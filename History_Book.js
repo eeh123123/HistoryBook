@@ -37,9 +37,7 @@ module.exports = {
 			if(err) {
 				res.send("查询失败" + err);
 			} else {
-				var string = JSON.stringify(data);
-				var jsondata = JSON.parse(string)
-				res.send(jsondata).end();
+				res.send(data).end();
 			}
 		});
 	},
@@ -107,8 +105,6 @@ module.exports = {
 					data: err
 				});
 			} else {
-				var string = JSON.stringify(data);
-				var jsondata = JSON.parse(string)
 				if(data.affectedRows) {
 					res.send({
 						rows: data.affectedRows,
@@ -117,7 +113,7 @@ module.exports = {
 				} else {
 					res.send({
 						rows: -1,
-						data: jsondata
+						data: data
 					});
 				}
 			}
