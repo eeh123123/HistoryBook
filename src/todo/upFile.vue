@@ -23,7 +23,6 @@
 			return {
 				fileList: [],
 				MYURL: this.$store.state.MYURL,
-				upload_URL: ""
 			};
 		},
 		methods: {
@@ -40,7 +39,7 @@
 				return this.$confirm(`确定移除 ${ file.name }？`);
 			},
 			upload() {
-				$.post(myurl + 'up', formData, config).then(function(data) {
+				$.post(this.MYURL + 'up', formData, config).then(function(data) {
 					if(data.data.status == 'success') {
 						$.get(myurl + "read.do", {
 							params: {

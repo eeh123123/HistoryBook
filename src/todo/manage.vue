@@ -6,12 +6,11 @@
 					<el-menu-item index="manage"><i class="el-icon-menu"></i>首页</el-menu-item>
 					<el-submenu index="1">
 						<template slot="title"><i class="el-icon-plus"></i>添加数据</template>
-						<el-menu-item index="addPerson">添加人物(未做)</el-menu-item>
-						<el-menu-item index="addJob">添加官职(未做)</el-menu-item>
+						<el-menu-item index="addPerson">生死簿</el-menu-item>
+						<el-menu-item index="addJob">官职表</el-menu-item>
 						<el-menu-item index="experience">添加履历(未做)</el-menu-item>
 						<el-menu-item index="upFile">添加物价表</el-menu-item>
 						<el-menu-item index="table1">自定义表格</el-menu-item>
-						<el-menu-item index="table2">自定义表格2</el-menu-item>
 						<el-menu-item index="hlx">自定义表格3</el-menu-item>
 					</el-submenu>
 					<el-submenu index="2">
@@ -33,7 +32,6 @@
 					</el-submenu>
 					<el-submenu index="6">
 						<template slot="title"><i class="el-icon-warning"></i>HLX专用</template>
-						<el-menu-item index="TYCWH">同义词维护</el-menu-item>
 					</el-submenu>
 				</el-menu>
 			</el-col>

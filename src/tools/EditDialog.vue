@@ -1,21 +1,13 @@
 <template>
-	<el-dialog id="dialog" :title="title" :before-close="beforeClose" :visible.sync="visible" center modal v-dialogDrag width="600px">
+	<el-dialog id="dialog" :title="title" :before-close="beforeClose" :visible.sync="visible" center modal v-dialogDrag width="500px">
 		<el-input placeholder="请输入内容" v-model="Dialog_search_data" class="input-with-select">
 			<el-button slot="append" icon="el-icon-search" @click="query()"></el-button>
 		</el-input>
-		<el-table :data.sync="Dialog_data" style="width: 100%" @current-change="handleCurrentChange" highlight-current-row  @row-dblclick="tableDBclick">
-			<el-table-column width="180" label="">
-				<template slot-scope="scope">
-					<span>{{scope.row.F_MC}}</span>
-				</template>
-			</el-table-column>
-			<el-table-column width="180" label="">
-				<template slot-scope="scope">
-					<span>{{scope.row.F_BH}}</span>
-				</template>
-			</el-table-column>
+		<el-table tooltip-effect="light" :data.sync="tableData.data" :row-style="{height:'30px'}" :cell-style="{padding:0}" @current-change='selectedTableData' @row-dblclick="save" highlight-current-row>
+			<el-table-column v-for="(item, index) in tableHead" :value="item.code" :key="index" :show-overflow-tooltip="true" :prop="item.code" :label="item.label" align='center'></el-table-column>
 		</el-table>
-		<el-pagination @size-change="handleSizeChange" @current-change="handleCurrentChange" :current-page="currentPage" :page-sizes="[10, 20, 30, 40]" :page-size="10" layout="total,prev, pager, next, jumper" :total="400">
+
+		<el-pagination @size-change="handleSizeChange" @current-change="handleCurrentChange" :current-page="currentPage" :page-sizes="[10, 20, 30, 40]" :page-size="10" layout="total,prev, pager, next" :total="tableData.total">
 		</el-pagination>
 		<!-- 插槽区 -->
 		<slot></slot>
@@ -57,13 +49,10 @@
 			},
 			save() {
 				let time = new Date().getTime()
-				this.$store.commit('setDialog_CallBack',time)
+				this.$store.commit('setDialog_CallBack', time)
 				this.$store.commit('setshow', false)
-			},
-			tableDBclick(){
-				let time = new Date().getTime()
-				this.$store.commit('setDialog_CallBack',time)
-				this.$store.commit('setshow', false)
+				
+				this.callBack(this.currentRow)
 			},
 			query() {
 				let sql = " 1=1 AND ";
@@ -79,14 +68,14 @@
 						}
 					})
 					.then(function(response) {
-						vm.Dialog_data = response.data;
+						vm.$store.commit('setCol', response.data);
 					})
 					.catch(function(error) {
 						console.log(error);
 					});
 			},
-			setCurrent(row) {
-				this.$refs.singleTable.setCurrentRow(row);
+			selectedTableData(val){
+				this.currentRow=val
 			}
 		},
 		mounted() {
@@ -110,10 +99,12 @@
 				default: '存储表'
 			},
 			visible: Boolean,
-			Dialog_data: Array,
+			tableData:Object,
+			tableHead:Array,
 			currentPage: Number,
 			handleCurrentChange: Function,
 			handleSizeChange: Function,
+			callBack: Function,
 		}
 	}
 </script>
@@ -126,6 +117,7 @@
 		td {
 			padding-bottom: 3px;
 			padding-top: 3px;
+
 		}
 	}
 </style>

@@ -11,7 +11,6 @@ import addJob from './todo/addJob.vue'
 import experience from './todo/experience.vue'
 import upFile from './todo/upFile.vue'
 import table1 from './todo/table1.vue'
-import table2 from './todo/table2.vue';
 import table3 from './todo/table3.vue';
 
 import explain from './todo/explain.vue'
@@ -22,10 +21,7 @@ import calendar from './todo/calendar.vue'
 
 import manage from './todo/manage.vue'
 
-import TYCWH from './hlx/TYCWH.vue'
 
-import EditDialog from './tools/EditDialog.vue'
-import SqlInput from './tools/SqlInput.vue'
 
 import adminSet from './todo/adminSet.vue';
 
@@ -63,11 +59,7 @@ const routes = [{
 				path: '/table1',
 				component: table1,
 				meta: ['添加数据', '自定义表格'],
-			}, {
-				path: '/table2',
-				component: table2,
-				meta: ['添加数据', '自定义表格2'],
-			}, {
+			},  {
 				path: '/hlx',
 				component: hlx,
 				meta: ['添加数据', '自定义表格3'],
@@ -96,13 +88,7 @@ const routes = [{
 				path: '/adminSet',
 				component: adminSet,
 				meta: ['账号管理', '个人信息'],
-			},
-			{
-				path: '/TYCWH',
-				component: TYCWH,
-				meta: ['HLX专用', '同义词维护'],
 			}
-
 		]
 	}
 ]
@@ -113,8 +99,6 @@ let router = new VueRouter({
 	mode: 'history'
 });
 
-Vue.component('EditDialog', EditDialog);
-Vue.component('SqlInput', SqlInput);
 
 /* new Vue 启动 */
 new Vue({

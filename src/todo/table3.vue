@@ -203,7 +203,6 @@
 					F_BH: '编号',
 					F_MC: '名称'
 				}]);
-				debugger
 				vm.$store.commit("setTitle", "品阶表");
 				vm.$store.commit("query_Dialog_data", option);
 				vm.$store.commit('setshow', true);
@@ -216,7 +215,6 @@
 				this.$store.commit('setshow', false)
 			},
 			save() {
-				debugger
 				this.$refs.multipleTable.store.states.selection
 				//this.$store.commit('setSQL_value', )
 

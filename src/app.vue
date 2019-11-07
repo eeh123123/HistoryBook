@@ -1,37 +1,15 @@
 <template>
 	<div id="app">
 		<router-view></router-view>
-		<EditDialog :visible.sync="Dialog_show" :Dialog_data.sync="Dialog_data" :title="Dialog_title" :handleCurrentChange="handleCurrentChange" :handleSizeChange="handleSizeChange"></EditDialog>
 	</div>
 </template>
 
 <script>
 	import login from './todo/login.vue'
-	import EditDialog from './tools/EditDialog.vue'
-	import Seconddialog from './tools/Seconddialog.vue'
-	
-	const mapState = Vuex.mapState;
 
 	export default {
-		computed: Object.assign({},
-			mapState({
-				Dialog_show: 'Dialog_show',
-				Dialog_data: 'Dialog_data',
-				Dialog_title:'Dialog_title'
-			})
-		),
 		components: {
-			login,
-			EditDialog,
-			Seconddialog
-		},
-		methods:{
-			handleCurrentChange(row){
-				this.$store.commit("setDialog_CurrentData", row);
-			},
-			handleSizeChange(a,b,c){
-				
-			},
+			login
 		}
 	}
 </script>
@@ -52,5 +30,4 @@
 	#login {
 		width: 60%;
 	}
-	
 </style>

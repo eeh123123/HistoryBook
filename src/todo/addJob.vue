@@ -57,15 +57,15 @@
 			<el-form :model="PLAdd_Data" label-width="80px" ref="editForm">
 				<el-row :gutter="20">
 					<el-col :span="12">
-						<el-form-item label="官职名">
-							<el-input auto-complete="off" v-model="PLAdd_Data.GuanZhiName"></el-input>
+						<el-form-item label="官职名*">
+							<el-input auto-complete="off" v-model="PLAdd_Data.GuanZhi_MC"></el-input>
 						</el-form-item>
 					</el-col>
 					<el-col :span="12">
-						<el-form-item label="品阶">
+						<el-form-item label="品阶*">
 							<div class="mdiv" style="margin-right:20px;top:5px;">
-								<input type='text' id='sqr' class="input1" readonly="readonly" style="width:100px; height: 20px;" @click="selectPinJie"></input>
-								<img  src="../assets/images/select.png" @click="selectPinJie()" style="cursor: pointer;width: 18px; height: 18px; position: relative; top: 8px;" />
+								<el-input suffix-icon="el-icon-circle-plus" @click.native="open_Dialog1()" :option="option" v-model="PLAdd_Data.PinJie_FMC">
+								</el-input>
 							</div>
 						</el-form-item>
 					</el-col>
@@ -75,20 +75,21 @@
 				</el-form-item>
 				<el-row :gutter="20">
 					<el-col :span="12">
-						<el-form-item label="部门">
-							<el-input v-model="PLAdd_Data.Belong" auto-complete="off"></el-input>
+						<el-form-item label="部门*">
+							<el-input suffix-icon="el-icon-circle-plus" @click.native="SSBM()" v-model="PLAdd_Data.Belong">
+							</el-input>
 						</el-form-item>
 					</el-col>
 					<el-col :span="12">
-						<el-form-item label="人数">
-							<el-input auto-complete="off"></el-input>
+						<el-form-item label="人数*">
+							<el-input auto-complete="off" v-model="PLAdd_Data.Count"></el-input>
 						</el-form-item>
 					</el-col>
 				</el-row>
 			</el-form>
 			<div slot="footer" class="dialog-footer">
-				<el-button @click.native="handleCancel('editForm')">取消</el-button>
-				<el-button type="primary" @click.native="handleUpdate('editForm')">保存</el-button>
+				<el-button @click.native="handleCancel()">取消</el-button>
+				<el-button type="primary" @click.native="PLSave()">保存</el-button>
 			</div>
 		</el-dialog>
 		<el-dialog title="部门表" :visible.sync="GZBVisible" :close-on-click-modal="false" class="edit-form">
@@ -101,14 +102,25 @@
 				<el-button @click="GZBVisible=false">取消</el-button>
 			</div>
 		</el-dialog>
+		<EditDialog :visible.sync="Dialog_show" :title="Dialog_title" :handleCurrentChange="handleCurrentChange" :handleSizeChange="handleSizeChange" :callBack="cbFunc" :tableHead="tableHead" :tableData.sync="Dialog_data"></EditDialog>
 	</div>
 </template>
 
 <script>
+	import EditDialog from '../tools/EditDialog.vue'
+	const mapState = Vuex.mapState;
 	let vm;
-	export default {
-		computed: {
 
+	export default {
+		computed: Object.assign({},
+			mapState({
+				Dialog_show: 'Dialog_show',
+				Dialog_data: 'Dialog_data',
+				Dialog_title: 'Dialog_title'
+			})
+		),
+		components: {
+			EditDialog
 		},
 		created() {
 
@@ -117,11 +129,10 @@
 			return {
 				//编辑界面数据
 				editFormVisible: false, //默认不显示编辑弹层
-				addnum: 0,
 				GuanZhi_Data: [],
 				GuanZhi_Orign_Data: [],
 				GuanZhi_EditIndex: 0,
-
+				cbFunc: function() {},
 				option: {
 					showcol: [{
 						F_MC: '名称',
@@ -139,42 +150,97 @@
 					label: 'label'
 				},
 				PLAdd_Data: {
-					GuanZhiName: '',
+					GuanZhi_MC: '',
 					PinJie_FBH: '',
+					PinJie_FMC: '',
 					F_Caption: '',
 					Belong: '',
-				}
+					Count: '',
+				},
+				GuanZhiType: 0,
+				tableHead: [{
+					code: "F_MC",
+					label: "名称"
+				}, {
+					code: "F_BH",
+					label: "编号"
+				}]
 			};
 		},
 		mounted() {
 			vm = this;
-			axios.get(this.$store.state.MYURL + 'Select_GuanZhi.do', {
-					params: {
-						type: "2"
-					}
-				})
-				.then(function(response) {
-					vm.GuanZhi_Data = response.data;
-					vm.GuanZhi_Orign_Data = JSON.parse(JSON.stringify(response.data));
-					for(let i = 0; i < vm.GuanZhi_Data.length; i++) {
-						vm.GuanZhi_Data[i].isInsert = false
-					}
-				})
-				.catch(function(error) {
-					console.log(error);
-				});
+			vm.queryTableData();
 		},
 		methods: {
+			//查询官职
+			queryTableData() {
+				axios.get(this.$store.state.MYURL + 'Select_GuanZhi.do', {
+						params: {
+							type: "2"
+						}
+					})
+					.then(function(response) {
+						vm.GuanZhi_Data = response.data;
+						vm.GuanZhi_Orign_Data = JSON.parse(JSON.stringify(response.data));
+						for(let i = 0; i < vm.GuanZhi_Data.length; i++) {
+							vm.GuanZhi_Data[i].isInsert = false
+						}
+					})
+					.catch(function(error) {
+						console.log(error);
+					});
+			},
 			Save() {
-				let array = []
-				debugger
+				let insert_flag = true;
+				let array_update = []
+				let array_update_str = []
 				for(let i = 0; i < vm.GuanZhi_Orign_Data.length; i++) {
 					for(let j in vm.GuanZhi_Orign_Data[i]) {
 						if(vm.GuanZhi_Orign_Data[i][j] != vm.GuanZhi_Data[i][j]) {
-							array.push(vm.GuanZhi_Data[i]);
+
+							for(let k = 0; k < array_update.length; k++) {
+								if(array_update[k].id == vm.GuanZhi_Data[i].id) {
+									insert_flag = false
+								}
+							}
+							if(insert_flag == true) {
+								array_update.push({
+									id: vm.GuanZhi_Data[i].id
+								})
+							}
+
+							//上面这个for循环和if是为了判断需不需要新增id
+
+							for(let k = 0; k < array_update.length; k++) {
+								if(array_update[k].id == vm.GuanZhi_Data[i].id) {
+									array_update[k][j] = vm.GuanZhi_Data[i][j]
+								}
+							}
 						}
 					}
 				}
+
+				if(array_update.length != 0) {
+					axios.post(this.$store.state.MYURL + 'UpdateTableRow.do', {
+							params: {
+								tablename: 'guanzhi',
+								values: array_update,
+							}
+						})
+						.then(function(response) {
+							for(let i = 0; i < vm.GuanZhi_Data.length; i++) {
+								vm.GuanZhi_Data[i].isInsert = false
+							}
+							vm.$message({
+								type: 'success',
+								message: response.data.msg
+							});
+						})
+						.catch(function(error) {
+							console.log(error);
+						});
+				}
+
 				let array_insert = []
 				let array_insert_str = []
 				for(let i = 0; i < vm.GuanZhi_Data.length; i++) {
@@ -205,31 +271,34 @@
 						}
 					}
 				}
-
 				Insertcol = Insertcol.substring(0, Insertcol.length - 1)
 
-				axios.post(this.$store.state.MYURL + 'InsertTableRow.do', {
-						params: {
-							tablename: 'guanzhi',
-							values: array_insert_str,
-							Insertcol: Insertcol,
-						}
-					})
-					.then(function(response) {
-						for(let i = 0; i < vm.GuanZhi_Data.length; i++) {
-							vm.GuanZhi_Data[i].isInsert = false
-						}
-					})
-					.catch(function(error) {
-						console.log(error);
-					});
+				if(array_insert.length != 0) {
+					axios.post(this.$store.state.MYURL + 'InsertTableRow.do', {
+							params: {
+								tablename: 'guanzhi',
+								values: array_insert_str,
+								Insertcol: Insertcol,
+							}
+						})
+						.then(function(response) {
+							for(let i = 0; i < vm.GuanZhi_Data.length; i++) {
+								vm.GuanZhi_Data[i].isInsert = false
+							}
+							vm.$message({
+								type: 'success',
+								message: response.data.msg
+							});
+						})
+						.catch(function(error) {
+							console.log(error);
+						});
+				}
 			},
 			deleteRow(index, rows) { //删除改行
 				rows.splice(index, 1);
 			},
-			addDialog(index, rows) { //打开弹出窗
-			},
-			addRow(GuanZhi_Data, event) {
+			addRow(GuanZhi_Data) {
 				GuanZhi_Data.push({
 					isInsert: true,
 					PinJie_FBH: '',
@@ -246,7 +315,11 @@
 			SSBM(index, row) {
 				vm.GZB_data = []
 				vm.GZBVisible = true
-				vm.GuanZhi_EditIndex = index
+				vm.GZB_filterText = '' //每次打开官职表时，置空查询条件
+				vm.GuanZhi_EditIndex = index || 0
+				if(index == undefined) {
+					vm.GuanZhiType = 1;
+				}
 				let option = {
 					tablename: "dept",
 					showcol: ['F_MC', 'F_BH', 'F_Parent'],
@@ -260,22 +333,22 @@
 						}
 					})
 					.then(function(response) {
-						for(let i = 0; i < response.data.length; i++) {
-							if(response.data[i].F_Parent === "#") {
+						for(let i = 0; i < response.data.data.length; i++) {
+							if(response.data.data[i].F_Parent === "#") {
 								vm.GZB_data.push({
-									label: response.data[i].F_MC,
-									value: response.data[i].F_BH,
-									id: response.data[i].F_BH,
+									label: response.data.data[i].F_MC,
+									value: response.data.data[i].F_BH,
+									id: response.data.data[i].F_BH,
 									children: []
 								})
 							}
 						}
-						for(let i = 0; i < response.data.length; i++) {
+						for(let i = 0; i < response.data.data.length; i++) {
 							for(let j = 0; j < vm.GZB_data.length; j++) {
-								if(response.data[i].F_Parent == vm.GZB_data[j].value) {
+								if(response.data.data[i].F_Parent == vm.GZB_data[j].value) {
 									vm.GZB_data[j].children.push({
-										label: response.data[i].F_MC,
-										value: response.data[i].F_BH,
+										label: response.data.data[i].F_MC,
+										value: response.data.data[i].F_BH,
 									})
 								}
 							}
@@ -284,7 +357,6 @@
 					.catch(function(error) {
 						console.log(error);
 					});
-
 			},
 			GZB_filterNode(value, data) {
 				if(!value) return true;
@@ -294,8 +366,14 @@
 
 			},
 			GZB_Sure() {
-				vm.GuanZhi_Data[vm.GuanZhi_EditIndex].Belong = vm.$refs.Tree.getCheckedNodes()[0].label
-				vm.GZBVisible = false
+				if(vm.GuanZhiType == 0) {
+					vm.GuanZhi_Data[vm.GuanZhi_EditIndex].Belong = vm.$refs.Tree.getCheckedNodes()[0].label
+					vm.GZBVisible = false
+				} else if(vm.GuanZhiType == 1) {
+					vm.PLAdd_Data.Belong = vm.$refs.Tree.getCheckedNodes()[0].label
+					vm.GZBVisible = false
+				}
+
 			},
 			GZB_checkGroupNode(a, b) {
 				if(b.checkedKeys.length > 0) {
@@ -313,21 +391,44 @@
 
 			//点击取消
 			handleCancel(formName) {
-				this.editFormVisible = false;
+				vm.PLAdd_Data = [];
+				vm.editFormVisible = false;
 			},
 
-			//点击更新
-			handleUpdate(forName) {
-				//更新的时候就把弹出来的表单中的数据写到要修改的表格中
-				var postData = {
-					name: this.editForm.name
+			//批量保存
+			PLSave() {
+				let senddata = JSON.parse(JSON.stringify(vm.PLAdd_Data));
+				let value = []
+				for(let i = 0; i < vm.PLAdd_Data.Count; i++) {
+					value.push(
+						[vm.PLAdd_Data.PinJie_FBH,
+							vm.PLAdd_Data.PinJie_FMC,
+							vm.PLAdd_Data.GuanZhi_MC + "(" + (i - 1 + 2) + ")",
+							vm.PLAdd_Data.F_Caption,
+							vm.PLAdd_Data.Belong
+						]
+					)
 				}
-
-				//这里再向后台发个post请求重新渲染表格数据
+				axios.post(this.$store.state.MYURL + 'InsertTableRow.do', {
+						params: {
+							tablename: "GuanZhi",
+							Insertcol: "PinJie_FBH,PinJie_FMC,GuanZhi_MC,F_Caption,Belong",
+							values: value
+						}
+					})
+					.then(function(response) {
+						vm.$message({
+							type: 'success',
+							message: response.data.msg
+						});
+						vm.queryTableData();
+					})
+					.catch(function(error) {
+						console.log(error);
+					});
 				this.editFormVisible = false;
 			},
 			open_Dialog(index, row) { //告诉子组件
-				//this.option.editShow = true;
 				vm.GuanZhi_EditIndex = index
 				let option = {
 					tablename: "PinJie",
@@ -341,71 +442,56 @@
 				vm.$store.commit("setTitle", "品阶表");
 				vm.$store.commit("query_Dialog_data", option);
 				vm.$store.commit('setshow', true);
+				vm.cbFunc = function(data) {
+					vm.GuanZhi_Data[vm.GuanZhi_EditIndex].PinJie_FMC = data.F_MC
+					vm.GuanZhi_Data[vm.GuanZhi_EditIndex].PinJie_FBH = data.F_BH
+				}
+			},
+			open_Dialog1(index, row) { //告诉子组件
+				vm.GuanZhi_EditIndex = index
+				let option = {
+					tablename: "PinJie",
+					showcol: ['F_MC', 'F_BH'],
+					sqlwhere: "1=1 Limit 0,10"
+				};
+				vm.$store.commit("setCol_Name", [{
+					F_BH: '编号',
+					F_MC: '名称'
+				}]);
+				vm.$store.commit("setTitle", "品阶表");
+				vm.$store.commit("query_Dialog_data", option);
+				vm.$store.commit('setshow', true);
+				vm.cbFunc = function(data) {
+					vm.PLAdd_Data.PinJie_FMC = data.F_MC
+					vm.PLAdd_Data.PinJie_FBH = data.F_BH
+				}
 			},
 			Select_GuanZhi: function() {
 				$.get(this.$store.state.MYURL + 'Select_GuanZhi.do', {
 					type: "1"
 				}, function(result) {
-					vm.tableData = result;
+					vm.GuanZhi_Data = result;
 					console.log(result);
 				}, "json");
 			},
-			//官职表关闭函数
-			GZBClose() {
-
+			handleCurrentChange(row) {
+				let option = {
+					tablename: "PinJie",
+					showcol: ['F_MC', 'F_BH'],
+					sqlwhere: "1=1 Limit " + (row - 1) * 10 + ",10"
+				};
+				vm.$store.commit("query_Dialog_data", option);
 			},
-			//选择品阶
-			selectPinJie() {
-				//var f_comp_id = sqrgs.panSelect("getValue");
-				$("#search2").panComSelect({
-					width: "400px", //弹出框的宽度
-					height: "500px", //弹出框的高度
-					title: "选择用户",
-					loadtext: "正在加载中...",
-					url: sys_ctx + "/commonJsp/panDctChooser1.jsp?refdctid=SSF_USERS&refilter=true&opencontent=iframe&pagezindex=200",
-					onlyfirst: true,
-					dydata: {
-						"grid_sqlWhere": "ZD.USR_USRID IN (select URO.F_USER_ID from BF_USER_ROLE_ORG URO where URO.F_COMP_ID = '" + f_comp_id + "' AND URO.F_ROLE_ID = 'R099') AND ZD.USR_DISABLE = '0' AND ZD.USR_TYPE = '1' "
-					},
-					parenturl: window.location.href,
-					callback: function(data) {
-						$("#sqr").val(data.rowData.USR_CAPTION + "(" + data.rowData.USR_USRID + ")");
-						$("#sqr").data("sqrid", data.rowData.USR_USRID);
-					}
-				});
-			},
-		},
-		computed: {
-			sql_value() {
-				return vm.$store.state.Dialog_Value;
-			}
+			handleSizeChange(a, b, c) {},
 		},
 		watch: {
 			GZB_filterText(val) {
 				this.$refs.Tree.filter(val);
-			},
-			'$store.state.Dialog_CallBack': function() {
-				vm.GuanZhi_Data[vm.GuanZhi_EditIndex].PinJie_FMC = vm.$store.state.Dialog_CurrentData.F_MC
-				vm.GuanZhi_Data[vm.GuanZhi_EditIndex].PinJie_FBH = vm.$store.state.Dialog_CurrentData.F_BH
-
-			},
+			}
 		}
 	}
 </script>
 <style lang="less">
-	.tb-edit .input-box {
-		display: none
-	}
-	
-	.tb-edit .current-cell .input-box {
-		display: inline-block;
-		margin-left: -15px;
-	}
-	
-	.row-bg {
-		padding: 5px 0;
-	}
-	
 	.addJob {
 		.el-dialog {
 			width: 400px;

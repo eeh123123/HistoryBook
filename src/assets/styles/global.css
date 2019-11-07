@@ -1,3 +1,20 @@
-.margin-left10{
+.margin-left10 {
 	margin-left: 10px;
 }
+
+.tb-edit .el-input {
+	display: none
+}
+
+.tb-edit .current-row .el-input+span {
+	display: none
+}
+
+.tb-edit .current-row .el-input {
+	display: block
+}
+
+
+
+
+

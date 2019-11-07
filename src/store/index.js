@@ -4,7 +4,8 @@ const store = new Vuex.Store({
 		MYURL: "http://localhost:8084/",
 		LoginState: false,
 		Dialog_show: false,
-		Dialog_data: [],
+		Dialog_data:{total:0,data:[]},
+		PinJie_FBH: [],
 		Dialog_Col_Name: [],
 		Dialog_title: "",
 		Dialog_PageSize: 10,
@@ -12,7 +13,6 @@ const store = new Vuex.Store({
 		Dialog_showcol: "",
 		Dialog_sqlwhere: "",
 		Dialog_CallBack: "",
-		Dialog_CurrentData:{},
 		Sql_value: "",
 
 	},
@@ -25,9 +25,6 @@ const store = new Vuex.Store({
 		},
 		setDialog_CallBack: (state, data) => {
 			state.Dialog_CallBack = data;
-		},
-		setDialog_CurrentData: (state, data) => {
-			state.Dialog_CurrentData = data;
 		},
 		query_Dialog_data: (state, data) => {
 			state.Dialog_tablename = data.tablename;
@@ -42,15 +39,14 @@ const store = new Vuex.Store({
 				})
 				.then(function(response) {
 					state.Dialog_data = response.data;
-					state.Dialog_data = state.Dialog_Col_Name.concat(state.Dialog_data);
-
 				})
 				.catch(function(error) {
 					console.log(error);
 				});
 		},
 		setCol: (state, data) => {
-			//state.Dialog_data = state.Col_Name.concat(state.Dialog_data);
+			state.Dialog_data.total = data.data.length;
+			state.Dialog_data.data = data.data;
 		},
 		setTitle: (state, data) => {
 			state.Dialog_title = data;

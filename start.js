@@ -36,51 +36,9 @@ var filename = "";
 var define = require('./define.js');
 var Func = require('./Func.js');
 
-var __dirname = define.Get_Dirname();
+var __dirname_mine = define.Get_Dirname();
 
-app.use(express.static(__dirname));
-
-//4 分配文件请求路径
-app.all('/', function(req, res) {
-	console.log("============================");
-	console.log("请求路径：" + req.url);
-	filename = req.url.split('/')[req.url.split('/').length - 1];
-	var suffix = req.url.split('.')[req.url.split('.').length - 1];
-	console.log("suffix:" + suffix);
-	if(req.url === '/') {
-		res.writeHead(200, {
-			'Content-Type': 'text/html'
-		});
-		res.end(Func.get_file_content(path.join(__dirname, 'html', 'index.html')));
-	} else if(suffix === 'css' || suffix === 'stylesheet') {
-		res.writeHead(200, {
-			'Content-Type': 'text/css'
-		});
-		res.end(Func.get_file_content(path.join(__dirname, 'web', 'css', filename)));
-	} else if(suffix in ['gif', 'jpeg', 'jpg', 'png']) {
-		res.writeHead(200, {
-			'Content-Type': 'image/' + suffix
-		});
-		res.end(Func.get_file_content(path.join(__dirname, 'web', 'images', filename)));
-	} else if(suffix === 'js' || suffix === 'script') {
-		res.writeHead(200, {
-			'Content-Type': 'text/javascript'
-		});
-		res.end(Func.get_file_content(path.join(__dirname, 'web', 'js', filename)));
-	} else if(suffix === 'html') {
-		res.writeHead(200, {
-			'Content-Type': 'text/html'
-		})
-		fs.readFile(__dirname + "/" + filename, 'utf-8', function(err, data) {
-			if(err) {
-				throw err;
-			}
-			response.end(Func.get_file_content(path.join(__dirname, 'html', 'index.html')));
-		});
-	} else {
-		response.end(Func.get_file_content(path.join(__dirname, 'html', 'index.html')));
-	}
-});
+app.use(express.static(__dirname_mine));
 
 //5 设置可以跨域
 app.all("*", function(req, res, next) {
@@ -90,6 +48,14 @@ app.all("*", function(req, res, next) {
 	res.header("Access-Control-Allow-Headers", "content-type");
 	//跨域允许的请求方式 
 	res.header("Access-Control-Allow-Methods", "DELETE,PUT,POST,GET,OPTIONS");
+	filename = req.url.split('/')[req.url.split('/').length - 1];
+	var suffix = req.url.split('.')[req.url.split('.').length - 1];
+	if(req.url.substring(0, 8) == "/upload/") {
+		res.writeHead(200, {
+			'Content-Type': 'image/' + suffix
+		});
+		res.end(Func.get_file_content(path.join(__dirname,'upload', filename)));
+	}
 	if(req.method.toLowerCase() == 'options')
 		res.send(200); //让options尝试请求快速结束
 	else
@@ -136,17 +102,7 @@ app.post('/up', function(req, res) {
 					text: '上传成功',
 					status: 'success',
 					filename: filename_
-				});
-				/*	var DangQsj = Func.getNowFormatDate(); //当前时间
-				var Insert_sql = "INSERT INTO FILE(URL,FILENAME,SAVETIME)values('"+filename+"','"+req.body.name+"','"+DangQsj+"')";
-				console.log(Insert_sql);
-				db.query(Insert_sql, (err, data) => {
-					if(err) {
-						res.send("查询失败" + err);
-					} else {
-						res.send({text:'上传成功',status:'success',filename:filename_});
-					}
-				});*/
+				});  
 			}
 		});
 	}
@@ -494,14 +450,7 @@ app.get('/WriteStories.do', function(req, res) {
 	var Tag = req.query.Tag || "";
 	var Filename = req.query.Filename || "";
 	var URL = req.query.URL || "";
-	if(Time.length != "8") {
-		res.send({
-			text: '错误，时间的位数不足8位',
-			status: 'failed',
-			sql: ""
-		}).end();
-		return;
-	}
+
 	var values = [];
 	//先到数据库里查一把有没有这条数据。有的话，UPDATE，没有的话，INSERT
 	var SearchCount_sql = "SELECT COUNT(*) AS NUM FROM EVENT WHERE TIME='" + Time + "'";
@@ -537,7 +486,9 @@ app.get('/WriteStories.do', function(req, res) {
 			} else {
 				var sql = "INSERT INTO EVENT(TITLE,Caption,Time,Year,Month,Tag,Filename,URL) VALUES ?";
 				values = [title, caption, Time, Year, Month, Tag, Filename, URL];
-				db.query(sql, [[values]], function(err, rows, fields, Filename) {
+				db.query(sql, [
+					[values]
+				], function(err, rows, fields, Filename) {
 					if(err) {
 						console.log(sql);
 						console.log(values);
@@ -573,9 +524,7 @@ app.get('/SelectStories.do', function(req, res) {
 		if(err) {
 			res.send("查询失败" + err);
 		} else {
-			var string = JSON.stringify(data);
-			var jsondata = JSON.parse(string)
-			res.send(jsondata).end();
+			res.send(data).end();
 		}
 	});
 });
@@ -644,5 +593,8 @@ app.get('/QueryTableRow.do', HB.QueryTableRow);
 
 //26 通用新增
 app.post('/InsertTableRow.do', HB.InsertTableRow);
+
+//28 通用更新
+app.post('/UpdateTableRow.do', HB.UpdateTableRow);
 
 app.listen(8084);

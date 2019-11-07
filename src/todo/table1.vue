@@ -6,37 +6,6 @@
 				<el-button type="primary" @click="Save()">保存</el-button>
 				<el-button type="primary" @click="PLadd()">批量添加官员</el-button>
 				<el-button size="small" type="primary" @click="Select_GuanZhi()">官职名去重</el-button>
-				<template>
-					<el-table :data="GuanZhi_Data" class="tb-edit" style="width: 100%" highlight-current-row>
-						<el-table-column label="官职名称" width="180">
-							<template slot-scope="scope">
-								<el-input size="small" v-model="scope.row.GuanZhi_MC" placeholder="请输入内容" @change="handleEdit(scope.$index, scope.row)"></el-input> <span>{{scope.row.GuanZhi_MC}}</span>
-							</template>
-						</el-table-column>
-						<el-table-column label="描述" width="180">
-							<template slot-scope="scope">
-								<el-input size="small" v-model="scope.row.F_Caption" placeholder="请输入内容" @change="handleEdit(scope.$index, scope.row)"></el-input> <span>{{scope.row.F_Caption}}</span>
-							</template>
-						</el-table-column>
-						<el-table-column label="品阶" width="200">
-							<template slot-scope="scope">
-								<sql-input :value="scope.row.PinJie" @click.native="open_Dialog()" :option="option"></sql-input>
-								</span>
-							</template>
-						</el-table-column>
-						<el-table-column label="所属部门" width="100">
-							<template slot-scope="scope">
-								<el-input size="small" v-model="scope.row.Belong" placeholder="" @change="handleEdit(scope.$index, scope.row)"></el-input> <span>{{scope.row.Belong}}</span>
-							</template>
-						</el-table-column>
-						</el-table-column>
-						<el-table-column fixed="right" label="操作">
-							<template slot-scope="scope">
-								<el-button @click.native.prevent="deleteRow(scope.$index, GuanZhi_Data)" size="small"> 移除 </el-button>
-							</template>
-						</el-table-column>
-					</el-table>
-				</template>
 			</el-form-item>
 		</el-form>
 

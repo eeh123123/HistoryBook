@@ -35,8 +35,8 @@
 	export default {
 		data() {
 			return {
-				baseUrl,
-				baseImgPath,
+				baseUrl:'',
+				baseImgPath:'',
 			}
 		},
 		computed: Object.assign({},

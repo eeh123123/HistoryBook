@@ -1,0 +1,86 @@
+{
+  "id": "1462719",
+  "name": "刊物订阅工具",
+  "font_family": "iconfont",
+  "css_prefix_text": "icon-",
+  "description": "",
+  "glyphs": [
+    {
+      "icon_id": "13335",
+      "name": "退出",
+      "font_class": "exit-door",
+      "unicode": "e622",
+      "unicode_decimal": 58914
+    },
+    {
+      "icon_id": "4135478",
+      "name": "查询",
+      "font_class": "chaxun",
+      "unicode": "e608",
+      "unicode_decimal": 58888
+    },
+    {
+      "icon_id": "4294697",
+      "name": "提交",
+      "font_class": "tijiao",
+      "unicode": "e637",
+      "unicode_decimal": 58935
+    },
+    {
+      "icon_id": "4479638",
+      "name": "部门",
+      "font_class": "bumen",
+      "unicode": "e623",
+      "unicode_decimal": 58915
+    },
+    {
+      "icon_id": "5625476",
+      "name": "人",
+      "font_class": "ren2",
+      "unicode": "e600",
+      "unicode_decimal": 58880
+    },
+    {
+      "icon_id": "5752210",
+      "name": "报刊",
+      "font_class": "baokan",
+      "unicode": "e601",
+      "unicode_decimal": 58881
+    },
+    {
+      "icon_id": "7550215",
+      "name": "向下",
+      "font_class": "xiangxia",
+      "unicode": "e68b",
+      "unicode_decimal": 59019
+    },
+    {
+      "icon_id": "8345206",
+      "name": "报刊杂志",
+      "font_class": "xuexi",
+      "unicode": "e605",
+      "unicode_decimal": 58885
+    },
+    {
+      "icon_id": "8439650",
+      "name": "删 除",
+      "font_class": "shanchu",
+      "unicode": "e63c",
+      "unicode_decimal": 58940
+    },
+    {
+      "icon_id": "10319959",
+      "name": "联系方式",
+      "font_class": "lianxifangshi",
+      "unicode": "e62b",
+      "unicode_decimal": 58923
+    },
+    {
+      "icon_id": "10484633",
+      "name": "增加",
+      "font_class": "zengjia",
+      "unicode": "e6bf",
+      "unicode_decimal": 59071
+    }
+  ]
+}
