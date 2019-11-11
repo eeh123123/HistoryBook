@@ -10,8 +10,6 @@ import addPerson from './todo/addPerson.vue'
 import addJob from './todo/addJob.vue'
 import experience from './todo/experience.vue'
 import upFile from './todo/upFile.vue'
-import table1 from './todo/table1.vue'
-import table3 from './todo/table3.vue';
 
 import explain from './todo/explain.vue'
 import WuJia from './todo/WuJia.vue'
@@ -26,8 +24,6 @@ import manage from './todo/manage.vue'
 import adminSet from './todo/adminSet.vue';
 
 import store from './store';
-
-import hlx from './todo/hlx.vue';
 
 import axios from './axios/index.js'
 
@@ -55,15 +51,7 @@ const routes = [{
 				path: '/upFile',
 				component: upFile,
 				meta: ['添加数据', '上传物价表'],
-			}, {
-				path: '/table1',
-				component: table1,
-				meta: ['添加数据', '自定义表格'],
-			},  {
-				path: '/hlx',
-				component: hlx,
-				meta: ['添加数据', '自定义表格3'],
-			},
+			}, 
 			{
 				path: '/explain',
 				component: explain,

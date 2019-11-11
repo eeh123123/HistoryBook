@@ -15,7 +15,7 @@ module.exports = {
 		var Select_GuanZhi_SQL = "";
 
 		if(req.query.type == "1") {
-			Select_GuanZhi_SQL = "SELECT B.Belong AS'Belong',B.F_Caption AS'F_Caption',B.F_PKEY AS'F_PKEY',B.PinJie_FBH AS'PinJie_FBH',B.PinJie_FMC AS'PinJie_FMC',B.F_PARENT AS'F_PARENT',B.F_LEAF AS'F_LEAF',B.guanzhi_FMC AS'GuanZhi_MC'FROM(SELECT DISTINCT CASE WHEN instr(GuanZhi_MC,'(')=0 THEN GuanZhi_MC ELSE LEFT(GuanZhi_MC,instr(GuanZhi_MC,'(')-1)END AS'GuanZhi_FMC',Belong,F_Caption,F_PKEY,PinJie_FBH,PinJie_FMC,F_PARENT,F_LEAF FROM guanzhi GROUP BY GuanZhi_FMC ORDER BY F_PKEY)B"
+			Select_GuanZhi_SQL = "SELECT B.Belong AS'Belong',B.F_Caption AS'F_Caption',B.id AS'id',B.PinJie_FBH AS'PinJie_FBH',B.PinJie_FMC AS'PinJie_FMC',B.F_PARENT AS'F_PARENT',B.F_LEAF AS'F_LEAF',B.guanzhi_FMC AS'GuanZhi_MC'FROM(SELECT DISTINCT CASE WHEN instr(GuanZhi_MC,'(')=0 THEN GuanZhi_MC ELSE LEFT(GuanZhi_MC,instr(GuanZhi_MC,'(')-1)END AS'GuanZhi_FMC',Belong,F_Caption,id,PinJie_FBH,PinJie_FMC,F_PARENT,F_LEAF FROM guanzhi GROUP BY GuanZhi_FMC  Order By Belong,(PinJie_FBH+0) ,GuanZhi_MC+0)B"
 		}
 		if(req.query.type == "2") {
 			Select_GuanZhi_SQL = "SELECT * FROM GUANZHI";
@@ -44,10 +44,10 @@ module.exports = {
 	//通用查询
 	QueryTableRow: function(req, res) {
 		var QueryTableRow_SQL = "SELECT " + req.query.showcol + " FROM " + req.query.tablename + " WHERE " + req.query.sqlwhere;
-		console.log("QueryTableRow_SQL："+QueryTableRow_SQL);
-		var QueryCount_Sql = "SELECT COUNT(*) COUNT  FROM " + req.query.tablename;
-		console.log("QueryCount_Sql"+QueryCount_Sql)
-
+		console.log("QueryTableRow_SQL：" + QueryTableRow_SQL);
+		var QueryCount_Sql = "SELECT "+req.query.showcol+" FROM " + req.query.tablename;
+		console.log("QueryCount_Sql：" + QueryCount_Sql)
+		
 		let flag = {
 			count: '',
 			jsondata: '',
@@ -55,17 +55,16 @@ module.exports = {
 		};
 
 		let changeNum = 0 //db.query的执行成功次数。
-
-		db.query(QueryCount_Sql, (err, count) => {
+		
+		db.query(QueryCount_Sql, (err, data) => {
 			if(err) {
 				res.send("查询失败" + err);
 			} else {
-				flag.count = count[0].COUNT;
+				flag.count = data.length;
 				changeNum = changeNum + 1
 				flag.changeNum = changeNum
 			}
 		});
-
 		db.query(QueryTableRow_SQL, (err, data) => {
 			if(err) {
 				res.send("查询失败" + err);
@@ -90,6 +89,47 @@ module.exports = {
 			}
 		})
 	},
+	//通用查询,不查总量
+	QueryTableRow_NoTotal: function(req, res) {
+		var QueryTableRow_NoTotal_SQL = "SELECT " + req.query.showcol + " FROM " + req.query.tablename + " WHERE " + req.query.sqlwhere;
+		console.log("QueryTableRow_NoTotal_SQL：" + QueryTableRow_NoTotal_SQL);
+
+		db.query(QueryTableRow_NoTotal_SQL, (err, data) => {
+			if(err) {
+				res.send("查询失败" + err);
+			} else {
+				res.send({
+					data: data
+				}).end();
+			}
+		});
+	},
+
+	//通用查询，
+	QueryTableRow_Wait: function(req, res) {
+		var QueryTableRow_SQL = "SELECT " + req.query.showcol + " FROM " + req.query.tablename + " WHERE " + req.query.sqlwhere;
+		console.log("QueryTableRow_SQL：" + QueryTableRow_SQL);
+		var QueryCount_Sql = "SELECT COUNT(1) COUNT  FROM " + req.query.tablename;
+		console.log("QueryCount_Sql：" + QueryCount_Sql)
+
+		db.query(QueryCount_Sql, (err, count) => {
+			if(err) {
+				res.send("查询失败" + err);
+			} else {
+				db.query(QueryTableRow_SQL, (err, data) => {
+					if(err) {
+						res.send("查询失败" + err);
+					} else {
+						res.send({
+							total: count[0].COUNT,
+							data: data
+						}).end();
+					}
+				});
+			}
+		});
+	},
+
 	//通用新增
 	InsertTableRow: function(req, res) {
 		var values = req.body.params.values
@@ -102,13 +142,13 @@ module.exports = {
 				console.log(InsertTableRow_SQL);
 				res.send({
 					rows: -1,
-					data: err
+					msg: "新增错误"
 				});
 			} else {
 				if(data.affectedRows) {
 					res.send({
 						rows: data.affectedRows,
-						text: "添加成功，添加数据：" + data.affectedRows + "条"
+						msg: "添加成功，添加数据：" + data.affectedRows + "条"
 					});
 				} else {
 					res.send({
@@ -119,30 +159,8 @@ module.exports = {
 			}
 		});
 	},
-	//批量新增官职
-	PL_Insert_GuznZhi: function(req, res) {
-		var Count = req.body.params.Count//循环个数
-		var values = req.body.params.values
-
-		for(let i=0;i<Count;i++){
-			
-		}
-		var InsertTableRow_SQL = "INSERT INTO " + req.body.params.tablename + "(" + req.body.params.Insertcol + ") VALUES ?";
-		
-		//		db.query(InsertTableRow_SQL, [values], function(err) {
-		//			if(err) {
-		//				console.log(err)
-		//				console.log('INSERT ERROR - ', err.message);
-		//				console.log(InsertTableRow_SQL);
-		//				console.log(param);
-		//				return;
-		//			}
-		//			console.log("INSERT SUCCESS");
-		//		});
-		res.send("11").end();
-	},
 	//通用更新
-	UpdateTableRow: function(req, res) { //这里有个隐患，F_PKEY必须在最前，将来再改。
+	UpdateTableRow: function(req, res) { //这里有个隐患，id，将来再改。
 		var values = req.body.params.values
 		var update_str = []
 		var update_data = new Array(req.body.params.values.length)
@@ -190,9 +208,9 @@ module.exports = {
 		})
 
 		for(let i = 0; i < update_str.length; i++) {
-			console.log(UpdateTableRow_SQL + update_str[i] + " WHERE F_PKEY=" + update_data[i][0])
+			console.log(UpdateTableRow_SQL + update_str[i] + " WHERE ID=" + update_data[i][0])
 			//改
-			db.query(UpdateTableRow_SQL + update_str[i] + " WHERE F_PKEY= " + update_data[i][0], update_data[i], function(err, result) {
+			db.query(UpdateTableRow_SQL + update_str[i] + " WHERE ID= " + update_data[i][0], update_data[i], function(err, result) {
 				if(err) {
 					console.log('[UPDATE ERROR] - ', err.message);
 					return;

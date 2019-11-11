@@ -6,8 +6,7 @@
 		<el-table tooltip-effect="light" :data.sync="tableData.data" :row-style="{height:'30px'}" :cell-style="{padding:0}" @current-change='selectedTableData' @row-dblclick="save" highlight-current-row>
 			<el-table-column v-for="(item, index) in tableHead" :value="item.code" :key="index" :show-overflow-tooltip="true" :prop="item.code" :label="item.label" align='center'></el-table-column>
 		</el-table>
-
-		<el-pagination @size-change="handleSizeChange" @current-change="handleCurrentChange" :current-page="currentPage" :page-sizes="[10, 20, 30, 40]" :page-size="10" layout="total,prev, pager, next" :total="tableData.total">
+		<el-pagination @size-change="handleSizeChange" @current-change="handleCurrentChange" :page-sizes="[10, 20, 30, 40]" :page-size="10" layout="total,prev, pager, next" :total="tableData.total" :current-page.sync="currentPage">
 		</el-pagination>
 		<!-- 插槽区 -->
 		<slot></slot>
@@ -37,7 +36,8 @@
 			return {
 				Dialog_search_data: "",
 				MYURL: this.$store.state.MYURL,
-				currentRow: null
+				currentRow: null,
+				currentPage: 1
 			}
 		},
 		methods: {
@@ -101,7 +101,6 @@
 			visible: Boolean,
 			tableData:Object,
 			tableHead:Array,
-			currentPage: Number,
 			handleCurrentChange: Function,
 			handleSizeChange: Function,
 			callBack: Function,
@@ -117,7 +116,6 @@
 		td {
 			padding-bottom: 3px;
 			padding-top: 3px;
-
 		}
 	}
 </style>

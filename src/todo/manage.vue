@@ -10,8 +10,6 @@
 						<el-menu-item index="addJob">官职表</el-menu-item>
 						<el-menu-item index="experience">添加履历(未做)</el-menu-item>
 						<el-menu-item index="upFile">添加物价表</el-menu-item>
-						<el-menu-item index="table1">自定义表格</el-menu-item>
-						<el-menu-item index="hlx">自定义表格3</el-menu-item>
 					</el-submenu>
 					<el-submenu index="2">
 						<template slot="title"><i class="el-icon-warning"></i>技术说明</template>
@@ -29,9 +27,6 @@
 					<el-submenu index="5">
 						<template slot="title"><i class="el-icon-warning"></i>账号管理</template>
 						<el-menu-item index="adminSet">个人信息</el-menu-item>
-					</el-submenu>
-					<el-submenu index="6">
-						<template slot="title"><i class="el-icon-warning"></i>HLX专用</template>
 					</el-submenu>
 				</el-menu>
 			</el-col>

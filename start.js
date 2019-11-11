@@ -575,7 +575,7 @@ app.get('/Search_SJZ.do', function(req, res) {
 });
 
 //22 下载压缩包
-app.get('/.do', function(req, res) {
+app.get('download_YDM/.do', function(req, res) {
 	res.setHeader("Access-Control-Allow-Origin", "*");
 	res.download('New_TLBB_vue.7z')
 });
@@ -591,7 +591,10 @@ app.get('/Select_PinJie.do', HB.Select_PinJie);
 //25 通用查询
 app.get('/QueryTableRow.do', HB.QueryTableRow);
 
-//26 通用新增
+//26 通用查询,不查total
+app.get('/QueryTableRow_NoTotal.do', HB.QueryTableRow_NoTotal);
+
+//27 通用新增
 app.post('/InsertTableRow.do', HB.InsertTableRow);
 
 //28 通用更新

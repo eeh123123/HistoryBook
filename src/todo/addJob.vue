@@ -2,10 +2,18 @@
 	<div class="addJob">
 		<el-form label-width="130px" size="small">
 			<el-form-item>
-				<el-button type="primary" @click="addRow(GuanZhi_Data)" class="margin-left10">新增</el-button>
-				<el-button type="primary" @click="Save()">保存</el-button>
+				<el-select v-model="query_Dept" clearable filterable class="margin-left10" placeholder="请选择部门">
+					<el-option v-for="item in GZB_data_All" :key="item.F_BH" :label="item.F_MC" :value="item.F_MC">
+					</el-option>
+				</el-select>
+				<div class="query-div">
+					<el-input v-model="query_Content" placeholder="请输入官职名称"></el-input>
+				</div>
+				<el-button type="primary" @click="searchs()" class="margin-left10" icon="el-icon-search">搜索</el-button>
+				<el-button type="primary" @click="addRow(GuanZhi_Data)" class="margin-left10" icon="el-icon-circle-plus-outline">新增</el-button>
+				<el-button type="primary" @click="Save()" icon="el-icon-upload">保存</el-button>
 				<el-button type="primary" @click="PLadd()">批量添加官员</el-button>
-				<el-button size="small" type="primary" @click="Select_GuanZhi()">官职名去重</el-button>
+				<el-button type="primary" @click="Select_GuanZhi()">官职名去重</el-button>
 				<template>
 					<el-table :data="GuanZhi_Data" class="tb-edit" style="width: 100%" highlight-current-row>
 						<el-table-column label="ID" width="60" v-if="false">
@@ -102,7 +110,7 @@
 				<el-button @click="GZBVisible=false">取消</el-button>
 			</div>
 		</el-dialog>
-		<EditDialog :visible.sync="Dialog_show" :title="Dialog_title" :handleCurrentChange="handleCurrentChange" :handleSizeChange="handleSizeChange" :callBack="cbFunc" :tableHead="tableHead" :tableData.sync="Dialog_data"></EditDialog>
+		<EditDialog ref="edit_dialog" :visible.sync="Dialog_show" :title="Dialog_title" :handleCurrentChange="handleCurrentChange" :handleSizeChange="handleSizeChange" :callBack="cbFunc" :tableHead="tableHead" :tableData.sync="Dialog_data"></EditDialog>
 	</div>
 </template>
 
@@ -127,6 +135,10 @@
 		},
 		data() {
 			return {
+				//查询数据
+				query_Dept: "",
+				query_Content: "",
+				GZB_data_All: [],
 				//编辑界面数据
 				editFormVisible: false, //默认不显示编辑弹层
 				GuanZhi_Data: [],
@@ -164,24 +176,82 @@
 				}, {
 					code: "F_BH",
 					label: "编号"
-				}]
+				}],
+				currentPage: 1
 			};
 		},
 		mounted() {
 			vm = this;
 			vm.queryTableData();
+			vm.query_GZB_data_All();
 		},
 		methods: {
-			//查询官职
-			queryTableData() {
-				axios.get(this.$store.state.MYURL + 'Select_GuanZhi.do', {
+			//查询所有部门
+			query_GZB_data_All() {
+				let option = {
+					tablename: "dept",
+					showcol: ['F_MC', 'F_BH', 'F_Parent'],
+					sqlwhere: "1=1 AND Dynasty = '唐'"
+				}
+				axios.get(this.$store.state.MYURL + 'QueryTableRow.do', {
 						params: {
-							type: "2"
+							tablename: option.tablename,
+							showcol: option.showcol.join(","),
+							sqlwhere: option.sqlwhere
 						}
 					})
 					.then(function(response) {
-						vm.GuanZhi_Data = response.data;
-						vm.GuanZhi_Orign_Data = JSON.parse(JSON.stringify(response.data));
+						vm.GZB_data_All = response.data.data;
+					})
+					.catch(function(error) {
+						console.log(error);
+					});
+			},
+			searchs() {
+				let option = {
+					tablename: "GuanZhi",
+					sqlwhere: "1=1"
+				}
+				if(vm.query_Dept) {
+					option.sqlwhere += " AND Belong ='" + vm.query_Dept + "'";
+				}
+				if(vm.query_Content) {
+					option.sqlwhere += " AND GuanZhi_MC LIKE '%" + vm.query_Content + "%'";
+				}
+				axios.get(this.$store.state.MYURL + 'QueryTableRow.do', {
+						params: {
+							tablename: option.tablename,
+							showcol: "*",
+							sqlwhere: option.sqlwhere + " Order By Belong,(PinJie_FBH+0) ,ID"
+						}
+					})
+					.then(function(response) {
+						vm.GuanZhi_Data = response.data.data;
+						vm.GuanZhi_Orign_Data = JSON.parse(JSON.stringify(response.data.data));
+						for(let i = 0; i < vm.GuanZhi_Data.length; i++) {
+							vm.GuanZhi_Data[i].isInsert = false
+						}
+					})
+					.catch(function(error) {
+						console.log(error);
+					});
+			},
+			//查询官职
+			queryTableData() {
+				let option = {
+					tablename: "GuanZhi",
+					sqlwhere: "1=1 Order By Belong,(PinJie_FBH+0) ,ID"
+				}
+				axios.get(this.$store.state.MYURL + 'QueryTableRow.do', {
+						params: {
+							tablename: option.tablename,
+							showcol: "*",
+							sqlwhere: option.sqlwhere
+						}
+					})
+					.then(function(response) {
+						vm.GuanZhi_Data = response.data.data;
+						vm.GuanZhi_Orign_Data = JSON.parse(JSON.stringify(response.data.data));
 						for(let i = 0; i < vm.GuanZhi_Data.length; i++) {
 							vm.GuanZhi_Data[i].isInsert = false
 						}
@@ -191,19 +261,18 @@
 					});
 			},
 			Save() {
-				let insert_flag = true;
+				let update_flag = true;
 				let array_update = []
 				let array_update_str = []
 				for(let i = 0; i < vm.GuanZhi_Orign_Data.length; i++) {
 					for(let j in vm.GuanZhi_Orign_Data[i]) {
 						if(vm.GuanZhi_Orign_Data[i][j] != vm.GuanZhi_Data[i][j]) {
-
 							for(let k = 0; k < array_update.length; k++) {
 								if(array_update[k].id == vm.GuanZhi_Data[i].id) {
-									insert_flag = false
+									update_flag = false
 								}
 							}
-							if(insert_flag == true) {
+							if(update_flag == true) {
 								array_update.push({
 									id: vm.GuanZhi_Data[i].id
 								})
@@ -216,6 +285,7 @@
 									array_update[k][j] = vm.GuanZhi_Data[i][j]
 								}
 							}
+							update_flag = true;
 						}
 					}
 				}
@@ -249,16 +319,15 @@
 					}
 				}
 				array_insert = JSON.parse(JSON.stringify(array_insert));
-
 				for(let i = 0; i < array_insert.length; i++) {
 					delete array_insert[i].isInsert
 					array_insert_str[i] = [] //初始化这个数组
 				}
 				let Insertcol = ""
+
 				for(let i in array_insert[0]) {
 					Insertcol += (i + ",")
 				}
-
 				for(let i = 0; i < array_insert.length; i++) {
 					for(let j in array_insert[i]) {
 						if(array_insert_str[i] === undefined) {
@@ -282,13 +351,21 @@
 							}
 						})
 						.then(function(response) {
-							for(let i = 0; i < vm.GuanZhi_Data.length; i++) {
-								vm.GuanZhi_Data[i].isInsert = false
+							if(response.data.rows != -1) {
+								for(let i = 0; i < vm.GuanZhi_Data.length; i++) {
+									vm.GuanZhi_Data[i].isInsert = false
+								}
+								vm.$message({
+									type: 'success',
+									message: response.data.msg
+								});
+							} else {
+								vm.$message({
+									type: 'error',
+									message: response.data.msg
+								});
 							}
-							vm.$message({
-								type: 'success',
-								message: response.data.msg
-							});
+
 						})
 						.catch(function(error) {
 							console.log(error);
@@ -299,12 +376,23 @@
 				rows.splice(index, 1);
 			},
 			addRow(GuanZhi_Data) {
-				GuanZhi_Data.push({
-					isInsert: true,
-					PinJie_FBH: '',
-					PinJie_FMC: '',
-					Belong: '',
-				})
+				if(GuanZhi_Data.length > 0) {
+					GuanZhi_Data.push({
+						isInsert: true,
+						PinJie_FBH: '',
+						PinJie_FMC: '',
+						F_Caption: '',
+						Belong: GuanZhi_Data[GuanZhi_Data.length - 1].Belong,
+					})
+				} else {
+					GuanZhi_Data.push({
+						isInsert: true,
+						PinJie_FBH: '',
+						PinJie_FMC: '',
+						F_Caption: '',
+						Belong: '',
+					})
+				}
 				vm.GuanZhi_EditIndex = vm.GuanZhi_Data.length - 1
 			},
 			//
@@ -442,6 +530,7 @@
 				vm.$store.commit("setTitle", "品阶表");
 				vm.$store.commit("query_Dialog_data", option);
 				vm.$store.commit('setshow', true);
+				vm.$refs.edit_dialog.currentPage = 1;
 				vm.cbFunc = function(data) {
 					vm.GuanZhi_Data[vm.GuanZhi_EditIndex].PinJie_FMC = data.F_MC
 					vm.GuanZhi_Data[vm.GuanZhi_EditIndex].PinJie_FBH = data.F_BH
@@ -460,6 +549,7 @@
 				}]);
 				vm.$store.commit("setTitle", "品阶表");
 				vm.$store.commit("query_Dialog_data", option);
+				vm.$refs.edit_dialog.currentPage = 1;
 				vm.$store.commit('setshow', true);
 				vm.cbFunc = function(data) {
 					vm.PLAdd_Data.PinJie_FMC = data.F_MC
@@ -471,6 +561,8 @@
 					type: "1"
 				}, function(result) {
 					vm.GuanZhi_Data = result;
+					vm.GuanZhi_Orign_Data = JSON.parse(JSON.stringify(result));
+
 					console.log(result);
 				}, "json");
 			},
@@ -493,6 +585,10 @@
 </script>
 <style lang="less">
 	.addJob {
+		.query-div {
+			width: 200px;
+			display: inline-block;
+		}
 		.el-dialog {
 			width: 400px;
 		}

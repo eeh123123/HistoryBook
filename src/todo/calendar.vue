@@ -5,7 +5,6 @@
 				<div class="tabbtn" @click="WNL()">万年历</div>
 				<div class="tabbtn" @click="SXT()">树形图</div>
 				<div class="tabbtn" @click="SJZ()">时间轴</div>
-				<div class="tabbtn" @click="GZB()">官职表</div>
 				<div style="clear:both;"></div>
 			</div>
 			<div id="calendar" v-show="WNL_flag" class="tab">
@@ -24,17 +23,6 @@
 						{{activity.content}}
 					</el-timeline-item>
 				</el-timeline>
-			</div>
-			<div id="gzb" v-show="GZB_flag" class="tab">
-				<header></header>
-				<div class="HolyGrail-body">
-					<main class="HolyGrail-content" id="FWQ">
-					</main>
-					<nav class="HolyGrail-nav" id="DaQu">
-					</nav>
-					<div style="clear: both"></div>
-				</div>
-				<footer></footer>
 			</div>
 		</div>
 		<div class="right">
@@ -128,7 +116,6 @@ export default {
 			}],
 			WNL_flag: true,
 			SJZ_flag: false,
-			GZB_flag: false,
 			SXT_flag: false,
 			SJZ_val: ""
 		}
@@ -303,26 +290,17 @@ export default {
 			vm.WNL_flag = true;
 			vm.SXT_flag = false;
 			vm.SJZ_flag = false;
-			vm.GZB_flag = false;
 		},
 		SXT() {
 			vm.WNL_flag = false;
 			vm.SXT_flag = true;
 			vm.SJZ_flag = false;
-			vm.GZB_flag = false;
 		},
 		SJZ() {
 			vm.WNL_flag = false;
 			vm.SXT_flag = false;
 			vm.SJZ_flag = true;
-			vm.GZB_flag = false;
 			vm.SJZ_search();
-		},
-		GZB() {
-			vm.WNL_flag = false;
-			vm.SXT_flag = false;
-			vm.SJZ_flag = false;
-			vm.GZB_flag = true;
 		},
 		drawWrited() {
 			$("tbody").find("span").parent().removeClass("writed");
@@ -360,8 +338,8 @@ export default {
 			if(time.length < 14) {
 				time += " 00:00:00";
 			}
-			var timestamp = new Date(time).getTime();
-			vm.value = timestamp;
+			//var timestamp = new Date(time).getTime();
+			vm.value = time;
 		},
 		upload(params) {
 			const formData = new FormData();
