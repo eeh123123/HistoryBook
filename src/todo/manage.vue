@@ -8,6 +8,11 @@
 						<template slot="title"><i class="el-icon-plus"></i>添加数据</template>
 						<el-menu-item index="addPerson">生死簿</el-menu-item>
 						<el-menu-item index="addJob">官职表</el-menu-item>
+						<el-menu-item index="familyTree">家谱树</el-menu-item>
+						<el-menu-item index="/commonDCT?dctid=attribute">特性表</el-menu-item>
+						<el-menu-item index="/commonDCT?dctid=attributeTime">特性时间表</el-menu-item>
+						<el-menu-item index="/commonDCT?dctid=family">家族表</el-menu-item>
+						<el-menu-item index="/commonDCT?dctid=person">人物表(未做)</el-menu-item>
 						<el-menu-item index="experience">添加履历(未做)</el-menu-item>
 						<el-menu-item index="upFile">添加物价表</el-menu-item>
 					</el-submenu>
@@ -28,6 +33,10 @@
 						<template slot="title"><i class="el-icon-warning"></i>账号管理</template>
 						<el-menu-item index="adminSet">个人信息</el-menu-item>
 					</el-submenu>
+					<el-submenu index="6">
+						<template slot="title"><i class="el-icon-warning"></i>模型设计</template>
+						<el-menu-item index="Dct">字典表</el-menu-item>
+					</el-submenu>
 				</el-menu>
 			</el-col>
 			<el-col :span="20" style="height: 100%;overflow: auto;">
@@ -45,13 +54,18 @@
 			defaultActive: function(){
 				return this.$route.path.replace('/', '');
 			}
-		}
+		},
+		watch:{
+			// $route(to,from){
+			// 	this.$router.push(to.fullPath)
+			// }
+		},
     }
 </script>
 
 <style lang="less" scoped>
 	@import '../style/mixin';
 	.manage_page{
-		
+
 	}
 </style>

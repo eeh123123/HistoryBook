@@ -43,11 +43,12 @@ module.exports = {
 	},
 	//通用查询
 	QueryTableRow: function(req, res) {
+		console.log("QueryTableRow");
 		var QueryTableRow_SQL = "SELECT " + req.query.showcol + " FROM " + req.query.tablename + " WHERE " + req.query.sqlwhere;
 		console.log("QueryTableRow_SQL：" + QueryTableRow_SQL);
-		var QueryCount_Sql = "SELECT "+req.query.showcol+" FROM " + req.query.tablename;
+		var QueryCount_Sql = "SELECT " + req.query.showcol + " FROM " + req.query.tablename;
 		console.log("QueryCount_Sql：" + QueryCount_Sql)
-		
+
 		let flag = {
 			count: '',
 			jsondata: '',
@@ -55,7 +56,7 @@ module.exports = {
 		};
 
 		let changeNum = 0 //db.query的执行成功次数。
-		
+
 		db.query(QueryCount_Sql, (err, data) => {
 			if(err) {
 				res.send("查询失败" + err);
@@ -82,7 +83,8 @@ module.exports = {
 					if(newValue == 2) {
 						res.send({
 							total: flag.count,
-							data: flag.jsondata
+							data: flag.jsondata,
+							code: 0
 						}).end();
 					}
 				}
@@ -180,7 +182,7 @@ module.exports = {
 			update_str[i] = update_str[i].substring(0, update_str[i].length - 1)
 		}
 
-		console.log(update_data)
+		console.log(update_data);
 		console.log(update_str);
 
 		UpdateTableRow_SQL = "UPDATE " + req.body.params.tablename + " SET "
@@ -221,5 +223,73 @@ module.exports = {
 				}
 			});
 		}
-	}
+	},
+	//查询DCT
+	QueryDct: function(req, res) {
+		let returnData = {
+			total: 0,
+			data: []
+		}
+		let p = Promise.all([new Promise(function(resolve, reject) {
+			var QueryDct_SQL = "SELECT * FROM DOF_DCT_COLS WHERE COL_USE = 1 AND COL_VISIBLE = 1 AND COL_APP_TYPE = 'window' AND DCT_ID = '" + req.query.tablename + "' ORDER BY COL_FK_DCT";
+			console.log("QueryDct_SQL:" + QueryDct_SQL)
+			db.query(QueryDct_SQL, (err, data) => { //第一步，先查询哪些列需要引用字典
+				if(err) {
+					res.send("查询失败" + err);
+				} else {
+					let col = []
+					let dct = []
+					for(let i = 0; i < data.length; i++) {
+						col.push(data[i].COL_ID)
+						dct.push(data[i].COL_FK_DCT)
+					}
+					let selectWindow_SQL = "SELECT DCT_FID,DCT_CAPTION,DCT_F_NAME,DCT_ID from dct_dicts where dct_id IN ('" + dct.join("','") + "')"
+					console.log(selectWindow_SQL)
+					db.query(selectWindow_SQL, (err, data) => { //第二步，获取字典名和列名
+						if(err) {
+							res.send("查询失败" + err);
+						} else {
+							console.log(data)
+							let selectFinal_SQL = "SELECT A.*"
+							let col_SQL = ""
+							let table_SQL = " from " + req.query.tablename + " A "
+							for(let i = 0; i < data.length; i++) {
+								col_SQL += (",B" + i + "." + data[i].DCT_FID + " AS " + col[i] + "_F_BH," + "B" + i + "." + data[i].DCT_F_NAME + " AS " + col[i] + "_F_MC ")
+								table_SQL += (" LEFT JOIN " + data[i].DCT_ID + " B" + i + " ON A." + col[i] + "=B" + i + "." + data[i].DCT_FID)
+							}
+							table_SQL += req.query.sqlwhere
+							col_SQL = col_SQL.substring(0, col_SQL.length - 1);
+							console.log(col_SQL)
+							console.log(table_SQL)
+							selectFinal_SQL += (col_SQL + table_SQL)
+							console.log("selectFinal_SQL:"+selectFinal_SQL)
+							db.query(selectFinal_SQL, (err, data) => { //第三步，获取
+								if(err) {
+									res.send("查询失败" + err);
+								} else {
+									returnData.data = data
+									resolve("Success")
+								}
+							});
+						}
+					});
+				}
+			});
+		}), new Promise(function(resolve, reject) {
+			var QueryCount_Sql = "SELECT * FROM " + req.query.tablename;
+			db.query(QueryCount_Sql, (err, data) => {
+				if(err) {
+					res.send("查询失败" + err);
+				} else {
+					returnData.total = data.length;
+					resolve("Success")
+				}
+			});
+
+		})]);
+
+		p.then(function(datas) {
+			res.send(returnData)
+		});
+	},
 }

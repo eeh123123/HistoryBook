@@ -1,67 +1,63 @@
 <template>
 	<div class="addJob">
-		<el-form label-width="130px" size="small">
-			<el-form-item>
-				<el-select v-model="query_Dept" clearable filterable class="margin-left10" placeholder="请选择部门">
-					<el-option v-for="item in GZB_data_All" :key="item.F_BH" :label="item.F_MC" :value="item.F_MC">
-					</el-option>
-				</el-select>
-				<div class="query-div">
-					<el-input v-model="query_Content" placeholder="请输入官职名称"></el-input>
-				</div>
-				<el-button type="primary" @click="searchs()" class="margin-left10" icon="el-icon-search">搜索</el-button>
-				<el-button type="primary" @click="addRow(GuanZhi_Data)" class="margin-left10" icon="el-icon-circle-plus-outline">新增</el-button>
-				<el-button type="primary" @click="Save()" icon="el-icon-upload">保存</el-button>
-				<el-button type="primary" @click="PLadd()">批量添加官员</el-button>
-				<el-button type="primary" @click="Select_GuanZhi()">官职名去重</el-button>
-				<template>
-					<el-table :data="GuanZhi_Data" class="tb-edit" style="width: 100%" highlight-current-row>
-						<el-table-column label="ID" width="60" v-if="false">
-							<template slot-scope="scope">
-								<el-input size="small" v-model="scope.row.id" placeholder="请输入内容" @change="handleEdit(scope.$index, scope.row)"></el-input> <span>{{scope.row.id}}</span>
-							</template>
-						</el-table-column>
-						<el-table-column label="官职名称" width="180">
-							<template slot-scope="scope">
-								<el-input size="small" v-model="scope.row.GuanZhi_MC" placeholder="请输入内容" @change="handleEdit(scope.$index, scope.row)"></el-input> <span>{{scope.row.GuanZhi_MC}}</span>
-							</template>
-						</el-table-column>
-						<el-table-column label="描述" width="180">
-							<template slot-scope="scope">
-								<el-input size="small" v-model="scope.row.F_Caption" placeholder="请输入内容" @change="handleEdit(scope.$index, scope.row)"></el-input> <span>{{scope.row.F_Caption}}</span>
-							</template>
-						</el-table-column>
-						<el-table-column label="品阶" width="200">
-							<template slot-scope="scope">
-								<el-input suffix-icon="el-icon-circle-plus" @click.native="open_Dialog(scope.$index, scope.row)" :option="option" v-model="scope.row.PinJie_FMC">
-								</el-input>
-								<span>{{scope.row.PinJie_FMC}}</span>
-							</template>
-						</el-table-column>
-						<el-table-column label="所属部门" width="100">
-							<template slot-scope="scope">
-								<el-input suffix-icon="el-icon-circle-plus" @click.native="SSBM(scope.$index, scope.row)" v-model="scope.row.Belong">
-								</el-input>
-								<span>{{scope.row.Belong}}</span>
-							</template>
-						</el-table-column>
-						</el-table-column>
-						<el-table-column fixed="right" label="操作">
-							<template slot-scope="scope">
-								<el-button @click.native.prevent="deleteRow(scope.$index, GuanZhi_Data)" size="small"> 移除 </el-button>
-							</template>
-						</el-table-column>
-						<el-table-column label="是否属于新增" width="150">
-							<template slot-scope="scope">
-								{{scope.row.isInsert}}
-							</template>
-						</el-table-column>
-					</el-table>
-				</template>
-			</el-form-item>
-		</el-form>
+		<el-select v-model="query_Dept" clearable filterable class="margin-left10" placeholder="请选择部门" @change="searchs()" size="small">
+			<el-option v-for="item in GZB_data_All" :key="item.F_BH" :label="item.F_MC" :value="item.F_MC">
+			</el-option>
+		</el-select>
+		<div class="query-div">
+			<el-input v-model="query_Content" placeholder="请输入官职名称" size="small"></el-input>
+		</div>
+		<el-button type="primary" size="small" @click="searchs()" class="margin-left10" icon="el-icon-search" >搜索</el-button>
+		<el-button type="primary" size="small" @click="addRow(GuanZhi_Data)" class="margin-left10" icon="el-icon-circle-plus-outline">新增</el-button>
+		<el-button type="primary" size="small" @click="Save()" icon="el-icon-upload">保存</el-button>
+		<el-button type="primary" size="small" @click="KJ_add()">快捷添加官员</el-button>
+		<el-button type="primary" size="small" @click="PLadd()">批量添加官员</el-button>
+		<el-button type="primary" size="small" @click="Select_GuanZhi()">官职名去重</el-button>
+		<template>
+			<el-table :data="GuanZhi_Data" class="tb-edit" border style="width: 100%" height="calc(100% - 32px)" highlight-current-row>
+				<el-table-column label="ID" width="60" v-if="false">
+					<template slot-scope="scope">
+						<el-input v-model="scope.row.id" placeholder="请输入内容" @change="handleEdit(scope.$index, scope.row)"></el-input> <span>{{scope.row.id}}</span>
+					</template>
+				</el-table-column>
+				<el-table-column label="官职名称" width="180">
+					<template slot-scope="scope">
+						<el-input v-model="scope.row.GuanZhi_MC" placeholder="请输入内容" @change="handleEdit(scope.$index, scope.row)"></el-input> <span>{{scope.row.GuanZhi_MC}}</span>
+					</template>
+				</el-table-column>
+				<el-table-column label="描述" width="180">
+					<template slot-scope="scope">
+						<el-input v-model="scope.row.F_Caption" placeholder="请输入内容" @change="handleEdit(scope.$index, scope.row)"></el-input> <span>{{scope.row.F_Caption}}</span>
+					</template>
+				</el-table-column>
+				<el-table-column label="品阶" width="200">
+					<template slot-scope="scope">
+						<el-input suffix-icon="el-icon-circle-plus" @click.native="open_Dialog(scope.$index, scope.row)" :option="option" v-model="scope.row.PinJie_FMC">
+						</el-input>
+						<span>{{scope.row.PinJie_FMC}}</span>
+					</template>
+				</el-table-column>
+				<el-table-column label="所属部门" width="100">
+					<template slot-scope="scope">
+						<el-input suffix-icon="el-icon-circle-plus" @click.native="SSBM(scope.$index, scope.row,0)" v-model="scope.row.Belong">
+						</el-input>
+						<span>{{scope.row.Belong}}</span>
+					</template>
+				</el-table-column>
+				<el-table-column fixed="right" label="操作">
+					<template slot-scope="scope">
+						<el-button @click.native.prevent="deleteRow(scope.$index, GuanZhi_Data)" size="small">移除</el-button>
+					</template>
+				</el-table-column>
+				<el-table-column label="是否属于新增" width="150">
+					<template slot-scope="scope">
+						{{scope.row.isInsert}}
+					</template>
+				</el-table-column>
+			</el-table>
+		</template>
 
-		<el-dialog title="批量添加官员" :visible.sync="editFormVisible" :close-on-click-modal="false" class="edit-form" :before-close="handleClose">
+		<el-dialog title="批量添加官员" :visible.sync="editFormVisible" :close-on-click-modal="false" :before-close="handleClose">
 			<el-form :model="PLAdd_Data" label-width="80px" ref="editForm">
 				<el-row :gutter="20">
 					<el-col :span="12">
@@ -100,7 +96,13 @@
 				<el-button type="primary" @click.native="PLSave()">保存</el-button>
 			</div>
 		</el-dialog>
-		<el-dialog title="部门表" :visible.sync="GZBVisible" :close-on-click-modal="false" class="edit-form">
+		<el-dialog title="快捷添加官员" :visible.sync="KJFormVisible" :close-on-click-modal="false" v-dialogDrag>
+			<el-input suffix-icon="el-icon-circle-plus" @click.native="SSBM('KJ')" v-model="KJ_GuanZhi" class="width-40"></el-input>
+			<el-input v-model="KJ_FirstName" placeholder="请输入前缀名" class="margin-bottom10 width-40"></el-input>
+			<textarea autocomplete="off" class="el-textarea__inner margin-bottom10" rows="12" style="min-height: 33px;" v-model="KJ_Caption">{{KJ_Caption}</textarea>
+			<el-button type="primary" @click="KJ_Read">读取</el-button>
+		</el-dialog>
+		<el-dialog title="部门表" :visible.sync="GZBVisible" :close-on-click-modal="false" v-dialogDrag>
 			<div class="GZB">
 				<el-input placeholder="输入关键字进行过滤" v-model="GZB_filterText">
 				</el-input>
@@ -141,6 +143,10 @@
 				GZB_data_All: [],
 				//编辑界面数据
 				editFormVisible: false, //默认不显示编辑弹层
+				KJFormVisible: false, //默认不显示快捷添加官职图层
+				KJ_FirstName: "",
+				KJ_GuanZhi: "",
+				KJ_Caption: "",
 				GuanZhi_Data: [],
 				GuanZhi_Orign_Data: [],
 				GuanZhi_EditIndex: 0,
@@ -182,7 +188,7 @@
 		},
 		mounted() {
 			vm = this;
-			vm.queryTableData();
+			//vm.queryTableData();
 			vm.query_GZB_data_All();
 		},
 		methods: {
@@ -400,13 +406,18 @@
 			handleEdit(index, row) {
 				this.editForm = Object.assign({}, row); //这句是关键！！！
 			},
-			SSBM(index, row) {
+			SSBM(index, row, type) {
 				vm.GZB_data = []
 				vm.GZBVisible = true
 				vm.GZB_filterText = '' //每次打开官职表时，置空查询条件
-				vm.GuanZhi_EditIndex = index || 0
+				if(type == 0) {
+					vm.GuanZhiType = 0;
+					vm.GuanZhi_EditIndex = index || 0
+				}
 				if(index == undefined) {
 					vm.GuanZhiType = 1;
+				} else if(index == "KJ") {
+					vm.GuanZhiType = 2;
 				}
 				let option = {
 					tablename: "dept",
@@ -456,11 +467,12 @@
 			GZB_Sure() {
 				if(vm.GuanZhiType == 0) {
 					vm.GuanZhi_Data[vm.GuanZhi_EditIndex].Belong = vm.$refs.Tree.getCheckedNodes()[0].label
-					vm.GZBVisible = false
 				} else if(vm.GuanZhiType == 1) {
 					vm.PLAdd_Data.Belong = vm.$refs.Tree.getCheckedNodes()[0].label
-					vm.GZBVisible = false
+				} else if(vm.GuanZhiType == 2) {
+					vm.KJ_GuanZhi = vm.$refs.Tree.getCheckedNodes()[0].label
 				}
+				vm.GZBVisible = false
 
 			},
 			GZB_checkGroupNode(a, b) {
@@ -471,6 +483,54 @@
 			PLadd(index, row) {
 				this.editFormVisible = true;
 				this.editForm = Object.assign({}, row); //这句是关键！！！
+			},
+			//快捷添加官员方法
+			KJ_add() {
+				vm.KJFormVisible = true;
+			},
+			KJ_Read() {
+				vm.KJ_FirstName
+				vm.KJ_Caption = vm.KJ_Caption.replace("　　", "　");
+				vm.KJ_Caption = vm.KJ_Caption.replace(/[\r\n]/g, "");
+				let Number_Array = ["一", "二", "三", "四", "五", "六", "七", "八", "九", "十"]
+				let array = vm.KJ_Caption.split("　");
+				let values = []
+				let index = 0
+				for(let i = 0; i < array.length; i++) {
+					if(array[i] == "") {
+						array.splice(i, 1)
+					}
+					array[i] = array[i].replace(/\s*/g, "");
+					array[i] = array[i].replace("人", "");
+				}
+				for(let i = 0; i < array.length; i++) {
+					//找到array[i]中的数字下标
+					for(let j = 0; j < Number_Array.length; j++) {
+						if(array[i].indexOf(Number_Array[j]) != -1) {
+							index = array[i].indexOf(Number_Array[j])
+							values[i] = ["", "", vm.KJ_FirstName + array[i].substr(0, index), ChineseToNumber(array[i].substr(index)) + "人", vm.KJ_GuanZhi];
+							break;
+						}
+					}
+				}
+
+				axios.post(this.$store.state.MYURL + 'InsertTableRow.do', {
+						params: {
+							tablename: "GuanZhi",
+							Insertcol: "PinJie_FBH,PinJie_FMC,GuanZhi_MC,F_Caption,Belong",
+							values: values
+						}
+					})
+					.then(function(response) {
+						vm.$message({
+							type: 'success',
+							message: response.data.msg
+						});
+						vm.searchs();
+					})
+					.catch(function(error) {
+						console.log(error);
+					});
 			},
 			//点击关闭dialog
 			handleClose(done) {
@@ -585,6 +645,7 @@
 </script>
 <style lang="less">
 	.addJob {
+		height: 100%;
 		.query-div {
 			width: 200px;
 			display: inline-block;

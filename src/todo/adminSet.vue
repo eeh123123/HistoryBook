@@ -1,6 +1,5 @@
 <template>
 	<div class="fillcontain">
-		<head-top></head-top>
 		<header class="admin_title">管理员信息</header>
 		{{LoginState}}
 		<div class="admin_set">
@@ -70,7 +69,7 @@
 	}
 </script>
 
-<style lang="less">
+<style lang="less" scoped>
 	@import '../style/mixin';
 	.explain_text {
 		margin-top: 20px;

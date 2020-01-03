@@ -26,7 +26,7 @@
 		justify-content: center;
 		align-items: center;
 	}
-	
+
 	#login {
 		width: 60%;
 	}

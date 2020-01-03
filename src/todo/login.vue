@@ -18,7 +18,7 @@
 			</div>
 			<div class="line button_line">
 				<el-row>
-					<el-button type="primary" @click="Login()">登陆</el-button>
+					<el-button type="primary" @click="Login()">登录</el-button>
 				</el-row>
 				<p class="tip">温馨提示：未登录过的新用户,自动注册</p>
 			</div>

@@ -45,9 +45,12 @@ app.all("*", function(req, res, next) {
 	//设置允许跨域的域名，*代表允许任意域名跨域
 	res.header("Access-Control-Allow-Origin", "*");
 	//允许的header类型
-	res.header("Access-Control-Allow-Headers", "content-type");
+	res.header("Access-Control-Allow-Headers", "content-type,Access-Token,authorization");
 	//跨域允许的请求方式 
 	res.header("Access-Control-Allow-Methods", "DELETE,PUT,POST,GET,OPTIONS");
+	res.header("Content-Type", "application/json;charset=utf-8");
+	//res.header('Content-Type', 'text/plain; charset=utf-8');
+	
 	filename = req.url.split('/')[req.url.split('/').length - 1];
 	var suffix = req.url.split('.')[req.url.split('.').length - 1];
 	if(req.url.substring(0, 8) == "/upload/") {
@@ -599,5 +602,8 @@ app.post('/InsertTableRow.do', HB.InsertTableRow);
 
 //28 通用更新
 app.post('/UpdateTableRow.do', HB.UpdateTableRow);
+
+//29 查询Dct
+app.get('/QueryDct.do', HB.QueryDct);
 
 app.listen(8084);

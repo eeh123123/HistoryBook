@@ -1,5 +1,5 @@
 <template>
-	<div style="position: relative;">
+	<div class="main">
 		<div class="left">
 			<div style="display: block;">
 				<div class="tabbtn" @click="WNL()">万年历</div>
@@ -12,7 +12,8 @@
 				</el-calendar>
 			</div>
 			<div id="tree" v-show="SXT_flag" class="tab">
-				<el-tree :props="props" :load="loadNode1" lazy show-checkbox class="new-tree" @node-click="node_click">
+				<!--树形图-->
+				<el-tree :props="props" :load="loadNode" lazy class="new-tree" @node-click="node_click">
 				</el-tree>
 			</div>
 			<div id="line" v-show="SJZ_flag" class="tab">
@@ -77,6 +78,7 @@ export default {
 				resource: '',
 				desc: ''
 			},
+			SXT_filterText: '', //树形图的过滤文本
 			//dynamicTags: ['标签一', '标签二', '标签三'], //标签对象
 			dynamicTags: [],
 			inputVisible: false,
@@ -194,11 +196,21 @@ export default {
 			return vm.$confirm(`确定移除 ${ file.name }？`);
 		},
 		save() {
+			let year
+			if(vm.year < 1000 && vm.year >= 100) {
+				year = '0' + vm.year
+			}
+			if(vm.year < 100 && vm.year >= 10) {
+				year = '00' + vm.year
+			}
+			if(vm.year < 10 && vm.year > 0) {
+				year = '000' + vm.year
+			}
 			$.get(vm.MYURL + 'WriteStories.do?', {
 				Title: vm.Title, //事件标题
 				Caption: vm.Caption, //事件内容
-				Time: vm.year + "" + (vm.month >= 10 ? vm.month : "0" + vm.month) + (vm.day >= 10 ? vm.day : "0" + vm.day), //具体时间，小于10的前面要加0
-				Year: vm.year, //年份
+				Time: year + "" + (vm.month >= 10 ? vm.month : "0" + vm.month) + (vm.day >= 10 ? vm.day : "0" + vm.day), //具体时间，小于10的前面要加0
+				Year: year - 0, //年份
 				Month: vm.month, //月份 
 				Tag: vm.dynamicTags.join(','), //Tag标签内容
 				Filename: "",
@@ -206,6 +218,8 @@ export default {
 			}, function(data) {
 				vm.$message(data.text + "\n" + data.sql);
 				vm.SearchMonthStories();
+				vm.node_had.childNodes = []; //把存起来的node的子节点清空，不然会界面会出现重复树！
+				vm.loadNode(vm.node_had, vm.resolve_had); //再次执行懒加载的方法
 			}, "json");
 			return;
 		},
@@ -229,23 +243,24 @@ export default {
 		searchs() {
 			vm.value = new Date(vm.year, vm.month - 1, vm.day, 12, 0, 0)
 		},
-		loadNode1(node, resolve) {
+
+		loadNode(node, resolve) {
 			if(node.level === 0) {
+				vm.node_had = node; //这里是关键！在data里面定义一个变量，将node.level == 0的node存起来
+				vm.resolve_had = resolve; //同上，把node.level == 0的resolve也存起来
 				$.get(vm.MYURL + 'Search_Tree.do?', {
 					Type: "1"
 				}, function(data) {
 					resolve(data);
 				});
-			}
-			if(node.level === 1) {
+			} else if(node.level === 1) {
 				$.get(vm.MYURL + 'Search_Tree.do?', {
 					Type: "2",
 					Year: node.data.name.substring(0, node.data.name.length - 1)
 				}, function(data) {
 					resolve(data);
 				});
-			}
-			if(node.level === 2) {
+			} else if(node.level === 2) {
 				var year = node.parent.label.substring(0, node.parent.label.length - 1);
 				var month = node.data.name.substring(0, node.data.name.length - 1);
 				$.get(vm.MYURL + 'Search_Tree.do?', {
@@ -255,9 +270,6 @@ export default {
 				}, function(data) {
 					resolve(data);
 				});
-			}
-			if(node.level === 3) {
-				return resolve([]);
 			} else {
 				return resolve([]);
 			}
@@ -286,6 +298,7 @@ export default {
 			}
 			vm.SearchMonthStories();
 		},
+
 		WNL() {
 			vm.WNL_flag = true;
 			vm.SXT_flag = false;
@@ -303,6 +316,7 @@ export default {
 			vm.SJZ_search();
 		},
 		drawWrited() {
+			let lastMounthFlag = 0; //上个月结束的下标标签
 			$("tbody").find("span").parent().removeClass("writed");
 			for(var i = 0; i < vm.Event.length; i++) {
 				var span = $("tbody").find("span");
@@ -310,6 +324,9 @@ export default {
 				for(var k = 0; k < span.length; k++) {
 					if(span[k].innerText == 1) {
 						flag++;
+						if(flag == 1) {
+							lastMounthFlag = k;
+						}
 					}
 					if(flag == 2) {
 						break;
@@ -325,6 +342,11 @@ export default {
 					}
 				}
 			}
+			//这个月1号之前的div通通移除class :writed
+			for(var j = 0; j < lastMounthFlag; j++) {
+				$(span[j]).parent().removeClass("writed");
+			}
+
 		},
 		SJZ_search() {
 			$.get(vm.MYURL + 'Search_SJZ.do?', {
@@ -355,24 +377,24 @@ export default {
 					vm.imgUrl = vm.MYURL + "upload/" + data.data.filename
 				}
 			})
-
 		},
+	},
+	watch: {
+		SXT_filterText(val) {
+			this.$refs.Tree.filter(val);
+		}
 	}
 };</script>
 
-<style lang="css" scoped>@import '../assets/styles/calendar.css';
+<style lang="less" scoped>@import '../assets/styles/calendar.css';
 .left {
 	float: left;
 	width: calc(100% - 500px);
+	height: 100%;
 }
 
 .right {
 	float: right;
 	width: 500px;
 	padding: 15px;
-}
-
-textarea {
-	text-indent: 25px
-}
-</style>
+}</style>

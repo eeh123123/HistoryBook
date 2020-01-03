@@ -16,7 +16,6 @@
             <el-button type="danger"  icon="el-icon-close" @click="close">关闭</el-button>
         </span>
 	</el-dialog>
-
 </template>
 
 <script>

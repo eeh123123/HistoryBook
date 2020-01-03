@@ -1,46 +1,62 @@
 <template>
-	<el-form label-width="130px" size="small">
-		<el-form-item>
-			<el-button type="primary" @click="addRow()" class="margin-left10">新增</el-button>
-			<el-button type="primary" @click="Save()">保存</el-button>
-			<template>
-				<el-table :data="tableData" class="tb-edit" style="width: 100%" highlight-current-row @row-click="handleCurrentChange">
-					<el-table-column label="姓名" width="180">
-						<template slot-scope="scope">
-							<el-input size="small" v-model="scope.row.person_name" placeholder="请输入内容" @change="handleEdit(scope.$index, scope.row)"></el-input> <span>{{scope.row.person_name}}</span>
-						</template>
-					</el-table-column>
-					<el-table-column label="出生日期" width="180">
-						<template slot-scope="scope">
-							<el-date-picker v-model="scope.row.born_date" type="date" placeholder="选择日期" editable value-format="yyyy-MM-dd">
-							</el-date-picker><span>{{scope.row.born_date}}</span>
-						</template>
-					</el-table-column>
-					<el-table-column label="死亡日期" width="180">
-						<template slot-scope="scope">
-							<el-date-picker v-model="scope.row.death_date" type="date" placeholder="选择日期" editable value-format="yyyy-MM-dd">
-							</el-date-picker><span>{{scope.row.death_date}}</span>
-						</template>
-					</el-table-column>
-					<el-table-column prop="address" label="出生地">
-						<template slot-scope="scope">
-							<el-input size="small" v-model="scope.row.born_position" placeholder="请输入内容" @change="handleEdit(scope.$index, scope.row)"></el-input> <span>{{scope.row.born_position}}</span>
-						</template>
-					</el-table-column>
-					<el-table-column prop="address" label="立绘">
-						<template slot-scope="scope">
-							<el-input size="small" v-model="scope.row.imgURL" placeholder="请输入内容" @change="handleEdit(scope.$index, scope.row)"></el-input> <span>{{scope.row.imgURL}}</span>
-						</template>
-					</el-table-column>
-					<el-table-column label="操作">
-						<template slot-scope="scope">
-							<el-button size="small" type="danger" @click="deleteRow(scope.$index, scope.row)">删除</el-button>
-						</template>
-					</el-table-column>
-				</el-table>
-			</template>
-		</el-form-item>
-	</el-form>
+	<div class="addPerson">
+		<el-button type="primary" @click="addRow()" class="margin-left10" size="small">新增</el-button>
+		<el-button type="primary" @click="Save()" size="small">保存</el-button>
+		<template>
+			<el-table :data="tableData" class="tb-edit" height="calc(100% - 32px)" border highlight-current-row @row-click="handleCurrentChange">
+				<el-table-column label="姓名" width="180">
+					<template slot-scope="scope">
+						<el-input v-model="scope.row.person_name" placeholder="请输入内容"></el-input> <span>{{scope.row.person_name}}</span>
+					</template>
+				</el-table-column>
+				<el-table-column label="出生日期" width="180">
+					<template slot-scope="scope">
+						<el-date-picker v-model="scope.row.born_date" type="date" placeholder="选择日期" editable value-format="yyyy-MM-dd">
+						</el-date-picker><span>{{scope.row.born_date}}</span>
+					</template>
+				</el-table-column>
+				<el-table-column label="死亡日期" width="180">
+					<template slot-scope="scope">
+						<el-date-picker v-model="scope.row.death_date" type="date" placeholder="选择日期" editable value-format="yyyy-MM-dd">
+						</el-date-picker><span>{{scope.row.death_date}}</span>
+					</template>
+				</el-table-column>
+				<el-table-column prop="address" label="出生地">
+					<template slot-scope="scope">
+						<el-input v-model="scope.row.born_position" placeholder="请输入内容" @click.native="Open_Position(scope.$index, scope.row)" suffix-icon="el-icon-circle-plus"></el-input> <span>{{scope.row.born_position}}</span>
+					</template>
+				</el-table-column>
+				<el-table-column prop="address" label="描述" :show-overflow-tooltip="true">
+					<template slot-scope="scope">
+						<el-input v-model="scope.row.f_caption" placeholder="请输入内容"></el-input> <span>{{scope.row.f_caption}}</span>
+					</template>
+				</el-table-column>
+				<el-table-column prop="address" label="立绘">
+					<template slot-scope="scope">
+						<img :src="scope.row.imgURL" @click="openImg(scope.$index,scope.row.imgURL,imgURL)" style="vertical-align: middle;height:40px;width: 40px" />
+					</template>
+				</el-table-column>
+				<el-table-column label="操作">
+					<template slot-scope="scope">
+						<el-button type="danger" @click="deleteRow(scope.$index)">删除</el-button>
+					</template>
+				</el-table-column>
+			</el-table>
+		</template>
+		<el-dialog title="地区表" :visible.sync="DQVisible" :close-on-click-modal="false" v-dialogDrag custom-class="dialog-DQ">
+			<el-input v-model="DQ_Content" placeholder="请输入地区" class="margin-bottom10"></el-input>
+			<!--树形图-->
+			<el-tree :props="props" :load="loadNode" lazy class="new-tree margin-bottom10" @node-click="node_click" style="max-height: 400px;overflow-y: scroll;">
+			</el-tree>
+			<el-button type="primary" @click="DQ_Sure()">确定</el-button>
+		</el-dialog>
+		<el-dialog title="立绘表" :visible.sync="Img.Visible" :close-on-click-modal="false" v-dialogDrag custom-class="dialog-Image">
+			<el-upload class="avatar-uploader" :action="Img.action" :show-file-list="false" :on-success="handleAvatarSuccess">
+				<img v-if="Img.Url" :src="Img.Url" class="person-Image">
+				<i v-else class="el-icon-plus avatar-uploader-icon"></i>
+			</el-upload>
+		</el-dialog>
+	</div>
 </template>
 
 <script>
@@ -50,7 +66,21 @@
 			return {
 				tableData: [],
 				tableData_Orign_Data: [],
-
+				EditIndex: "",
+				contentId: "",
+				DQ_born_position: '',
+				DQVisible: false,
+				DQ_Content: "",
+				props: {
+					label: 'PROVINCE',
+					children: 'zones',
+					isLeaf: 'leaf'
+				},
+				Img: {
+					Visible: false,
+					Url: '',
+					action: ''
+				}
 			}
 		},
 		mounted() {
@@ -61,8 +91,8 @@
 			queryTableData() {
 				let option = {
 					tablename: "Person",
-					showcol: ['imgURL','ID','person_name', 'born_date', 'born_position','death_date'],
-					sqlwhere: "1=1"
+					showcol: ['imgURL', 'id', 'person_name', 'born_date', 'born_position', 'death_date', 'f_caption'],
+					sqlwhere: "1=1 ORDER BY CONVERT(PERSON_NAME USING GBK) COLLATE GBK_CHINESE_CI ASC"
 				}
 				axios.get(this.$store.state.MYURL + 'QueryTableRow.do', {
 						params: {
@@ -73,7 +103,7 @@
 					})
 					.then(function(response) {
 						vm.tableData = response.data.data;
-						vm.tableData_Orign_Data = JSON.parse(JSON.stringify(response.data));
+						vm.tableData_Orign_Data = JSON.parse(JSON.stringify(response.data.data));
 						for(let i = 0; i < vm.tableData.length; i++) {
 							vm.tableData[i].isInsert = false
 						}
@@ -94,11 +124,73 @@
 			handleCurrentChange: function(row, event, column) {
 				console.log(row, event, column, event.currentTarget);
 			},
-			handleEdit: function(index, row) {
-				console.log(index, row);
+			deleteRow(index) { //删除改行
+				vm.tableData.splice(index, 1);
 			},
-			deleteRow(index, rows) { //删除改行
-				rows.splice(index, 1);
+			Open_Position(index, row) {
+				vm.EditIndex = index || 0
+				vm.DQVisible = true
+			},
+			loadNode(node, resolve, type, value) {
+				if(node.level === 0) {
+					vm.node_had = node; //这里是关键！在data里面定义一个变量，将node.level == 0的node存起来
+					vm.resolve_had = resolve; //同上，把node.level == 0的resolve也存起来
+					let option = {
+						tablename: "PROVINCES",
+						showcol: ['ID', 'PROVINCEID', 'PROVINCE'],
+						sqlwhere: "1=1 "
+					}
+					axios.get(this.$store.state.MYURL + 'QueryTableRow.do', {
+							params: {
+								tablename: option.tablename,
+								showcol: option.showcol.join(","),
+								sqlwhere: option.sqlwhere
+							}
+						})
+						.then(function(response) {
+							resolve(response.data.data);
+
+						})
+						.catch(function(error) {
+							console.log(error);
+						});
+				} else if(node.level === 1) {
+					let option = {
+						tablename: "CITIES",
+						showcol: ['*'],
+					}
+					if(type == "custom") {
+						option.sqlwhere = "1=1 AND CITY LIKE '%" + value + "%'";
+					} else {
+						option.sqlwhere = "1=1 AND PROVINCEID='" + node.data.PROVINCEID + "'";
+					}
+
+					axios.get(this.$store.state.MYURL + 'QueryTableRow.do', {
+							params: {
+								tablename: option.tablename,
+								showcol: option.showcol.join(","),
+								sqlwhere: option.sqlwhere
+							}
+						})
+						.then(function(response) {
+							for(let i = 0; i < response.data.data.length; i++) {
+								response.data.data[i]["PROVINCE"] = response.data.data[i]["city"]
+							}
+							resolve(response.data.data);
+						})
+						.catch(function(error) {
+							console.log(error);
+						});
+				} else {
+					return resolve([]);
+				}
+			},
+			node_click(a, b, c) {
+				vm.DQ_born_position = a.city
+			},
+			DQ_Sure() {
+				vm.tableData[vm.EditIndex].born_position = vm.DQ_born_position
+				vm.DQVisible = false;
 			},
 			Save() {
 				let insert_flag = true;
@@ -107,7 +199,6 @@
 				for(let i = 0; i < vm.tableData_Orign_Data.length; i++) {
 					for(let j in vm.tableData_Orign_Data[i]) {
 						if(vm.tableData_Orign_Data[i][j] != vm.tableData[i][j]) {
-							
 							for(let k = 0; k < array_update.length; k++) {
 								if(array_update[k].id == vm.tableData[i].id) {
 									insert_flag = false
@@ -133,7 +224,7 @@
 				if(array_update.length != 0) {
 					axios.post(this.$store.state.MYURL + 'UpdateTableRow.do', {
 							params: {
-								tablename: 'guanzhi',
+								tablename: 'person',
 								values: array_update,
 							}
 						})
@@ -205,10 +296,65 @@
 						});
 				}
 			},
+			handleAvatarSuccess(res, file) {
+				vm.Img.Url = vm.$store.state.FWQURL + "upload/" + res.filename
+				let array_update = [{
+					id: vm.contentId,
+					imgUrl: vm.Img.Url
+				}]
+				axios.post(this.$store.state.MYURL + 'UpdateTableRow.do', {
+						params: {
+							tablename: 'person',
+							values: array_update,
+						}
+					})
+					.then(function(response) {
+						vm.tableData[vm.contentId].imgUrl = vm.Img.Url
+						vm.$message({
+							type: 'success',
+							message: response.data.msg
+						});
+					})
+			},
+			openImg(index, val) {
+				vm.contentId = vm.tableData[index].id
+				vm.Img.Visible = true
+				vm.Img.Url = val
+				vm.Img.action = vm.$store.state.FWQURL + "up"
+			}
+		},
+		watch: {
+			DQ_Content(val) {
+				if(val) {
+					vm.node_had.level = 1;
+				} else {
+					vm.node_had.level = 0;
+				}
+				vm.node_had.childNodes = []; //把存起来的node的子节点清空，不然会界面会出现重复树！
+				vm.loadNode(vm.node_had, vm.resolve_had, 'custom', val); //再次执行懒加载的方法
+			}
 		}
 	}
 </script>
-
-<style lang="css" scoped="scoped">
-
+<style lang="less">
+	.addPerson {
+		height: 100%;
+		.el-form-item,
+		.el-form-item__content {
+			height: 100%;
+		}
+		.dialog-DQ {
+			width: 400px;
+		}
+		.dialog-Image {
+			width: 600px;
+			height: 400px;
+		}
+		.person-Image {
+			width: auto;
+			height: 282px;
+			max-width: 100%;
+			max-height: 100%;
+		}
+	}
 </style>

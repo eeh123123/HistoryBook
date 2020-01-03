@@ -1,13 +1,14 @@
 import App from './app.vue'
 import VueRouter from 'vue-router'
 
-import './assets/styles/global.css'
+import './assets/styles/global.less'
 
 import login from './todo/login.vue'
 import manage from './todo/manage.vue'
 
 import addPerson from './todo/addPerson.vue'
 import addJob from './todo/addJob.vue'
+import familyTree from './todo/familyTree.vue'
 import experience from './todo/experience.vue'
 import upFile from './todo/upFile.vue'
 
@@ -17,15 +18,15 @@ import FWQ from './todo/FWQ.vue'
 
 import calendar from './todo/calendar.vue'
 
-import manage from './todo/manage.vue'
-
-
+import commonDct from './todo/commonDct.vue'
+import Dct from './todo/Dct.vue'
 
 import adminSet from './todo/adminSet.vue';
 
 import store from './store';
 
 import axios from './axios/index.js'
+
 
 const routes = [{
 		path: '/',
@@ -47,11 +48,31 @@ const routes = [{
 				path: '/experience',
 				component: experience,
 				meta: ['添加数据', '添加履历'],
+			},
+			{
+				path: "/commonDCT",
+				component: commonDct,
+				meta: ['添加数据', '字典表'],
+			},
+			{
+				path: "/commonDCT?dctid=attribute",
+				component: commonDct,
+				meta: ['添加数据', '特性表'],
+			},
+			{
+				path: "/commonDCT?dctid=attributeTime",
+				component: commonDct,
+				meta: ['添加数据', '特性时间表'],
 			}, {
+				path: "/familyTree",
+				component: familyTree,
+				meta: ['添加数据', '家谱树'],
+			},
+			{
 				path: '/upFile',
 				component: upFile,
 				meta: ['添加数据', '上传物价表'],
-			}, 
+			},
 			{
 				path: '/explain',
 				component: explain,
@@ -76,7 +97,11 @@ const routes = [{
 				path: '/adminSet',
 				component: adminSet,
 				meta: ['账号管理', '个人信息'],
-			}
+			}, {
+				path: '/Dct',
+				component: Dct,
+				meta: ['建模管理', '字典管理'],
+			},
 		]
 	}
 ]
@@ -87,7 +112,6 @@ let router = new VueRouter({
 	mode: 'history'
 });
 
-
 /* new Vue 启动 */
 new Vue({
 	el: '#app',
@@ -97,3 +121,4 @@ new Vue({
 	router, //可以简写为router
 	store
 })
+

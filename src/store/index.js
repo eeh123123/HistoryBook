@@ -2,6 +2,7 @@
 const store = new Vuex.Store({
 	state: {
 		MYURL: "http://localhost:8084/",
+		FWQURL: "http://49.235.128.250:8084/",
 		LoginState: false,
 		Dialog_show: false,
 		Dialog_data:{total:0,data:[]},
@@ -14,7 +15,6 @@ const store = new Vuex.Store({
 		Dialog_sqlwhere: "",
 		Dialog_CallBack: "",
 		Sql_value: "",
-
 	},
 	mutations: {
 		setshow: (state, data) => {
@@ -40,9 +40,6 @@ const store = new Vuex.Store({
 				.then(function(response) {
 					state.Dialog_data = response.data;
 				})
-				.catch(function(error) {
-					console.log(error);
-				});
 		},
 		setCol: (state, data) => {
 			state.Dialog_data.total = data.data.length;
