@@ -1,6 +1,6 @@
 <template>
 	<div id="app">
-		<router-view></router-view>
+		<router-view :key="key"></router-view>
 	</div>
 </template>
 
@@ -10,6 +10,11 @@
 	export default {
 		components: {
 			login
+		},
+		computed:{
+			key() {
+				return this.$route.fullPath
+			}
 		}
 	}
 </script>
@@ -26,7 +31,7 @@
 		justify-content: center;
 		align-items: center;
 	}
-
+	
 	#login {
 		width: 60%;
 	}
