@@ -40,6 +40,12 @@
 				<i v-else class="el-icon-plus avatar-uploader-icon"></i>
 			</el-upload>
 		</el-dialog>
+		<el-dialog title="Dialog.title" :visible.sync="Dialog.Visible" :close-on-click-modal="false" v-dialogDrag custom-class="dialog-Image">
+			<el-upload class="avatar-uploader" :action="Img.action" :show-file-list="false" :on-success="handleAvatarSuccess">
+				<img v-if="Img.Url" :src="Img.Url" class="person-Image" />
+				<i v-else class="el-icon-plus avatar-uploader-icon"></i>
+			</el-upload>
+		</el-dialog>
 	</div>
 </template>
 
@@ -58,21 +64,25 @@
 					Url: '',
 					action: ''
 				},
-				contentId:'',//当前行的id,
-				contentUrl:'',//当前行的imgURL
-				F_PKEY:''//当前字典的主键
+				contentId: '', //当前行的id,
+				contentUrl: '', //当前行的imgURL
+				F_PKEY: '', //当前字典的主键
+				Dialog: {
+					Visible: false,
+					title: ''
+				}
 			};
 		},
 		methods: {
-			getF_PKEY(){
-				axios.get(this.$store.state.MYURL+"QueryTableRow.do", {
+			getF_PKEY() {
+				axios.get(this.$store.state.MYURL + "QueryTableRow.do", {
 					params: {
 						tablename: "DCT_DICTS",
 						showcol: ['*'],
-						sqlwhere: "DCT_ID = '" + this.$route.query.dctid+"'"
+						sqlwhere: "DCT_ID = '" + this.$route.query.dctid + "'"
 					}
 				}).then(res => {
-					this.F_PKEY=res.data.data[0].DCT_FID
+					this.F_PKEY = res.data.data[0].DCT_FID
 				})
 			},
 			selectedTableData(val) {
@@ -80,8 +90,8 @@
 				this.$emit("selectedTableData", val);
 			},
 			open_Dialog(index, item) {},
-			openImg(index, val,colName) {
-				this.contentId = this.tableData.data[index].id;//这里要获取一下主键
+			openImg(index, val, colName) {
+				this.contentId = this.tableData.data[index].id; //这里要获取一下主键
 				this.contentUrl = colName
 				this.Img.Visible = true;
 				this.Img.Url = val;
@@ -90,15 +100,15 @@
 			handleAvatarSuccess(res, file) {
 				this.Img.Url = this.$store.state.FWQURL + "upload/" + res.filename;
 				let array_update = [{}];
-				array_update[0][this.F_PKEY]=this.contentId
-				array_update[0][this.contentUrl]=this.Img.Url
+				array_update[0][this.F_PKEY] = this.contentId
+				array_update[0][this.contentUrl] = this.Img.Url
 				axios.post(this.$store.state.MYURL + "UpdateTableRow.do", {
 					params: {
 						tablename: this.$route.query.dctid,
 						values: array_update
 					}
 				}).then(res => {
-					this.tableData.data[this.contentId-1][this.contentUrl] = this.Img.Url;
+					this.tableData.data[this.contentId - 1][this.contentUrl] = this.Img.Url;
 					this.$message({
 						type: "success",
 						message: res.data.msg
@@ -114,7 +124,7 @@
 			tableHead: Array,
 			tableHeight: Number,
 			pageSize: {
-				type: [String,Number],
+				type: [String, Number],
 				default: 10
 			},
 			handleCurrentChange: Function

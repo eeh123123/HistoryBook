@@ -2,6 +2,7 @@ import App from './app.vue'
 import VueRouter from 'vue-router'
 
 import './assets/styles/global.less'
+import './assets/styles/tree.less'
 
 import login from './todo/login.vue'
 import manage from './todo/manage.vue'
@@ -26,8 +27,10 @@ import adminSet from './todo/adminSet.vue';
 import store from './store';
 
 import axios from './axios/index.js'
+import tools from './tools/tools.js'
 
 
+Vue.prototype.$tools=tools
 const routes = [{
 		path: '/',
 		component: login

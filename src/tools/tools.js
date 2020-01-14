@@ -42,7 +42,6 @@ function ComparArray(_array1, _array2) {
 	}
 }
 
-
 var chnNumChar = ["零", "一", "二", "三", "四", "五", "六", "七", "八", "九"];
 var chnUnitSection = ["", "万", "亿", "万亿", "亿亿"];
 var chnUnitChar = ["", "十", "百", "千"];
@@ -170,12 +169,13 @@ function composeTree(list = []) {
 	//const data = JSON.parse(JSON.stringify(list)) // 浅拷贝不改变源数据
 	const data = list
 	const result = []
-	if (!Array.isArray(data)) {
+	if(!Array.isArray(data)) {
 		return result
 	}
 	data.forEach(item => {
 		// delete item.children
 		item.children = []
+		item.closed = true
 	})
 	const map = {}
 	data.forEach(item => {
@@ -183,11 +183,37 @@ function composeTree(list = []) {
 	})
 	data.forEach(item => {
 		const parent = map[item.fatherid]
-		if (parent) {
+		if(parent) {
 			(parent.children || (parent.children = [])).push(item)
 		} else {
 			result.push(item)
 		}
 	})
 	return result
+}
+// 树结构排序
+function sort(data, id) {
+	function sortArr(data) {
+		if(Array.isArray(data) && data.length > 0) {
+			data = data.sort(function(a, b) {
+				return a[id] - b[id]
+			})
+			// 排序子对象
+			for(let i = 0; i < data.length; i++) {
+				sortArr(data[i].children)
+			}
+		}
+	}
+	sortArr(data)
+	return data
+}
+
+export default {
+	getJsonLength: getJsonLength,
+	ComparArray: ComparArray,
+	SectionToChinese: SectionToChinese,
+	NumberToChinese: NumberToChinese,
+	ChineseToNumber: ChineseToNumber,
+	composeTree: composeTree,
+	sort: sort
 }
