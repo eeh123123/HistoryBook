@@ -15,6 +15,8 @@ const store = new Vuex.Store({
 		Dialog_sqlwhere: "",
 		Dialog_CallBack: "",
 		Sql_value: "",
+		Drawer:false,
+		personData:{},
 	},
 	mutations: {
 		setshow: (state, data) => {
@@ -50,6 +52,9 @@ const store = new Vuex.Store({
 		},
 		setSQL_value: (state, data) => {
 			state.Sql_value = data;
+		},
+		setDrawer: (state, data) => {
+			state.Drawer = data;
 		},
 	}
 })

@@ -444,15 +444,16 @@ app.get('/FWQ_File.do', function(req, res) {
 });
 
 //18 插入故事
-app.get('/WriteStories.do', function(req, res) {
-	var title = req.query.Title || "";
-	var caption = req.query.Caption || "";
-	var Time = req.query.Time || "";
-	var Year = req.query.Year || "";
-	var Month = req.query.Month || "";
-	var Tag = req.query.Tag || "";
-	var Filename = req.query.Filename || "";
-	var URL = req.query.URL || "";
+app.post('/WriteStories.do', function(req, res) {
+	console.log(req.body.params)
+	var title = req.body.params.Title || "";
+	var caption = req.body.params.Caption || "";
+	var Time = req.body.params.Time || "";
+	var Year = req.body.params.Year || "";
+	var Month = req.body.params.Month || "";
+	var Tag = req.body.params.Tag || "";
+	var Filename = req.body.params.Filename || "";
+	var URL = req.body.params.URL || "";
 
 	var values = [];
 	//先到数据库里查一把有没有这条数据。有的话，UPDATE，没有的话，INSERT

@@ -61,340 +61,346 @@
 	</div>
 </template>
 
-<script>let Write_Time = "";
-let vm;
-export default {
-	data() {
-		return {
-			value: new Date(700, 1, 1), //时间对象
-			story: "",
-			form: {
-				name: '',
-				region: '',
-				date1: '',
-				date2: '',
-				delivery: false,
-				type: [],
-				resource: '',
-				desc: ''
-			},
-			SXT_filterText: '', //树形图的过滤文本
-			//dynamicTags: ['标签一', '标签二', '标签三'], //标签对象
-			dynamicTags: [],
-			inputVisible: false,
-			inputValue: '',
-			fileList: [],
-			Event: "",
-			Title: "",
-			Caption: "",
-			MYURL: this.$store.state.MYURL,
-			year: "",
-			month: "",
-			day: "",
-			imgUrl: '',
-			props: {
-				label: 'name',
-				children: 'zones',
-				isLeaf: 'leaf'
-			},
-			tree_data: "",
-			SJZ_data: [{
-				content: '支持使用图标',
-				timestamp: '2018-04-12 20:46',
-				size: 'large',
-				type: 'primary',
-				icon: 'el-icon-more'
-			}, {
-				content: '支持自定义颜色',
-				timestamp: '2018-04-03 20:46',
-				color: '#0bbd87'
-			}, {
-				content: '支持自定义尺寸',
-				timestamp: '2018-04-03 20:46',
-				size: 'large'
-			}, {
-				content: '默认样式的节点',
-				timestamp: '2018-04-03 20:46'
-			}],
-			WNL_flag: true,
-			SJZ_flag: false,
-			SXT_flag: false,
-			SJZ_val: ""
-		}
-	},
-	filters: {
-		formatDate: function(value) {
-			return moment(value).format('YYYY-MM-DD');
-		}
-	},
-	beforecreated() {
-		vm = this;
-	},
-	created() {
-		vm = this;
-	},
-	mounted() {
-		vm.year = vm.value.getFullYear();
-		vm.month = vm.value.getMonth() - 1 + 2;
-		vm.day = vm.value.getDate();
+<script>
+	let Write_Time = "";
+	let vm;
+	export default {
+		data() {
+			return {
+				value: new Date(700, 1, 1), //时间对象
+				story: "",
+				form: {
+					name: '',
+					region: '',
+					date1: '',
+					date2: '',
+					delivery: false,
+					type: [],
+					resource: '',
+					desc: ''
+				},
+				SXT_filterText: '', //树形图的过滤文本
+				//dynamicTags: ['标签一', '标签二', '标签三'], //标签对象
+				dynamicTags: [],
+				inputVisible: false,
+				inputValue: '',
+				fileList: [],
+				Event: "",
+				Title: "",
+				Caption: "",
+				MYURL: this.$store.state.MYURL,
+				year: "",
+				month: "",
+				day: "",
+				imgUrl: '',
+				props: {
+					label: 'name',
+					children: 'zones',
+					isLeaf: 'leaf'
+				},
+				tree_data: "",
+				SJZ_data: [{
+					content: '支持使用图标',
+					timestamp: '2018-04-12 20:46',
+					size: 'large',
+					type: 'primary',
+					icon: 'el-icon-more'
+				}, {
+					content: '支持自定义颜色',
+					timestamp: '2018-04-03 20:46',
+					color: '#0bbd87'
+				}, {
+					content: '支持自定义尺寸',
+					timestamp: '2018-04-03 20:46',
+					size: 'large'
+				}, {
+					content: '默认样式的节点',
+					timestamp: '2018-04-03 20:46'
+				}],
+				WNL_flag: true,
+				SJZ_flag: false,
+				SXT_flag: false,
+				SJZ_val: ""
+			}
+		},
+		filters: {
+			formatDate: function(value) {
+				return moment(value).format('YYYY-MM-DD');
+			}
+		},
+		beforecreated() {
+			vm = this;
+		},
+		created() {
+			vm = this;
+		},
+		mounted() {
+			vm.year = vm.value.getFullYear();
+			vm.month = vm.value.getMonth() - 1 + 2;
+			vm.day = vm.value.getDate();
 
-		vm.SearchMonthStories();
-		vm.$watch('value', function(val, old_val) {
-			vm.imgUrl = "";
 			vm.SearchMonthStories();
-			vm.year = moment(vm.value).format('YYYY') - 0 + 0;
-			vm.month = moment(vm.value).format('MM') - 0 + 0;
-			vm.day = moment(vm.value).format('DD') - 0 + 0;
-			//修改右侧对应的caption
-			for(var i = 0; i < vm.Event.length; i++) {
-				if(vm.Event[i].Time == moment(vm.value).format('YYYYMMDD')) {
-					vm.Title = vm.Event[i].Title;
-					vm.Caption = vm.Event[i].Caption;
-				} else {
-					vm.Title = "";
-					vm.Caption = "";
-				}
-			}
-		});
-	},
-	methods: {
-		onSubmit() {
-			console.log('submit!');
-		},
-		handleClose(tag) {
-			vm.dynamicTags.splice(vm.dynamicTags.indexOf(tag), 1);
-		},
-
-		showInput() {
-			vm.inputVisible = true;
-			vm.$nextTick(_ => {
-				vm.$refs.saveTagInput.$refs.input.focus();
-			});
-		},
-
-		handleInputConfirm() {
-			let inputValue = vm.inputValue;
-
-			if(inputValue) {
-				vm.dynamicTags.push(inputValue);
-			}
-			vm.inputVisible = false;
-			vm.inputValue = '';
-		},
-		//文件上传
-		handleRemove(file, fileList) {
-			console.log(file, fileList);
-		},
-		handlePreview(file) {
-
-			console.log(file);
-		},
-		handleExceed(files, fileList) {
-			vm.$message.warning(`当前限制选择 3 个文件，本次选择了 ${files.length} 个文件，共选择了 ${files.length + fileList.length} 个文件`);
-		},
-		beforeRemove(file, fileList) {
-			return vm.$confirm(`确定移除 ${ file.name }？`);
-		},
-		save() {
-			let year
-			if(vm.year < 1000 && vm.year >= 100) {
-				year = '0' + vm.year
-			}
-			if(vm.year < 100 && vm.year >= 10) {
-				year = '00' + vm.year
-			}
-			if(vm.year < 10 && vm.year > 0) {
-				year = '000' + vm.year
-			}
-			$.get(vm.MYURL + 'WriteStories.do?', {
-				Title: vm.Title, //事件标题
-				Caption: vm.Caption, //事件内容
-				Time: year + "" + (vm.month >= 10 ? vm.month : "0" + vm.month) + (vm.day >= 10 ? vm.day : "0" + vm.day), //具体时间，小于10的前面要加0
-				Year: year - 0, //年份
-				Month: vm.month, //月份 
-				Tag: vm.dynamicTags.join(','), //Tag标签内容
-				Filename: "",
-				URL: vm.imgUrl,
-			}, function(data) {
-				vm.$message(data.text + "\n" + data.sql);
+			vm.$watch('value', function(val, old_val) {
+				vm.imgUrl = "";
 				vm.SearchMonthStories();
-				vm.node_had.childNodes = []; //把存起来的node的子节点清空，不然会界面会出现重复树！
-				vm.loadNode(vm.node_had, vm.resolve_had); //再次执行懒加载的方法
-			}, "json");
-			return;
-		},
-		SearchMonthStories() {
-			$.get(vm.MYURL + 'SelectStories.do', {
-				Month: moment(vm.value).format('MM') - 0, //准确时间。减0是为了把字符串转换成数字，去0
-				Year: moment(vm.value).format('YYYY') - 0 //年份
-			}, function(data) {
-				vm.Event = data; //这里没法用this了
-				let time = parseInt(moment(vm.value).format('YYYYMMDD'))
+				vm.year = moment(vm.value).format('YYYY') - 0 + 0;
+				vm.month = moment(vm.value).format('MM') - 0 + 0;
+				vm.day = moment(vm.value).format('DD') - 0 + 0;
+				//修改右侧对应的caption
 				for(var i = 0; i < vm.Event.length; i++) {
-					if(vm.Event[i].Time == time) {
+					if(vm.Event[i].Time == moment(vm.value).format('YYYYMMDD')) {
 						vm.Title = vm.Event[i].Title;
 						vm.Caption = vm.Event[i].Caption;
-						vm.imgUrl = vm.Event[i].url;
+					} else {
+						vm.Title = "";
+						vm.Caption = "";
 					}
 				}
-				vm.drawWrited();
-			}, "json");
+			});
 		},
-		searchs() {
-			vm.value = new Date(vm.year, vm.month - 1, vm.day, 12, 0, 0)
-		},
+		methods: {
+			onSubmit() {
+				console.log('submit!');
+			},
+			handleClose(tag) {
+				vm.dynamicTags.splice(vm.dynamicTags.indexOf(tag), 1);
+			},
 
-		loadNode(node, resolve) {
-			if(node.level === 0) {
-				vm.node_had = node; //这里是关键！在data里面定义一个变量，将node.level == 0的node存起来
-				vm.resolve_had = resolve; //同上，把node.level == 0的resolve也存起来
-				$.get(vm.MYURL + 'Search_Tree.do?', {
-					Type: "1"
-				}, function(data) {
-					resolve(data);
+			showInput() {
+				vm.inputVisible = true;
+				vm.$nextTick(_ => {
+					vm.$refs.saveTagInput.$refs.input.focus();
 				});
-			} else if(node.level === 1) {
-				$.get(vm.MYURL + 'Search_Tree.do?', {
-					Type: "2",
-					Year: node.data.name.substring(0, node.data.name.length - 1)
-				}, function(data) {
-					resolve(data);
-				});
-			} else if(node.level === 2) {
-				var year = node.parent.label.substring(0, node.parent.label.length - 1);
-				var month = node.data.name.substring(0, node.data.name.length - 1);
-				$.get(vm.MYURL + 'Search_Tree.do?', {
-					Type: "3",
-					Year: year,
-					Month: month
-				}, function(data) {
-					resolve(data);
-				});
-			} else {
-				return resolve([]);
-			}
-		},
-		node_click(node, data, obj) {
-			if(data.level == "1") {
-				vm.value = new Date(node.name.substring(0, node.name.length - 1), 0, 1, 1, 1, 1);
-			}
-			if(data.level == "2") {
-				var year = data.parent.label.substring(0, data.parent.label.length - 1);
-				var month = data.data.name.substring(0, data.data.name.length - 1);
-				vm.value = new Date(year, month - 1, 1, 1, 1, 1);
-			}
-			if(data.level == "3") {
-				var year = data.parent.parent.label.substring(0, data.parent.parent.label.length - 1);
-				var month = data.parent.data.name.substring(0, data.parent.data.name.length - 1);
-				//以下是获取日期 day
-				var day = "";
-				for(var i = 0; i < data.label.length; i++) {
-					if(data.label[i] === "日") {
-						break;
-					} //
-					day += data.label[i];
+			},
+
+			handleInputConfirm() {
+				let inputValue = vm.inputValue;
+
+				if(inputValue) {
+					vm.dynamicTags.push(inputValue);
 				}
-				vm.value = new Date(year, month - 1, day, 1, 1, 1);
-			}
-			vm.SearchMonthStories();
-		},
-
-		WNL() {
-			vm.WNL_flag = true;
-			vm.SXT_flag = false;
-			vm.SJZ_flag = false;
-		},
-		SXT() {
-			vm.WNL_flag = false;
-			vm.SXT_flag = true;
-			vm.SJZ_flag = false;
-		},
-		SJZ() {
-			vm.WNL_flag = false;
-			vm.SXT_flag = false;
-			vm.SJZ_flag = true;
-			vm.SJZ_search();
-		},
-		drawWrited() {
-			let lastMounthFlag = 0; //上个月结束的下标标签
-			$("tbody").find("span").parent().removeClass("writed");
-			for(var i = 0; i < vm.Event.length; i++) {
-				var span = $("tbody").find("span");
-				let flag = 0;
-				for(var k = 0; k < span.length; k++) {
-					if(span[k].innerText == 1) {
-						flag++;
-						if(flag == 1) {
-							lastMounthFlag = k;
+				vm.inputVisible = false;
+				vm.inputValue = '';
+			},
+			//文件上传
+			handleRemove(file, fileList) {
+				console.log(file, fileList);
+			},
+			handlePreview(file) {
+				console.log(file);
+			},
+			handleExceed(files, fileList) {
+				vm.$message.warning(`当前限制选择 3 个文件，本次选择了 ${files.length} 个文件，共选择了 ${files.length + fileList.length} 个文件`);
+			},
+			beforeRemove(file, fileList) {
+				return vm.$confirm(`确定移除 ${ file.name }？`);
+			},
+			save() {
+				let year
+				if(vm.year < 1000 && vm.year >= 100) {
+					year = '0' + vm.year
+				}
+				if(vm.year < 100 && vm.year >= 10) {
+					year = '00' + vm.year
+				}
+				if(vm.year < 10 && vm.year > 0) {
+					year = '000' + vm.year
+				}
+				let option = {
+					Title: vm.Title, //事件标题
+					Caption: vm.Caption, //事件内容
+					Time: year + "" + (vm.month >= 10 ? vm.month : "0" + vm.month) + (vm.day >= 10 ? vm.day : "0" + vm.day), //具体时间，小于10的前面要加0
+					Year: year - 0, //年份
+					Month: vm.month, //月份 
+					Tag: vm.dynamicTags.join(','), //Tag标签内容
+					Filename: "",
+					URL: vm.imgUrl,
+				}
+				axios.post(this.MYURL + 'WriteStories.do?', {
+					params: option
+				}).then(data => {
+					this.$message(data.data.text + "\n" + data.data.sql);
+					this.SearchMonthStories();
+					this.node_had.childNodes = []; //把存起来的node的子节点清空，不然会界面会出现重复树！
+					this.loadNode(this.node_had, this.resolve_had); //再次执行懒加载的方法
+				})
+				return;
+			},
+			SearchMonthStories() {
+				$.get(vm.MYURL + 'SelectStories.do', {
+					Month: moment(vm.value).format('MM') - 0, //准确时间。减0是为了把字符串转换成数字，去0
+					Year: moment(vm.value).format('YYYY') - 0 //年份
+				}, function(data) {
+					vm.Event = data; //这里没法用this了
+					let time = parseInt(moment(vm.value).format('YYYYMMDD'))
+					for(var i = 0; i < vm.Event.length; i++) {
+						if(vm.Event[i].Time == time) {
+							vm.Title = vm.Event[i].Title;
+							vm.Caption = vm.Event[i].Caption;
+							vm.imgUrl = vm.Event[i].url;
 						}
 					}
-					if(flag == 2) {
-						break;
-					}
+					vm.drawWrited();
+				}, "json");
+			},
+			searchs() {
+				vm.value = new Date(vm.year, vm.month - 1, vm.day, 12, 0, 0)
+			},
+
+			loadNode(node, resolve) {
+				if(node.level === 0) {
+					vm.node_had = node; //这里是关键！在data里面定义一个变量，将node.level == 0的node存起来
+					vm.resolve_had = resolve; //同上，把node.level == 0的resolve也存起来
+					$.get(vm.MYURL + 'Search_Tree.do?', {
+						Type: "1"
+					}, function(data) {
+						resolve(data);
+					});
+				} else if(node.level === 1) {
+					$.get(vm.MYURL + 'Search_Tree.do?', {
+						Type: "2",
+						Year: node.data.name.substring(0, node.data.name.length - 1)
+					}, function(data) {
+						resolve(data);
+					});
+				} else if(node.level === 2) {
+					var year = node.parent.label.substring(0, node.parent.label.length - 1);
+					var month = node.data.name.substring(0, node.data.name.length - 1);
+					$.get(vm.MYURL + 'Search_Tree.do?', {
+						Type: "3",
+						Year: year,
+						Month: month
+					}, function(data) {
+						resolve(data);
+					});
+				} else {
+					return resolve([]);
+				}
+			},
+			node_click(node, data, obj) {
+				if(data.level == "1") {
+					vm.value = new Date(node.name.substring(0, node.name.length - 1), 0, 1, 1, 1, 1);
+				}
+				if(data.level == "2") {
+					var year = data.parent.label.substring(0, data.parent.label.length - 1);
+					var month = data.data.name.substring(0, data.data.name.length - 1);
+					vm.value = new Date(year, month - 1, 1, 1, 1, 1);
+				}
+				if(data.level == "3") {
+					var year = data.parent.parent.label.substring(0, data.parent.parent.label.length - 1);
+					var month = data.parent.data.name.substring(0, data.parent.data.name.length - 1);
+					//以下是获取日期 day
 					var day = "";
-					var time_day = "";
-					for(var j = 0; j < vm.Event.length; j++) {
-						day = span[k].innerText;
-						time_day = vm.Event[j].Time.substr(6) - 0; //字符串转数字
-						if(day == time_day) {
-							$(span[k]).parent().addClass("writed");
+					for(var i = 0; i < data.label.length; i++) {
+						if(data.label[i] === "日") {
+							break;
+						} //
+						day += data.label[i];
+					}
+					vm.value = new Date(year, month - 1, day, 1, 1, 1);
+				}
+				vm.SearchMonthStories();
+			},
+
+			WNL() {
+				vm.WNL_flag = true;
+				vm.SXT_flag = false;
+				vm.SJZ_flag = false;
+			},
+			SXT() {
+				vm.WNL_flag = false;
+				vm.SXT_flag = true;
+				vm.SJZ_flag = false;
+			},
+			SJZ() {
+				vm.WNL_flag = false;
+				vm.SXT_flag = false;
+				vm.SJZ_flag = true;
+				vm.SJZ_search();
+			},
+			drawWrited() {
+				let lastMounthFlag = 0; //上个月结束的下标标签
+				$("tbody").find("span").parent().removeClass("writed");
+				for(var i = 0; i < vm.Event.length; i++) {
+					var span = $("tbody").find("span");
+					let flag = 0;
+					for(var k = 0; k < span.length; k++) {
+						if(span[k].innerText == 1) {
+							flag++;
+							if(flag == 1) {
+								lastMounthFlag = k;
+							}
+						}
+						if(flag == 2) {
+							break;
+						}
+						var day = "";
+						var time_day = "";
+						for(var j = 0; j < vm.Event.length; j++) {
+							day = span[k].innerText;
+							time_day = vm.Event[j].Time.substr(6) - 0; //字符串转数字
+							if(day == time_day) {
+								$(span[k]).parent().addClass("writed");
+							}
 						}
 					}
 				}
-			}
-			//这个月1号之前的div通通移除class :writed
-			for(var j = 0; j < lastMounthFlag; j++) {
-				$(span[j]).parent().removeClass("writed");
-			}
+				//这个月1号之前的div通通移除class :writed
+				for(var j = 0; j < lastMounthFlag; j++) {
+					$(span[j]).parent().removeClass("writed");
+				}
 
+			},
+			SJZ_search() {
+				$.get(vm.MYURL + 'Search_SJZ.do?', {
+					Caption: vm.SJZ_val, //时间轴查找的关键字
+				}, function(data) {
+					vm.SJZ_data = data;
+				}, "json");
+			},
+			SJZ_click(data) {
+				var time = data;
+				if(time.length < 14) {
+					time += " 00:00:00";
+				}
+				//var timestamp = new Date(time).getTime();
+				vm.value = time;
+			},
+			upload(params) {
+				const formData = new FormData();
+				formData.append('file', params.file)
+				const headerConfig = {
+					headers: {
+						'Content-Type': 'multipart/form-data'
+					}
+				};
+				formData.append('originalname', params.file.name);
+				axios.post(this.MYURL + 'up', formData, headerConfig).then(function(data) {
+					if(data.data.status == 'success') {
+						vm.imgUrl = vm.MYURL + "upload/" + data.data.filename
+					}
+				})
+			},
 		},
-		SJZ_search() {
-			$.get(vm.MYURL + 'Search_SJZ.do?', {
-				Caption: vm.SJZ_val, //时间轴查找的关键字
-			}, function(data) {
-				vm.SJZ_data = data;
-			}, "json");
-		},
-		SJZ_click(data) {
-			var time = data;
-			if(time.length < 14) {
-				time += " 00:00:00";
+		watch: {
+			SXT_filterText(val) {
+				this.$refs.Tree.filter(val);
 			}
-			//var timestamp = new Date(time).getTime();
-			vm.value = time;
-		},
-		upload(params) {
-			const formData = new FormData();
-			formData.append('file', params.file)
-			const headerConfig = {
-				headers: {
-					'Content-Type': 'multipart/form-data'
-				}
-			};
-			formData.append('originalname', params.file.name);
-			axios.post(this.MYURL + 'up', formData, headerConfig).then(function(data) {
-				if(data.data.status == 'success') {
-					vm.imgUrl = vm.MYURL + "upload/" + data.data.filename
-				}
-			})
-		},
-	},
-	watch: {
-		SXT_filterText(val) {
-			this.$refs.Tree.filter(val);
 		}
+	};
+</script>
+
+<style lang="less" scoped>
+	@import '../assets/styles/calendar.css';
+	.left {
+		float: left;
+		width: calc(100% - 500px);
+		height: 100%;
 	}
-};</script>
-
-<style lang="less" scoped>@import '../assets/styles/calendar.css';
-.left {
-	float: left;
-	width: calc(100% - 500px);
-	height: 100%;
-}
-
-.right {
-	float: right;
-	width: 500px;
-	padding: 15px;
-}</style>
+	
+	.right {
+		float: right;
+		width: 500px;
+		padding: 15px;
+	}
+</style>

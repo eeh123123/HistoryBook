@@ -1,9 +1,10 @@
 <template>
 	<div class="baseTable">
-		<el-table tooltip-effect="light" :data.sync="tableData.data" :height.sync="tableHeight" @current-change="selectedTableData" highlight-current-row>
+		<el-table stripe tooltip-effect="light" :data.sync="tableData.data" :height.sync="tableHeight" @current-change="selectedTableData" highlight-current-row> <!--class="tb-edit"-->
 			<el-table-column v-for="(item, index) in tableHead" :value="item.code" :key="index" :show-overflow-tooltip="true" :prop="item.code" :label="item.label" align="center" :width="item.code == 'index' ? 50 : item.width" :min-width="item['min-width']">
 				<template slot-scope="scope">
-					<span v-if="item.code == 'index'">{{(currentPage - 1) * pageSize + (scope.$index + 1)}}</span>
+					<!--<span>{{ scope.row[item.code] }}</span>-->
+					<span v-if="item.code == 'index'">{{(Me_tableData.currentPage - 1) * pageSize + (scope.$index + 1)}}</span>
 					<el-button v-else-if="item.type == 'btn'" @click="item.func(scope.row)" type="text" size="small">
 						{{ scope.row[item.code]}}
 					</el-button>
@@ -21,18 +22,21 @@
 						</el-date-picker>
 					</div>
 					<div v-else-if="item.COL_APP_TYPE == 'window'">
-						<el-input suffix-icon="el-icon-circle-plus" @click.native="open_Dialog(scope.$index, scope.row)" v-model="scope.row[item.code + '_F_MC']">
+						<el-input suffix-icon="el-icon-circle-plus" @click.native="open_Dialog(scope.$index, scope.row,item.code)" v-model="scope.row[item.code + '_F_MC']">
 						</el-input>
-						<!--<span>{{scope.row[item.code+"_F_BH"]}}</span>-->
 					</div>
 					<div v-else-if="item.COL_APP_TYPE == 'icon'">
 						<img :src="scope.row[item.code]" @click="openImg(scope.$index,scope.row[item.code],item.code)" style="vertical-align: middle;height:40px;width: 40px" />
+					</div>
+					<div v-else-if="item.COL_APP_TYPE == 'boolean'">
+						<el-switch v-model="scope.row[item.code]" active-value="1" inactive-value="0">
+						</el-switch>
 					</div>
 					<span v-else>{{ scope.row[item.code] }}</span>
 				</template>
 			</el-table-column>
 		</el-table>
-		<el-pagination @current-change="handleCurrentChange" class="hi-pagination-1" :page-sizes="[10, 20, 30, 40]" :page-size="pageSize" background layout="total, prev, pager, next" :total="tableData.total" :current-page.sync="currentPage">
+		<el-pagination @current-change="handleCurrentChange" class="hi-pagination-1" :page-sizes="[10, 20, 30, 40]" :page-size="pageSize-0" background layout="total, prev, pager, next" :total="tableData.total" :current-page.sync="Me_tableData.currentPage">
 		</el-pagination>
 		<el-dialog title="选择图片" :visible.sync="Img.Visible" :close-on-click-modal="false" v-dialogDrag custom-class="dialog-Image">
 			<el-upload class="avatar-uploader" :action="Img.action" :show-file-list="false" :on-success="handleAvatarSuccess">
@@ -40,36 +44,52 @@
 				<i v-else class="el-icon-plus avatar-uploader-icon"></i>
 			</el-upload>
 		</el-dialog>
-		<el-dialog title="Dialog.title" :visible.sync="Dialog.Visible" :close-on-click-modal="false" v-dialogDrag custom-class="dialog-Image">
-			<el-upload class="avatar-uploader" :action="Img.action" :show-file-list="false" :on-success="handleAvatarSuccess">
-				<img v-if="Img.Url" :src="Img.Url" class="person-Image" />
-				<i v-else class="el-icon-plus avatar-uploader-icon"></i>
-			</el-upload>
+		<el-dialog :title="Dialog.title" :visible.sync="Dialog.Visible" :close-on-click-modal="false" v-dialogDrag width="30%">
+			<el-input placeholder="请输入内容" v-model="Dialog.search_data" class="input-with-select">
+				<el-button slot="append" icon="el-icon-search" @click="Dialog_query()"></el-button>
+			</el-input>
+			<el-table tooltip-effect="light" :data.sync="Dialog.tableData.data" @current-change='Dialog_selectedTableData' @row-dblclick="Dialog_save" highlight-current-row>
+				<el-table-column v-for="(item, index) in Dialog.tableHead" :value="item.code" :key="index" :show-overflow-tooltip="true" :prop="item.code" :label="item.label" align='center'></el-table-column>
+			</el-table>
+			<el-pagination @current-change="Dialog_HandleCurrentChange" :page-sizes="[10, 20, 30, 40]" :page-size="10" layout="total,prev, pager, next" :total="Dialog.tableData.total" :current-page.sync="Dialog.currentPage">
+			</el-pagination>
+			<!-- 按钮区 -->
+			<span slot="footer">
+            <el-button type="success" icon="el-icon-check" @click="Dialog_save">保存</el-button>
+            <el-button type="danger"  icon="el-icon-close" @click="Dialog_close">关闭</el-button>
+        </span>
 		</el-dialog>
 	</div>
 </template>
 
 <script>
 	export default {
-		computed: {
-			init: function() {}
-		},
-		created() {},
 		data() {
 			return {
-				currentRow: null,
-				currentPage: 1,
+				Me_tableData: {
+					currentRow: null,
+					currentPage: 1,
+					contentId: '', //当前行的id,
+					contentUrl: '', //当前行的imgURL
+					F_PKEY: '', //当前字典的主键
+				},
 				Img: {
 					Visible: false,
 					Url: '',
-					action: ''
+					action: 'http://49.235.128.250:8084/up'
 				},
-				contentId: '', //当前行的id,
-				contentUrl: '', //当前行的imgURL
-				F_PKEY: '', //当前字典的主键
+
 				Dialog: {
+					code: '',
 					Visible: false,
-					title: ''
+					title: '',
+					search_data: '',
+					tableData: [],
+					tableHead: [],
+					currentPage: 1,
+					commonData: {}, //存查询条件
+					sqlwhere: "",
+					currentRow: null,
 				}
 			};
 		},
@@ -82,38 +102,87 @@
 						sqlwhere: "DCT_ID = '" + this.$route.query.dctid + "'"
 					}
 				}).then(res => {
-					this.F_PKEY = res.data.data[0].DCT_FID
+					this.Me_tableData.F_PKEY = res.data.data[0].DCT_FID
 				})
 			},
 			selectedTableData(val) {
-				this.currentRow = val;
+				this.Me_tableData.currentRow = val;
 				this.$emit("selectedTableData", val);
 			},
-			open_Dialog(index, item) {},
 			openImg(index, val, colName) {
-				this.contentId = this.tableData.data[index].id; //这里要获取一下主键
-				this.contentUrl = colName
+				this.Me_tableData.contentId = this.tableData.data[index].id; //这里要获取一下主键 debugger
+				this.Me_tableData.contentUrl = colName
 				this.Img.Visible = true;
 				this.Img.Url = val;
-				this.Img.action = "http://49.235.128.250:8084/up";
 			},
 			handleAvatarSuccess(res, file) {
 				this.Img.Url = this.$store.state.FWQURL + "upload/" + res.filename;
 				let array_update = [{}];
-				array_update[0][this.F_PKEY] = this.contentId
-				array_update[0][this.contentUrl] = this.Img.Url
+				array_update[0][this.Me_tableData.F_PKEY] = this.Me_tableData.contentId
+				array_update[0][this.Me_tableData.contentUrl] = this.Img.Url
 				axios.post(this.$store.state.MYURL + "UpdateTableRow.do", {
 					params: {
 						tablename: this.$route.query.dctid,
 						values: array_update
 					}
 				}).then(res => {
-					this.tableData.data[this.contentId - 1][this.contentUrl] = this.Img.Url;
+					this.tableData.data[this.Me_tableData.contentId - 1][this.Me_tableData.contentUrl] = this.Img.Url;
 					this.$message({
 						type: "success",
 						message: res.data.msg
 					});
 				})
+			},
+
+			open_Dialog(index, item, code) {
+				this.Dialog.code = code
+				let data = this.tableData.map.get(code)
+				this.Dialog.commonData = data
+				this.Dialog_queryData(data)
+				this.Dialog.Visible = true
+			},
+			Dialog_query() {
+				if(this.Dialog.search_data != "") {
+					this.Dialog.sqlwhere = " AND " + this.Dialog.commonData.F_Caption + " LIKE '%" + this.Dialog.search_data + "%'"
+				} else {
+					this.Dialog.sqlwhere = ""
+				}
+				this.Dialog_queryData(this.Dialog.commonData)
+			},
+			Dialog_queryData(data) {
+				axios.get(this.$store.state.MYURL + "QueryTableRow.do", {
+					params: {
+						tablename: data.tablename,
+						showcol: [data.F_Pkey, data.F_Caption],
+						sqlwhere: "1=1 " + this.Dialog.sqlwhere + " Limit " + (this.Dialog.currentPage - 1) * 10 + ",10"
+					}
+				}).then(res => {
+					this.Dialog.tableHead = [{
+							code: data.F_Pkey,
+							label: data.F_Pkey_Name
+						},
+						{
+							code: data.F_Caption,
+							label: data.F_Caption_Name,
+						}
+					]
+					this.Dialog.tableData = res.data
+				})
+			},
+			Dialog_selectedTableData(val) {
+				this.Dialog.currentRow = val;
+			},
+			Dialog_HandleCurrentChange() {
+				this.Dialog_queryData(this.Dialog.commonData)
+			},
+			Dialog_save() {
+				this.Me_tableData.currentRow[this.Dialog.code] = this.Dialog.currentRow[this.Dialog.commonData.F_Pkey]
+				this.Me_tableData.currentRow[this.Dialog.code + "_F_BH"] = this.Dialog.currentRow[this.Dialog.commonData.F_Pkey]
+				this.Me_tableData.currentRow[this.Dialog.code + "_F_MC"] = this.Dialog.currentRow[this.Dialog.commonData.F_Caption]
+				this.Dialog.Visible = false
+			},
+			Dialog_close() {
+				this.Dialog.Visible = false
 			}
 		},
 		mounted() {
@@ -127,7 +196,7 @@
 				type: [String, Number],
 				default: 10
 			},
-			handleCurrentChange: Function
+			handleCurrentChange: Function,
 		}
 	};
 </script>

@@ -80,15 +80,17 @@ const routes = [{
 				path: '/explain',
 				component: explain,
 				meta: ['技术说明', '技术说明'],
-			}, {
-				path: '/WuJia',
-				component: WuJia,
-				meta: ['物价表', '物价表'],
-			}, {
-				path: '/FWQ',
-				component: FWQ,
-				meta: ['服务器列表', '服务器列表'],
-			}, {
+			}, 
+//			{
+//				path: '/WuJia',
+//				component: WuJia,
+//				meta: ['物价表', '物价表'],
+//			}, {
+//				path: '/FWQ',
+//				component: FWQ,
+//				meta: ['服务器列表', '服务器列表'],
+//			}, 
+			{
 				path: '/calendar',
 				component: calendar,
 				meta: ['唐', '万年历'],

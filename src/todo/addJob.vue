@@ -132,9 +132,6 @@
 		components: {
 			EditDialog
 		},
-		created() {
-
-		},
 		data() {
 			return {
 				//查询数据
@@ -238,9 +235,6 @@
 							vm.GuanZhi_Data[i].isInsert = false
 						}
 					})
-					.catch(function(error) {
-						console.log(error);
-					});
 			},
 			//查询官职
 			queryTableData() {
@@ -262,9 +256,6 @@
 							vm.GuanZhi_Data[i].isInsert = false
 						}
 					})
-					.catch(function(error) {
-						console.log(error);
-					});
 			},
 			Save() {
 				let update_flag = true;
@@ -312,9 +303,6 @@
 								message: response.data.msg
 							});
 						})
-						.catch(function(error) {
-							console.log(error);
-						});
 				}
 
 				let array_insert = []
@@ -373,9 +361,6 @@
 							}
 
 						})
-						.catch(function(error) {
-							console.log(error);
-						});
 				}
 			},
 			deleteRow(index, rows) { //删除改行
@@ -453,9 +438,6 @@
 							}
 						}
 					})
-					.catch(function(error) {
-						console.log(error);
-					});
 			},
 			GZB_filterNode(value, data) {
 				if(!value) return true;
@@ -528,9 +510,6 @@
 						});
 						vm.searchs();
 					})
-					.catch(function(error) {
-						console.log(error);
-					});
 			},
 			//点击关闭dialog
 			handleClose(done) {
@@ -622,8 +601,6 @@
 				}, function(result) {
 					vm.GuanZhi_Data = result;
 					vm.GuanZhi_Orign_Data = JSON.parse(JSON.stringify(result));
-
-					console.log(result);
 				}, "json");
 			},
 			handleCurrentChange(row) {

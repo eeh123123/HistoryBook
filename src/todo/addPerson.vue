@@ -291,9 +291,6 @@
 								message: response.data.msg
 							});
 						})
-						.catch(function(error) {
-							console.log(error);
-						});
 				}
 			},
 			handleAvatarSuccess(res, file) {

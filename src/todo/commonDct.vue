@@ -2,204 +2,206 @@
 	<div class="commonDct">
 		<div class="floor1">
 			<el-button type="primary" icon="el-icon-search" @click="addNewRow">新增</el-button>
-			<el-button type="primary" icon="el-icon-search" @click="addNewRow">保存</el-button>
+			<el-button type="primary" icon="el-icon-search" @click="save">保存</el-button>
 		</div>
 		<div class="floor2">
-			<BaseTable pageSize="20" :handleCurrentChange="handleCurrentChange" :handleSizeChange="handleSizeChange" @selectedTableData="Left1_selectedTableData" :callBack="cbFunc" :tableHead="tableHead" :tableData.sync="tableData"></BaseTable>
+			<BaseTable pageSize="15" :handleCurrentChange="handleCurrentChange" :handleSizeChange="handleSizeChange" @selectedTableData="Left1_selectedTableData" :callBack="cbFunc" :tableHead="tableHead" :tableData.sync="tableData"></BaseTable>
 		</div>
 	</div>
 </template>
 
-<script>import BaseTable from '../tools/BaseTable.vue'
-let vm;
-export default {
-	components: {
-		BaseTable
-	},
-	data() {
-		return {
-			tableData: {
-				data: [],
-				total: 0
-			},
-			cbFunc: function() {},
-			contentType: 1,
-			dctName: '',
-			tableHead: [{
-				code: "DCT_ID",
-				label: "名称"
-			}, {
-				code: "DCT_CAPTION",
-				label: "编号"
-			}], //左侧列表1
-			LeftData1: {},
-			RightHead: [{
-				code: 'COL_ID',
-				label: '标识',
-				type: 'text',
-			}],
-			currentPage: 1
-		}
-	},
-	mounted() {
-		vm = this;
-		vm.queryTableHead()
-		vm.queryTableData()
-	},
-	methods: {
-		handleCurrentChange(val) {
-			vm.currentPage = val
+<script>
+	import BaseTable from '../tools/BaseTable.vue'
+	let vm;
+	export default {
+		components: {
+			BaseTable
+		},
+		data() {
+			return {
+				tableData: {
+					data: [],
+					total: 0,
+					map: new Map(),
+				},
+				Orign_Data: [],
+				cbFunc: function() {},
+				tableHead: [{
+					code: "DCT_ID",
+					label: "名称"
+				}, {
+					code: "DCT_CAPTION",
+					label: "编号"
+				}],
+				currentPage: 1,
+				saveMsg: '',
+			}
+		},
+		mounted() {
+			vm = this;
+			vm.queryTableHead()
 			vm.queryTableData()
 		},
-		handleSizeChange() {
+		methods: {
+			handleCurrentChange(val) {
+				vm.currentPage = val
+				vm.queryTableData()
+			},
+			handleSizeChange() {
 
-		},
-		queryTableHead() {
-			axios.get(this.$store.state.MYURL + 'QueryTableRow.do', {
+			},
+			Left1_selectedTableData(val) {
+
+			},
+			queryTableHead() {
+				axios.get(this.$store.state.MYURL + 'QueryTableRow.do', {
 					params: {
 						tablename: "DOF_DCT_COLS",
 						showcol: ['*'],
 						sqlwhere: "DCT_ID = '" + this.$route.query.dctid + "' AND COL_VISIBLE ='1' ORDER BY COL_DISP_ORDER"
 					}
-				}).then(function(response) {
+				}).then(res => {
 					let tableHead = []
-					for(let i = 0; i < response.data.data.length; i++) {
+					for(let i = 0; i < res.data.data.length; i++) {
+						if(res.data.data[i].COL_APP_TYPE == "window") {
+							this.tableData.map.set(res.data.data[i].COL_ID, {})
+							this.getF_Pkey_F_Caption(res.data.data[i].COL_ID, res.data.data[i].COL_FK_DCT)
+							this.getF_Pkey_Name_F_Caption_Name(res.data.data[i].COL_ID, res.data.data[i].COL_FK_DCT)
+						}
 						tableHead.push({
-							code: response.data.data[i].COL_ID,
-							label: response.data.data[i].COL_CAPTION,
-							COL_APP_TYPE: response.data.data[i].COL_APP_TYPE
+							code: res.data.data[i].COL_ID,
+							label: res.data.data[i].COL_CAPTION,
+							COL_APP_TYPE: res.data.data[i].COL_APP_TYPE,
 						})
 					}
-					vm.tableHead = tableHead
+					this.tableHead = tableHead
 				})
-				.catch(function(error) {
-					console.log(error);
-				});
-		},
-		queryTableData() {
-			axios.get(this.$store.state.MYURL + 'QueryDct.do', {
+			},
+			queryTableData() {
+				axios.get(this.$store.state.MYURL + 'QueryDct.do', {
 					params: {
 						tablename: this.$route.query.dctid,
-						sqlwhere:" Limit " + (vm.currentPage - 1) * 20 + ",20"
+						sqlwhere: " Limit " + (this.currentPage - 1) * 15 + ",15"
 					}
-				}).then(function(response) {
-					vm.tableData = {
-						data: response.data.data || [],
-						total: response.data.total || 0
+				}).then(res => {
+					this.tableData.data = res.data.data || []
+					this.tableData.total = res.data.total || 0
+					this.Orign_Data = JSON.parse(JSON.stringify(res.data.data));
+				})
+			},
+			getF_Pkey_F_Caption(colId, dctid) {
+				axios.get(this.$store.state.MYURL + "QueryTableRow.do", {
+					params: {
+						tablename: "DCT_DICTS",
+						showcol: ['*'],
+						sqlwhere: "DCT_ID = '" + dctid + "'"
+					}
+				}).then(res => {
+					this.tableData.map.set(colId, {
+						F_Pkey: res.data.data[0].DCT_FID,
+						F_Caption: res.data.data[0].DCT_F_NAME,
+						F_Pkey_Name: '',
+						F_Caption_Name: '',
+						tablename: dctid
+					})
+				})
+			},
+			getF_Pkey_Name_F_Caption_Name(colId, dctid) {
+				axios.get(this.$store.state.MYURL + "QueryTableRow.do", {
+					params: {
+						tablename: "DOF_DCT_COLS",
+						showcol: ['*'],
+						sqlwhere: "DCT_ID = '" + dctid + "'"
+					}
+				}).then(res => {
+					for(let i in this.tableData.map.get(colId)) {
+						for(let j = 0; j < res.data.data.length; j++) {
+							if(res.data.data[j].COL_ID == this.tableData.map.get(colId)[i]) {
+								if(this.tableData.map.get(colId).F_Pkey == res.data.data[j].COL_ID) {
+									this.tableData.map.get(colId).F_Pkey_Name = res.data.data[j].COL_CAPTION
+								} else if(this.tableData.map.get(colId).F_Caption == res.data.data[j].COL_ID) {
+									this.tableData.map.get(colId).F_Caption_Name = res.data.data[j].COL_CAPTION
+								}
+							}
+						}
 					}
 				})
-				.catch(function(error) {
-					console.log(error);
+			},
+			addNewRow() {
+				vm.tableData.data.push({
+					isInsert: true,
 				});
-		},
-		Left1_selectedTableData(val) {},
-		addNewRow() {
-			vm.tableData.data.push({
-				isInsert: true,
-			});
-		},
-		save() {
+			},
+			save() {
+				var p = Promise.all([new Promise(function(resolve, reject) {
+						vm.insertAxios(resolve)
 
+					}), new Promise(function(resolve, reject) {
+						vm.updateAxios(resolve)
+					})
+
+				])
+				p.then(function(datas) {
+					vm.$message({
+						type: 'success',
+						message: datas
+					});
+				});
+			},
+			insertAxios(resolve) {
+				let insertData = this.$tools.getInsert(this.Orign_Data, this.tableData.data, 'isInsert')
+				if(insertData.array_insert_str.length != 0) {
+					axios.post(this.$store.state.MYURL + 'InsertTableRow.do', {
+							params: {
+								tablename: this.$route.query.dctid,
+								values: insertData.array_insert_str,
+								Insertcol: insertData.Insertcol,
+							}
+						})
+						.then(res => {
+							for(let i = 0; i < this.tableData.data.length; i++) {
+								this.tableData.data[i].isInsert = false
+							}
+							resolve(res.data.msg)
+						})
+				}
+			},
+			updateAxios(resolve) {
+				let updateData = this.$tools.ComparArray(this.Orign_Data, this.tableData.data, 'id')
+				axios.post(this.$store.state.MYURL + 'UpdateTableRow.do', {
+						params: {
+							tablename: this.$route.query.dctid,
+							values: updateData,
+						}
+					})
+					.then(res => {
+						resolve(res.data.msg)
+					})
+			}
 		}
-	},
-	watch: {
-		contentType() {
 
-		},
-	},
-
-}</script>
-
-<style lang="less">.commonDct {
-	width: 100%;
-	height: 100%;
-	/*蓝色背景部分结束*/
-	.floor1 {
-		width: 100%;
-		height: 52px;
-		padding: 10px;
 	}
-	.floor2 {
+</script>
+
+<style lang="less">
+	.commonDct {
 		width: 100%;
-		height: 90%;
-		.son1 {
-			float: left;
-			width: 30%;
-			height: 100%;
-			box-sizing: border-box;
-			padding: 1px;
-			border-radius: 10px;
-			.box {
-				border-radius: 10px;
-				box-sizing: border-box;
-				height: 100%;
-				width: 100%;
-				position: relative;
-				.LeftList {
-					text-align: center;
-					margin-top: 10px;
-					height: calc(100% - 52px);
-					width: 100%;
+		height: 100%;
+		.floor1 {
+			width: 100%;
+			height: 52px;
+			padding: 10px;
+		}
+		.floor2 {
+			width: 100%;
+			height: 90%;
+			.baseTable {
+				border: none;
+				color: #224491;
+				td .el-input__inner {
+					border: none;
 				}
 			}
-			.box:before {
-				content: "";
-				width: 25px;
-				height: 15px;
-				display: block;
-				position: absolute;
-				top: -3px;
-				left: -2px;
-				border-top: 3px solid #74bfff;
-				border-left: 3px solid #74bfff;
-			}
-			.box:after {
-				content: "";
-				width: 25px;
-				height: 15px;
-				display: block;
-				position: absolute;
-				top: -3px;
-				right: -2px;
-				border-top: 3px solid #74bfff;
-				border-right: 3px solid #74bfff;
-			}
-			.box .border {
-				height: 12px;
-				width: 100%;
-				position: absolute;
-				bottom: 0;
-				margin: 0;
-			}
-			.box .border:before {
-				content: "";
-				width: 25px;
-				height: 15px;
-				display: block;
-				position: absolute;
-				top: -3px;
-				left: -2px;
-				border-bottom: 3px solid #74bfff;
-				border-left: 3px solid #74bfff;
-			}
-			.box .border:after {
-				content: "";
-				width: 25px;
-				height: 15px;
-				display: block;
-				position: absolute;
-				top: -3px;
-				right: -2px;
-				border-bottom: 3px solid #74bfff;
-				border-right: 3px solid #74bfff;
-			}
-		}
-		.baseTable {
-			border: none;
-			color: #224491;
-			.el-input__inner {
-				border: none;
-			}
 		}
 	}
-}</style>
+</style>

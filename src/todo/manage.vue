@@ -1,5 +1,5 @@
 <template>
-	<div class="manage_page fillcontain">
+	<div class="fillcontain">
 		<el-row style="height: 100%;">
 	  		<el-col :span="4"  style="min-height: 100%; background-color: #324057;">
 				<el-menu :default-active="defaultActive" style="min-height: 100%;" theme="dark" router>
@@ -12,19 +12,20 @@
 						<el-menu-item index="/commonDCT?dctid=attribute">特性表</el-menu-item>
 						<el-menu-item index="/commonDCT?dctid=attributeTime">特性时间表</el-menu-item>
 						<el-menu-item index="/commonDCT?dctid=family">家族表</el-menu-item>
-						<el-menu-item index="/commonDCT?dctid=person">人物表(未做)</el-menu-item>
-						<el-menu-item index="experience">添加履历(未做)</el-menu-item>
-						<el-menu-item index="upFile">添加物价表</el-menu-item>
-					</el-submenu>
+						<el-menu-item index="/commonDCT?dctid=person">人物表</el-menu-item>
+						<el-menu-item index="/commonDCT?dctid=item">物品表</el-menu-item>
+						<el-menu-item index="experience">履历表(未做)</el-menu-item>
+<!--						<el-menu-item index="upFile">添加物价表</el-menu-item>
+-->					</el-submenu>
 					<el-submenu index="2">
 						<template slot="title"><i class="el-icon-warning"></i>技术说明</template>
 						<el-menu-item index="explain">技术说明</el-menu-item>
 					</el-submenu>
-					<el-submenu index="3">
+					<!--<el-submenu index="3">
 						<template slot="title"><i class="el-icon-warning"></i>天龙八部相关</template>
 						<el-menu-item index="WuJia">物价表</el-menu-item>
 						<el-menu-item index="FWQ">服务器列表</el-menu-item>
-					</el-submenu>
+					</el-submenu>-->
 					<el-submenu index="4">
 						<template slot="title"><i class="el-icon-warning"></i>唐</template>
 						<el-menu-item index="calendar">万年历</el-menu-item>
@@ -54,18 +55,10 @@
 			defaultActive: function(){
 				return this.$route.path.replace('/', '');
 			}
-		},
-		watch:{
-			// $route(to,from){
-			// 	this.$router.push(to.fullPath)
-			// }
-		},
-    }
+	}
+}
 </script>
 
 <style lang="less" scoped>
 	@import '../style/mixin';
-	.manage_page{
-
-	}
 </style>

@@ -8,7 +8,7 @@ function getJsonLength(jsonData) {
 }
 
 //2 比较两个jsonArray的不同,其中array1是原数组，array2是修改后的数组
-function ComparArray(_array1, _array2) {
+function ComparArray(_array1, _array2, id) {
 	let array1 = JSON.parse(JSON.stringify(_array1));
 	let array2 = JSON.parse(JSON.stringify(_array2));
 
@@ -40,6 +40,48 @@ function ComparArray(_array1, _array2) {
 			}
 		}
 	}
+	return array_update
+}
+
+//3 获取新增函数
+function getInsert(array1, array2, id) {
+	let array_insert = []
+	let array_insert_str = []
+	for(let i = 0; i < array2.length; i++) {
+		if(array2[i].isInsert === true) {
+			array_insert.push(array2[i])
+		}
+	}
+	for(let i = 0; i < array2.length; i++) {
+		if(array2[i].isInsert === true) {
+			array2.slice(i,1)
+		}
+	}
+	array_insert = JSON.parse(JSON.stringify(array_insert));
+
+	for(let i = 0; i < array_insert.length; i++) {
+		delete array_insert[i].isInsert
+		array_insert_str[i] = [] //初始化这个数组
+	}
+	let Insertcol = ""
+	for(let i in array_insert[0]) {
+		Insertcol += (i + ",")
+	}
+
+	for(let i = 0; i < array_insert.length; i++) {
+		for(let j in array_insert[i]) {
+			if(array_insert_str[i] === undefined) {
+				array_insert_str[i] = []
+			}
+			if(array_insert[i][j] == "") {
+				array_insert_str[i].push("")
+			} else {
+				array_insert_str[i].push(array_insert[i][j])
+			}
+		}
+	}
+	Insertcol = Insertcol.substring(0, Insertcol.length - 1)
+	return {Insertcol:Insertcol,array_insert_str:array_insert_str}
 }
 
 var chnNumChar = ["零", "一", "二", "三", "四", "五", "六", "七", "八", "九"];
@@ -70,7 +112,7 @@ function SectionToChinese(section) {
 	return chnStr;
 }
 
-//3 数字转中文
+//4 数字转中文
 function NumberToChinese(num) {
 	var unitPos = 0;
 	var strIns = '',
@@ -133,7 +175,7 @@ var chnNameValue = {
 	}
 }
 
-//4 中文转数字
+//5 中文转数字
 function ChineseToNumber(chnStr) {
 	var rtn = 0;
 	var section = 0;
@@ -164,7 +206,7 @@ function ChineseToNumber(chnStr) {
 	return rtn + section;
 }
 
-//5 数组转tree
+//6 数组转tree
 function composeTree(list = []) {
 	//const data = JSON.parse(JSON.stringify(list)) // 浅拷贝不改变源数据
 	const data = list
@@ -191,7 +233,7 @@ function composeTree(list = []) {
 	})
 	return result
 }
-// 树结构排序
+//7 树结构排序
 function sort(data, id) {
 	function sortArr(data) {
 		if(Array.isArray(data) && data.length > 0) {
@@ -211,6 +253,7 @@ function sort(data, id) {
 export default {
 	getJsonLength: getJsonLength,
 	ComparArray: ComparArray,
+	getInsert: getInsert,
 	SectionToChinese: SectionToChinese,
 	NumberToChinese: NumberToChinese,
 	ChineseToNumber: ChineseToNumber,

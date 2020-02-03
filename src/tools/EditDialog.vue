@@ -3,7 +3,7 @@
 		<el-input placeholder="请输入内容" v-model="Dialog_search_data" class="input-with-select">
 			<el-button slot="append" icon="el-icon-search" @click="query()"></el-button>
 		</el-input>
-		<el-table tooltip-effect="light" :data.sync="tableData.data" :row-style="{height:'30px'}" :cell-style="{padding:0}" @current-change='selectedTableData' @row-dblclick="save" highlight-current-row>
+		<el-table tooltip-effect="light" :data.sync="tableData.data" @current-change='selectedTableData' @row-dblclick="save" highlight-current-row>
 			<el-table-column v-for="(item, index) in tableHead" :value="item.code" :key="index" :show-overflow-tooltip="true" :prop="item.code" :label="item.label" align='center'></el-table-column>
 		</el-table>
 		<el-pagination @size-change="handleSizeChange" @current-change="handleCurrentChange" :page-sizes="[10, 20, 30, 40]" :page-size="10" layout="total,prev, pager, next" :total="tableData.total" :current-page.sync="currentPage">
@@ -23,11 +23,6 @@
 	import '../Func.js'
 
 	export default {
-		computed: {
-			init: function() {
-
-			}
-		},
 		created() {
 			vm = this;
 		},
