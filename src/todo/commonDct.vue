@@ -1,11 +1,11 @@
 <template>
-	<div class="commonDct">
+	<div class="commonDct" ref="getHeight">
 		<div class="floor1">
 			<el-button type="primary" icon="el-icon-search" @click="addNewRow">新增</el-button>
 			<el-button type="primary" icon="el-icon-search" @click="save">保存</el-button>
 		</div>
 		<div class="floor2">
-			<BaseTable pageSize="15" :handleCurrentChange="handleCurrentChange" :handleSizeChange="handleSizeChange" @selectedTableData="Left1_selectedTableData" :callBack="cbFunc" :tableHead="tableHead" :tableData.sync="tableData"></BaseTable>
+			<BaseTable pageSize="15" :handleCurrentChange="handleCurrentChange" :handleSizeChange="handleSizeChange" @selectedTableData="Left1_selectedTableData" :callBack="cbFunc" :tableHead="tableHead" :tableData.sync="tableData" :tableHeight="tableData.tableHeight"></BaseTable>
 		</div>
 	</div>
 </template>
@@ -23,6 +23,7 @@
 					data: [],
 					total: 0,
 					map: new Map(),
+					tableHeight: 300
 				},
 				Orign_Data: [],
 				cbFunc: function() {},
@@ -39,10 +40,19 @@
 		},
 		mounted() {
 			vm = this;
-			vm.queryTableHead()
-			vm.queryTableData()
+			this.setTableHeight()
+			this.queryTableHead()
 		},
 		methods: {
+			setTableHeight() {
+				debugger
+				let obj = this.$refs.getHeight
+				let height = obj.offsetHeight -52 - 32
+				setTimeout(() => {
+					this.tableData.tableHeight = height
+					this.queryTableData()
+				}, 50)
+			},
 			handleCurrentChange(val) {
 				vm.currentPage = val
 				vm.queryTableData()
@@ -78,11 +88,15 @@
 				})
 			},
 			queryTableData() {
+				let params = {
+					tablename: this.$route.query.dctid,
+					sqlwhere: " Limit " + (this.currentPage - 1) * 15 + ",15"
+				}
+				if(this.$route.query.page == 0) {
+					params.sqlwhere = ""
+				}
 				axios.get(this.$store.state.MYURL + 'QueryDct.do', {
-					params: {
-						tablename: this.$route.query.dctid,
-						sqlwhere: " Limit " + (this.currentPage - 1) * 15 + ",15"
-					}
+					params: params
 				}).then(res => {
 					this.tableData.data = res.data.data || []
 					this.tableData.total = res.data.total || 0
@@ -134,28 +148,39 @@
 			},
 			save() {
 				var p = Promise.all([new Promise(function(resolve, reject) {
-						vm.insertAxios(resolve)
+					vm.insertAxios(resolve)
 
-					}), new Promise(function(resolve, reject) {
-						vm.updateAxios(resolve)
-					})
-
-				])
+				}), new Promise(function(resolve, reject) {
+					vm.updateAxios(resolve)
+				})])
 				p.then(function(datas) {
 					vm.$message({
 						type: 'success',
 						message: datas
 					});
+					vm.Orign_Data = JSON.parse(JSON.stringify(vm.tableData.data))
 				});
 			},
 			insertAxios(resolve) {
-				let insertData = this.$tools.getInsert(this.Orign_Data, this.tableData.data, 'isInsert')
-				if(insertData.array_insert_str.length != 0) {
+				let insertData = JSON.parse(JSON.stringify(this.tableData.data))
+
+				for(let i = 0; i < insertData.length; i++) {
+					for(let j in insertData[i]) {
+						if(j.indexOf("_F_BH") != -1) {
+							delete insertData[i][j]
+						}
+						if(j.indexOf("_F_MC") != -1) {
+							delete insertData[i][j]
+						}
+					}
+				}
+				let insertData_Request = this.$tools.getInsert(this.Orign_Data, insertData, 'isInsert')
+				if(insertData_Request.array_insert_str.length != 0) {
 					axios.post(this.$store.state.MYURL + 'InsertTableRow.do', {
 							params: {
 								tablename: this.$route.query.dctid,
-								values: insertData.array_insert_str,
-								Insertcol: insertData.Insertcol,
+								values: insertData_Request.array_insert_str,
+								Insertcol: insertData_Request.Insertcol,
 							}
 						})
 						.then(res => {
@@ -164,19 +189,25 @@
 							}
 							resolve(res.data.msg)
 						})
+				} else {
+					resolve("无新增")
 				}
 			},
 			updateAxios(resolve) {
 				let updateData = this.$tools.ComparArray(this.Orign_Data, this.tableData.data, 'id')
-				axios.post(this.$store.state.MYURL + 'UpdateTableRow.do', {
-						params: {
-							tablename: this.$route.query.dctid,
-							values: updateData,
-						}
-					})
-					.then(res => {
-						resolve(res.data.msg)
-					})
+				if(updateData.length != 0) {
+					axios.post(this.$store.state.MYURL + 'UpdateTableRow.do', {
+							params: {
+								tablename: this.$route.query.dctid,
+								values: updateData,
+							}
+						})
+						.then(res => {
+							resolve(res.data.msg)
+						})
+				} else {
+					resolve("无更新")
+				}
 			}
 		}
 
@@ -189,12 +220,10 @@
 		height: 100%;
 		.floor1 {
 			width: 100%;
-			height: 52px;
-			padding: 10px;
+			padding: 10px 10px 0 10px;
 		}
 		.floor2 {
 			width: 100%;
-			height: 90%;
 			.baseTable {
 				border: none;
 				color: #224491;

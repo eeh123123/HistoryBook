@@ -1,6 +1,7 @@
 <template>
 	<div class="baseTable">
-		<el-table stripe tooltip-effect="light" :data.sync="tableData.data" :height.sync="tableHeight" @current-change="selectedTableData" highlight-current-row> <!--class="tb-edit"-->
+		<el-table stripe tooltip-effect="light" :data.sync="tableData.data" :height.sync="tableHeight" @current-change="selectedTableData" highlight-current-row>
+			<!--class="tb-edit"-->
 			<el-table-column v-for="(item, index) in tableHead" :value="item.code" :key="index" :show-overflow-tooltip="true" :prop="item.code" :label="item.label" align="center" :width="item.code == 'index' ? 50 : item.width" :min-width="item['min-width']">
 				<template slot-scope="scope">
 					<!--<span>{{ scope.row[item.code] }}</span>-->
@@ -26,7 +27,7 @@
 						</el-input>
 					</div>
 					<div v-else-if="item.COL_APP_TYPE == 'icon'">
-						<img :src="scope.row[item.code]" @click="openImg(scope.$index,scope.row[item.code],item.code)" style="vertical-align: middle;height:40px;width: 40px" />
+						<img :src="scope.row[item.code]" @click="openImg(scope.$index,scope.row[item.code],item.code)" style="vertical-align: middle;height:30px;width: 30px" />
 					</div>
 					<div v-else-if="item.COL_APP_TYPE == 'boolean'">
 						<el-switch v-model="scope.row[item.code]" active-value="1" inactive-value="0">
@@ -78,7 +79,6 @@
 					Url: '',
 					action: 'http://49.235.128.250:8084/up'
 				},
-
 				Dialog: {
 					code: '',
 					Visible: false,
@@ -126,6 +126,7 @@
 						values: array_update
 					}
 				}).then(res => {
+					debugger
 					this.tableData.data[this.Me_tableData.contentId - 1][this.Me_tableData.contentUrl] = this.Img.Url;
 					this.$message({
 						type: "success",
@@ -139,6 +140,7 @@
 				let data = this.tableData.map.get(code)
 				this.Dialog.commonData = data
 				this.Dialog_queryData(data)
+				this.Dialog.search_data = "";
 				this.Dialog.Visible = true
 			},
 			Dialog_query() {
@@ -176,13 +178,14 @@
 				this.Dialog_queryData(this.Dialog.commonData)
 			},
 			Dialog_save() {
-				this.Me_tableData.currentRow[this.Dialog.code] = this.Dialog.currentRow[this.Dialog.commonData.F_Pkey]
-				this.Me_tableData.currentRow[this.Dialog.code + "_F_BH"] = this.Dialog.currentRow[this.Dialog.commonData.F_Pkey]
-				this.Me_tableData.currentRow[this.Dialog.code + "_F_MC"] = this.Dialog.currentRow[this.Dialog.commonData.F_Caption]
+				Vue.set(this.Me_tableData.currentRow, this.Dialog.code, this.Dialog.currentRow[this.Dialog.commonData.F_Pkey])
+				Vue.set(this.Me_tableData.currentRow, this.Dialog.code + "_F_BH", this.Dialog.currentRow[this.Dialog.commonData.F_Pkey])
+				Vue.set(this.Me_tableData.currentRow, this.Dialog.code + "_F_MC", this.Dialog.currentRow[this.Dialog.commonData.F_Caption])
 				this.Dialog.Visible = false
 			},
 			Dialog_close() {
 				this.Dialog.Visible = false
+				this.Dialog.search_data = ''
 			}
 		},
 		mounted() {

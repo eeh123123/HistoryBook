@@ -1,5 +1,5 @@
 <template>
-	<div class="main">
+	<div class="main calendar">
 		<div class="left">
 			<div style="display: block;">
 				<div class="tabbtn" @click="WNL()">万年历</div>
@@ -27,34 +27,38 @@
 			</div>
 		</div>
 		<div class="right">
-			<el-form ref="form" :model="form" class="form">
-				<el-input v-model="Title" placeholder="标题" class="title"></el-input>
+			<div class="top">
 				<div class="searchs">
 					<el-input v-model="year" placeholder="年" style="width:20%"></el-input>
 					<el-input v-model="month" placeholder="月" style="width:16%"></el-input>
 					<el-input v-model="day" placeholder="日" style="width:16%"></el-input>
 					<el-button type="primary" icon="el-icon-search" style="width:16%" @click="searchs()"></el-button>
 				</div>
-				<el-form-item>
-					<textarea autocomplete="off" class="el-textarea__inner" rows="12" style="min-height: 33px;" v-model="Caption">{{Caption}</textarea>
-					<div class="demo-image__error">
+			</div>
+			<div class="bottom">
+				<el-form ref="form" :model="form" class="form">
+					<el-input v-model="Title" placeholder="标题" class="title"></el-input>
+					<el-form-item class="textareaForm">
+						<textarea autocomplete="off" class="el-textarea__inner" rows="12" style="min-height: 33px;" v-model="Caption">{{Caption}</textarea>
+						<el-button size="small" type="success" @click="save">记录</el-button>
+					<!--<div class="demo-image__error">
 						<div class="block">
 							<el-image :src="imgUrl"></el-image>
 						</div>
 					</div>
-					<el-tag :key="tag" v-for="tag in dynamicTags" closable :disable-transitions="false" @close="handleClose(tag)">
-						{{tag}}
-					</el-tag>
-				</el-form-item>
-				<el-input class="input-new-tag" v-if="inputVisible" v-model="inputValue" ref="saveTagInput" size="small" @keyup.enter.native="handleInputConfirm" @blur="handleInputConfirm">
-				</el-input>
-				<el-button v-else class="button-new-tag" size="small" @click="showInput">+ New Tag</el-button>
-				<el-upload class="upload-demo" :http-request="upload" action="localhost:8084/up" ref="upload" :on-preview="handlePreview" :on-remove="handleRemove" :before-remove="beforeRemove" multiple :limit="1" :on-exceed="handleExceed" :file-list="fileList">
+						<el-tag :key="tag" v-for="tag in dynamicTags" closable :disable-transitions="false" @close="handleClose(tag)">
+							{{tag}}
+						</el-tag>-->
+					</el-form-item>
+					<!--<el-input class="input-new-tag" v-if="inputVisible" v-model="inputValue" ref="saveTagInput" size="small" @keyup.enter.native="handleInputConfirm" @blur="handleInputConfirm">
+					</el-input>
+					<el-button v-else class="button-new-tag" size="small" @click="showInput">+ New Tag</el-button>-->
+					<!--<el-upload class="upload-demo" :http-request="upload" action="localhost:8084/up" ref="upload" :on-preview="handlePreview" :on-remove="handleRemove" :before-remove="beforeRemove" multiple :limit="1" :on-exceed="handleExceed" :file-list="fileList">
 					<el-button size="small" type="primary" slot="trigger">选择文件</el-button>
-					<el-button size="small" type="success" @click="save">记录</el-button>
 					<div slot="tip" class="el-upload__tip">只能上传jpg/png文件，且不超过500kb</div>
-				</el-upload>
-			</el-form>
+				</el-upload>-->
+				</el-form>
+			</div>
 		</div>
 
 		<div style="clear:both;"></div>
@@ -390,17 +394,50 @@
 	};
 </script>
 
-<style lang="less" scoped>
+<style lang="less">
 	@import '../assets/styles/calendar.css';
-	.left {
-		float: left;
-		width: calc(100% - 500px);
-		height: 100%;
-	}
-	
-	.right {
-		float: right;
-		width: 500px;
-		padding: 15px;
+	.calendar {
+		.left {
+			float: left;
+			width: calc(100% - 500px);
+			height: 100%;
+		}
+		.right {
+			float: right;
+			width: 500px;
+			padding: 15px;
+			.form {
+				position: relative;
+			}
+			* {
+				background-color: transparent!important;
+				color: black;
+			}
+			.title {
+				position: absolute;
+				left: 6%;
+				top: 5%;
+				width: 88%;
+				height: 26px;
+				.el-input__inner {
+					height: 26px;
+				}
+			}
+			.form {
+				background-image: url("../assets/images/commonEventBg.png");
+				background-size: 100% 100%;
+				background-repeat: no-repeat;
+				height: 500px;
+				.textareaForm {
+					width: 83%;
+					left: 8%;
+					top: 34%;
+					position: absolute;
+					.el-textarea__inner{
+						padding: 0;	
+					}
+				}
+			}
+		}
 	}
 </style>

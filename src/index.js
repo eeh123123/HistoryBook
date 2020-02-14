@@ -24,6 +24,8 @@ import Dct from './todo/Dct.vue'
 
 import adminSet from './todo/adminSet.vue';
 
+import cardManage from './todo/cardManage.vue';
+
 import store from './store';
 
 import axios from './axios/index.js'
@@ -58,7 +60,7 @@ const routes = [{
 				meta: ['添加数据', '字典表'],
 			},
 			{
-				path: "/commonDCT?dctid=attribute",
+				path: "/commonDCT?dctid=attribute&page=0",
 				component: commonDct,
 				meta: ['添加数据', '特性表'],
 			},
@@ -106,7 +108,7 @@ const routes = [{
 				path: '/Dct',
 				component: Dct,
 				meta: ['建模管理', '字典管理'],
-			},
+			}
 		]
 	}
 ]

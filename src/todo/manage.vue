@@ -9,7 +9,7 @@
 						<el-menu-item index="addPerson">生死簿</el-menu-item>
 						<el-menu-item index="addJob">官职表</el-menu-item>
 						<el-menu-item index="familyTree">家谱树</el-menu-item>
-						<el-menu-item index="/commonDCT?dctid=attribute">特性表</el-menu-item>
+						<el-menu-item index="/commonDCT?dctid=attribute&page=0">特性表</el-menu-item>
 						<el-menu-item index="/commonDCT?dctid=attributeTime">特性时间表</el-menu-item>
 						<el-menu-item index="/commonDCT?dctid=family">家族表</el-menu-item>
 						<el-menu-item index="/commonDCT?dctid=person">人物表</el-menu-item>

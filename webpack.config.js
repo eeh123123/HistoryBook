@@ -35,7 +35,7 @@ const config = {
 				test: /\.less$/,
 				use: ['style-loader', 'css-loader', 'less-loader']
 			}, {
-				test: /\.(gif|jpg|jpeg|png|svg|ttf|woff)$/, //处理图片
+				test: /\.(gif|jpg|jpeg|png|svg|ttf|woff|bmp|cur|ani)$/, //处理图片
 				use: [{ //loader是可以配置选项的,如下options
 					loader: 'url-loader', //url-loader实际上依赖于file-loader,file-loader处理完文件可以保存为一个文件供处理
 					options: {

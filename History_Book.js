@@ -41,6 +41,17 @@ module.exports = {
 			}
 		});
 	},
+	QueryPerson: function(req, res) {
+		let id = req.query.id;
+		let QueryPerson_SQL = "SELECT A.*,B.attrId AS 'attrId',C.imgUrl AS 'attrUrl',c.F_caption AS 'attrF_caption',c.F_name FROM PERSON A,attributetime B,attribute C WHERE A.ID = '" + id + "' AND B.USERID='" + id + "' AND C.id = B.attrId"
+		db.query(QueryPerson_SQL, (err, data) => {
+			if(err) {
+				res.send("查询失败" + err);
+			} else {
+				res.send(data).end();
+			}
+		});
+	},
 	//通用查询
 	QueryTableRow: function(req, res) {
 		console.log("QueryTableRow");
@@ -262,7 +273,7 @@ module.exports = {
 							console.log(col_SQL)
 							console.log(table_SQL)
 							selectFinal_SQL += (col_SQL + table_SQL)
-							console.log("selectFinal_SQL:"+selectFinal_SQL)
+							console.log("selectFinal_SQL:" + selectFinal_SQL)
 							db.query(selectFinal_SQL, (err, data) => { //第三步，获取
 								if(err) {
 									res.send("查询失败" + err);

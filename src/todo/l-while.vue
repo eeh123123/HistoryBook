@@ -2,7 +2,7 @@
 	<ul v-if="item.children && item.children.length > 0 && item.closed==true">
 		<template v-for="children in item.children">
 			<child :text="item">
-				<span class="child-item" @click="clickFunc(children)" @click.right="userDrawer(children)" >
+				<span class="child-item" @click="clickFunc(children)" @click.right="userDrawer(children)">
 					<span class="person" :style="{'background-image':'url(' + children.imgURL + ')'}"></span>
 				<span class="name">{{children.person_name}}</span>
 				</span>
@@ -12,24 +12,36 @@
 		</template>
 	</ul>
 </template>
-<script>import child from './l-child.vue'
-export default {
-	name: 'l-while',
-	components: {
-		child
-	},
-	props: {
-		item: {
-			type: Object,
-			required: true
-		}
-	},
-	methods: {
-		clickFunc(children) {
-			children.closed = !children.closed
+<script>
+	import child from './l-child.vue'
+	export default {
+		name: 'l-while',
+		components: {
+			child
 		},
-		userDrawer(children) {
-			this.$store.commit("setDrawer", true);
+		props: {
+			item: {
+				type: Object,
+				required: true
+			}
+		},
+		methods: {
+			clickFunc(children) {
+				children.closed = !children.closed
+			},
+			userDrawer(children) {
+				axios.get(this.$store.state.MYURL + 'QueryPerson.do', {
+						params: {
+							id: children.id
+						}
+					})
+					.then(res => {
+						debugger
+						this.$store.commit("setDrawer", true);
+						this.$store.commit("setPersonData", res.data);
+					})
+
+			}
 		}
 	}
-}</script>
+</script>

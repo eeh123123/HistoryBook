@@ -16,7 +16,8 @@ const store = new Vuex.Store({
 		Dialog_CallBack: "",
 		Sql_value: "",
 		Drawer:false,
-		personData:{},
+		FamilyData:{},
+		PersonData:[{imgUrl:''}],
 	},
 	mutations: {
 		setshow: (state, data) => {
@@ -55,6 +56,12 @@ const store = new Vuex.Store({
 		},
 		setDrawer: (state, data) => {
 			state.Drawer = data;
+		},
+		setFamilyData: (state, data) => {
+			state.FamilyData = data;
+		},
+		setPersonData: (state, data) => {
+			state.PersonData = data;
 		},
 	}
 })

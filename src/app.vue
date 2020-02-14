@@ -4,19 +4,20 @@
 		<el-drawer title="" :visible.sync="Drawer" :direction="direction" :before-close="handleClose" size='28.64%' class="personDrawer">
 			<div class="top">
 				<div class="floor1">
+					<div class="close"></div>
 				</div>
 				<div class="floor2">
 					<div class="left">
 						<div class="floor1">
-							<div class="lord">
+							<!--<div class="lord">
 								<div class="circle"></div>
 								<div class="lordName">领主</div>
-							</div>
+							</div>-->
 							<div class="yours">
 								<div class="circle"></div>
 								<div class="yoursName">配偶</div>
 							</div>
-							<div class="you">
+							<div class="you" v-bind:style="{backgroundImage:'url(' + PersonData[0].imgURL + ')'}">
 								<div class="circle"></div>
 							</div>
 						</div>
@@ -25,10 +26,14 @@
 					<div class="right">
 						<div class="top"></div>
 						<div class="bottom">
-							<div class="attribute"></div>
-							<div class="attribute"></div>
+							<div class="attribute1">
+								<el-tooltip class="item" effect="light" v-for="(item,index) in PersonData" placement="bottom">
+									<div slot="content">{{item.F_name}}<br/>{{item.attrF_caption}}</div>
+									<div class="item" :key="index" v-bind:style="{backgroundImage:'url(' + item.attrUrl + ')'}"></div>
+								</el-tooltip>
+							</div>
+							<div class="attribute2"></div>
 						</div>
-
 					</div>
 				</div>
 			</div>
@@ -53,8 +58,8 @@
 			Drawer() {
 				return this.$store.state.Drawer
 			},
-			personData() {
-				return this.$store.state.personData
+			PersonData() {
+				return this.$store.state.PersonData
 			}
 		},
 		data() {
@@ -65,6 +70,9 @@
 		methods: {
 			handleClose() {
 				this.$store.commit("setDrawer", false);
+			},
+			QueryData() {
+
 			}
 		}
 	}
@@ -72,6 +80,10 @@
 
 <style lang="less">
 	@import './style/common';
+	/*body {
+	cursor: url('http://49.235.128.250:8084/upload/normal.cur'),auto;
+}*/
+	
 	#app {
 		position: absolute;
 		left: 0;
@@ -93,7 +105,7 @@
 			display: none;
 		}
 		.el-drawer.ltr {
-			background-image: url("./assets/images/personBG.jpg");
+			background-image: url("./assets/images/personboard.bmp");
 			background-size: 100% 100%;
 			background-repeat: no-repeat;
 		}
@@ -102,11 +114,22 @@
 			width: 100%;
 			>.floor1 {
 				height: 10%;
+				position: relative;
+				.close {
+					cursor: pointer;
+					height: 1.2vw;
+					width: 1.2vw;
+					position: absolute;
+					right: 3%;
+					top: 23%;
+					background-image: url("./assets/images/close.png");
+					background-size: 100% 100%;
+					background-repeat: no-repeat;
+				}
 			}
 			>.floor2 {
-				height: 90%;
+				height: 93%;
 				margin: 0 10px 10px 10px;
-				background-color: white;
 				.left {
 					float: left;
 					width: 60%;
@@ -115,12 +138,10 @@
 						height: 74%;
 						width: 100%;
 						position: relative;
-						background-color: yellow;
 						.circle {
 							height: 100%;
 							width: calc(100% + 4px);
 							border-radius: 100%;
-							background-image: -webkit-linear-gradient( left, #124e9a 0%, #124e9a 20%, #ffffff 30%, #124e9a 40%, #124e9a 90%);
 						}
 						.lord {
 							height: 3vw;
@@ -129,7 +150,6 @@
 							top: 1.4vw;
 							right: 4vw;
 							border-radius: 3vw;
-							background-color: green;
 							.lordName {
 								height: 1vw;
 								width: 3vw;
@@ -148,30 +168,30 @@
 							width: 8vw;
 							border-radius: 8vw;
 							position: absolute;
-							bottom: 20%;
-							left: 1vw;
-							/*background-color: blue;*/
+							bottom: 12%;
+							left: 20%;
 							z-index: 1;
+							background-size: 100% 100%;
+							background-repeat: no-repeat;
 						}
 						.yours {
 							height: 5.55vw;
 							width: 5.55vw;
 							border-radius: 5.55vw;
 							position: absolute;
-							bottom: 20%;
-							right: 3vw;
-							/*background-color: pink;*/
-							border: 4px solid silver;
+							bottom: 14%;
+							right: 1%;
 							z-index: 2;
 							.yoursName {
-								height: 1vw;
+								height: 1.4vw;
+								line-height: 1.4vw;
 								width: 5.55vw;
 								background-image: url("./assets/images/name.png");
 								background-size: 100% 100%;
 								background-repeat: no-repeat;
 								position: absolute;
-								bottom: -0.5vw;
-								left: -4px;
+								bottom: -14%;
+								left: -4%;
 								text-align: center;
 								font-size: 0.8vw;
 								z-index: 2;
@@ -189,17 +209,26 @@
 					float: left;
 					width: 40%;
 					height: 100%;
-					border: solid 2px #4C3932;
-					.top{
-						height: 83%;
+					.top {
+						height: 85%;
 						width: 100%;
 					}
-					.bottom{
-						height: 17%;
+					.bottom {
+						height: 15%;
 						width: 100%;
-						.attribute{
-							height:50%;
-							width:100%;
+						.attribute1 {
+							height: 45%;
+							width: 100%;
+							.item {
+								height: 100%;
+								width: 1.2vw;
+								float: left;
+								cursor: pointer;
+							}
+						}
+						.attribute2 {
+							height: 55%;
+							width: 100%;
 						}
 					}
 				}

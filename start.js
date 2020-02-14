@@ -607,4 +607,7 @@ app.post('/UpdateTableRow.do', HB.UpdateTableRow);
 //29 查询Dct
 app.get('/QueryDct.do', HB.QueryDct);
 
+//查询个人属性
+app.get('/QueryPerson.do', HB.QueryPerson);
+
 app.listen(8084);
