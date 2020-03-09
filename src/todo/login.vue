@@ -20,7 +20,8 @@
 				<el-row>
 					<el-button type="primary" @click="Login()">登录</el-button>
 				</el-row>
-				<p class="tip">温馨提示：未登录过的新用户,自动注册</p>
+				<!--				<p class="tip">温馨提示：未登录过的新用户,自动注册</p>
+-->
 			</div>
 		</div>
 	</div>
@@ -38,78 +39,85 @@
 		},
 		mounted() {
 			vm = this;
-			vm.username=localStorage.getItem("username");
-			vm.password=localStorage.getItem("password");
-			if(vm.username&&vm.password){
+			vm.username = localStorage.getItem("username");
+			vm.password = localStorage.getItem("password");
+			if(vm.username && vm.password) {
 				vm.Login();
 			}
 		},
 		methods: {
 			Login: function() {
-				if(vm.username==""||vm.username==undefined||vm.username==null){
+				if(vm.username == "" || vm.username == undefined || vm.username == null) {
 					this.$message.error("用户名不能为空");
 					return;
 				}
-				if(vm.password==""||vm.password==undefined||vm.password==null){
+				if(vm.password == "" || vm.password == undefined || vm.password == null) {
 					this.$message.error("密码不能为空");
 					return;
 				}
-				let vm_u=vm.username.replace(/\s*/g,"");
-				let vm_p=vm.password.replace(/\s*/g,"");
-				if(vm_u==""){
-						this.$message.error("用户名不能为全空格");
-						return;
+				let vm_u = vm.username.replace(/\s*/g, "");
+				let vm_p = vm.password.replace(/\s*/g, "");
+				if(vm_u == "") {
+					this.$message.error("用户名不能为全空格");
+					return;
 				}
-				if(vm_p==""){
-						this.$message.error("密码不能为全空格");
-						return;
+				if(vm_p == "") {
+					this.$message.error("密码不能为全空格");
+					return;
 				}
-				$.get(vm.MYURL + 'Login.do', {
-					username: vm.username,
-					password: vm.password
-				}, function(data) {
-					if(data.rows == "0") {
-						vm.Register();
-					} else if(data.rows == "1") {
+				axios.get(vm.MYURL + 'Login.do', {
+					params: {
+						username: vm.username,
+						password: vm.password
+					}
+				}).then(res => {
+					if(res.data.rows == "0") {
 						vm.$message({
 							showClose: true,
-							message: data.text,
+							message: "用户名或密码错误",
+							type: 'success'
+						});
+						//vm.Register();
+					} else if(res.data.rows == "1") {
+						vm.$message({
+							showClose: true,
+							message: res.data.text,
 							type: 'success'
 						});
 						localStorage.setItem("username", vm.username);
 						localStorage.setItem("password", vm.password);
 						vm.$router.push('manage')
-					}else if(data.rows == "-1"){
+					} else if(res.data.rows == "-1") {
 						vm.$message({
 							showClose: true,
-							message: data.text,
+							message: res.data.text,
 							type: 'success'
 						});
 					}
-				}, "json");
+				})
 			},
-			Register: function() {
-				$.get(vm.MYURL + 'Register.do', {
-					username: vm.username,
-					password: vm.password
-				}, function(data) {
-					if(data.rows == "1") {
-						vm.$message({
-							showClose: true,
-							message: data.text,
-							type: 'success'
-						});
-						localStorage.setItem("username", vm.username);
-						localStorage.setItem("password", vm.password);
-						vm.$router.push('manage')
-					}
-				}, "json");
-			}
+//			Register: function() {
+//				$.get(vm.MYURL + 'Register.do', {
+//					username: vm.username,
+//					password: vm.password
+//				}, function(data) {
+//					if(data.rows == "1") {
+//						vm.$message({
+//							showClose: true,
+//							message: data.text,
+//							type: 'success'
+//						});
+//						localStorage.setItem("username", vm.username);
+//						localStorage.setItem("password", vm.password);
+//						vm.$router.push('manage')
+//					}
+//				}, "json");
+//			}
 		}
 	}
 </script>
 <style lang="less" scoped>
-	@import '../style/mixin';
+	@import '../assets/styles/mixin';
 </style>
 <style lang="css" scoped>
 	.bg {
@@ -118,7 +126,7 @@
 		background-image: url("../assets/images/login_bg.jpg");
 		background-size: cover;
 	}
-	
+
 	#login {
 		width: 400px;
 		position: absolute;
@@ -137,7 +145,7 @@
 		-o-transform: translateX(-50%);
 		/* Opera */
 	}
-	
+
 	.login_title {
 		padding: 20px 0;
 		border-bottom: 1px solid #e5e5e5;
@@ -146,48 +154,51 @@
 		text-align: center;
 		margin-bottom: 15px;
 	}
-	
+
 	.line {
 		height: 50px;
 	}
-	
+
 	.line>div {
 		display: inline-block;
 		position: relative;
 	}
-	
+
 	.right {
 		width: 120px;
 		text-align: right;
 	}
-	
+
 	.button_line {
 		margin-top: 20px;
 	}
-	
+
 	#app {
 		background-image: url("../assets/images/timg.jpg");
 	}
-	
+
 	.left {
 		width: 220px;
 	}
-	
+
 	.el-form-item {
 		margin-bottom: 0px
 	}
-	
+
 	.el-form--inline .el-form-item {
 		margin-right: 0;
 	}
-	.tip{
-		color:red;
+
+	.tip {
+		color: red;
 		margin-left: 40px;
 	}
-	.button_line{
-		height:120px;
+
+	.button_line {
+		height: 120px;
 	}
-	.el-row{
+
+	.el-row {
 		margin-left: 125px;
-	}		
+	}
 </style>

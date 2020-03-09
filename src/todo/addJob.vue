@@ -1,7 +1,7 @@
 <template>
 	<div class="addJob">
 		<el-select v-model="query_Dept" clearable filterable class="margin-left10" placeholder="请选择部门" @change="searchs()" size="small">
-			<el-option v-for="item in GZB_data_All" :key="item.F_BH" :label="item.F_MC" :value="item.F_MC">
+			<el-option v-for="item in GZB_data_All" :key="item.F_BH" :label="item.F_MC" :value="item.F_BH">
 			</el-option>
 		</el-select>
 		<div class="query-div">
@@ -37,21 +37,18 @@
 						<span>{{scope.row.PinJie_FMC}}</span>
 					</template>
 				</el-table-column>
+				<el-table-column label="上级官员" width="200">
+					<template slot-scope="scope">
+						<el-input suffix-icon="el-icon-circle-plus" @click.native="open_DialogGuanZhi(scope.$index, scope.row)" :option="option" v-model="scope.row.fatherid">
+						</el-input>
+						<span>{{scope.row.fatherid_FMC}}</span>
+					</template>
+				</el-table-column>
 				<el-table-column label="所属部门" width="100">
 					<template slot-scope="scope">
 						<el-input suffix-icon="el-icon-circle-plus" @click.native="SSBM(scope.$index, scope.row,0)" v-model="scope.row.Belong">
 						</el-input>
 						<span>{{scope.row.Belong}}</span>
-					</template>
-				</el-table-column>
-				<el-table-column fixed="right" label="操作">
-					<template slot-scope="scope">
-						<el-button @click.native.prevent="deleteRow(scope.$index, GuanZhi_Data)" size="small">移除</el-button>
-					</template>
-				</el-table-column>
-				<el-table-column label="是否属于新增" width="150">
-					<template slot-scope="scope">
-						{{scope.row.isInsert}}
 					</template>
 				</el-table-column>
 			</el-table>
@@ -363,9 +360,6 @@
 						})
 				}
 			},
-			deleteRow(index, rows) { //删除改行
-				rows.splice(index, 1);
-			},
 			addRow(GuanZhi_Data) {
 				if(GuanZhi_Data.length > 0) {
 					GuanZhi_Data.push({
@@ -573,6 +567,33 @@
 				vm.cbFunc = function(data) {
 					vm.GuanZhi_Data[vm.GuanZhi_EditIndex].PinJie_FMC = data.F_MC
 					vm.GuanZhi_Data[vm.GuanZhi_EditIndex].PinJie_FBH = data.F_BH
+				}
+			},
+			open_DialogGuanZhi(index, row){
+				vm.GuanZhi_EditIndex = index
+				let option = {
+					tablename: "GuanZhi",
+					showcol: ['GuanZhi_MC', 'id'],
+					sqlwhere: "1=1 Limit 0,10"
+				};
+				vm.$store.commit("setCol_Name", [{
+					GuanZhi_MC: '名称',
+					id: '编号'
+				}]);
+				vm.tableHead=[{
+					code: "GuanZhi_MC",
+					label: "名称"
+				}, {
+					code: "id",
+					label: "编号"
+				}],
+				vm.$store.commit("setTitle", "官职表");
+				vm.$store.commit("query_Dialog_data", option);
+				vm.$store.commit('setshow', true);
+				vm.$refs.edit_dialog.currentPage = 1;
+				vm.cbFunc = function(data) {
+					vm.GuanZhi_Data[vm.GuanZhi_EditIndex].father_id_FMC = data.GuanZhi_MC
+					vm.GuanZhi_Data[vm.GuanZhi_EditIndex].father_id_FBH = data.id
 				}
 			},
 			open_Dialog1(index, row) { //告诉子组件

@@ -3,19 +3,28 @@
 		<div class="floor1">
 			<el-button type="primary" icon="el-icon-search" @click="addNewRow">新增</el-button>
 			<el-button type="primary" icon="el-icon-search" @click="save">保存</el-button>
+			<component v-bind:is="currentView"></component>
 		</div>
 		<div class="floor2">
-			<BaseTable pageSize="15" :handleCurrentChange="handleCurrentChange" :handleSizeChange="handleSizeChange" @selectedTableData="Left1_selectedTableData" :callBack="cbFunc" :tableHead="tableHead" :tableData.sync="tableData" :tableHeight="tableData.tableHeight"></BaseTable>
+			<BaseTable pageSize="15" :handleCurrentChange="handleCurrentChange" :handleSizeChange="handleSizeChange" @selectedTableData="Left1_selectedTableData" :callBack="cbFunc" :page="page" :tableHead="tableHead" :tableData.sync="tableData" :tableHeight="tableData.tableHeight"></BaseTable>
 		</div>
 	</div>
 </template>
 
 <script>
+	import person from '../sonVue/person.vue'
 	import BaseTable from '../tools/BaseTable.vue'
+		
 	let vm;
 	export default {
 		components: {
 			BaseTable
+		},
+		computed: {
+			currentView() {
+				if(this.$route.query.dctid=="person")
+				return person
+			}
 		},
 		data() {
 			return {
@@ -35,7 +44,14 @@
 					label: "编号"
 				}],
 				currentPage: 1,
-				saveMsg: '',
+				index: 0,
+				arr: [
+					person,
+				],
+				page: {
+					pageSize: 10
+				},
+				option:''
 			}
 		},
 		mounted() {
@@ -45,9 +61,8 @@
 		},
 		methods: {
 			setTableHeight() {
-				debugger
 				let obj = this.$refs.getHeight
-				let height = obj.offsetHeight -52 - 32
+				let height = obj.offsetHeight - 52 - 32
 				setTimeout(() => {
 					this.tableData.tableHeight = height
 					this.queryTableData()
@@ -95,10 +110,17 @@
 				if(this.$route.query.page == 0) {
 					params.sqlwhere = ""
 				}
+				debugger
+				if(this.option){
+					params.sqlwhere = this.option + params.sqlwhere
+				}
 				axios.get(this.$store.state.MYURL + 'QueryDct.do', {
 					params: params
 				}).then(res => {
 					this.tableData.data = res.data.data || []
+					if(this.$route.query.page == 0) {
+						this.page.pageSize = res.data.data.length
+					}
 					this.tableData.total = res.data.total || 0
 					this.Orign_Data = JSON.parse(JSON.stringify(res.data.data));
 				})
@@ -226,9 +248,11 @@
 			width: 100%;
 			.baseTable {
 				border: none;
-				color: #224491;
 				td .el-input__inner {
 					border: none;
+				}
+				.el-table__body-wrapper {
+					height: calc(100% - 40px) !important;
 				}
 			}
 		}

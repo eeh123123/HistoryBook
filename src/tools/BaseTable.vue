@@ -1,6 +1,6 @@
 <template>
-	<div class="baseTable">
-		<el-table stripe tooltip-effect="light" :data.sync="tableData.data" :height.sync="tableHeight" @current-change="selectedTableData" highlight-current-row>
+	<div>
+		<el-table class="baseTable" stripe tooltip-effect="light" :data.sync="tableData.data" :height.sync="tableHeight" @current-change="selectedTableData" highlight-current-row>
 			<!--class="tb-edit"-->
 			<el-table-column v-for="(item, index) in tableHead" :value="item.code" :key="index" :show-overflow-tooltip="true" :prop="item.code" :label="item.label" align="center" :width="item.code == 'index' ? 50 : item.width" :min-width="item['min-width']">
 				<template slot-scope="scope">
@@ -126,7 +126,6 @@
 						values: array_update
 					}
 				}).then(res => {
-					debugger
 					this.tableData.data[this.Me_tableData.contentId - 1][this.Me_tableData.contentUrl] = this.Img.Url;
 					this.$message({
 						type: "success",
@@ -139,7 +138,7 @@
 				this.Dialog.code = code
 				let data = this.tableData.map.get(code)
 				this.Dialog.commonData = data
-				this.Dialog_queryData(data)
+				this.Dialog_query()
 				this.Dialog.search_data = "";
 				this.Dialog.Visible = true
 			},
@@ -149,6 +148,7 @@
 				} else {
 					this.Dialog.sqlwhere = ""
 				}
+				this.Dialog.currentPage = 1
 				this.Dialog_queryData(this.Dialog.commonData)
 			},
 			Dialog_queryData(data) {
@@ -182,6 +182,7 @@
 				Vue.set(this.Me_tableData.currentRow, this.Dialog.code + "_F_BH", this.Dialog.currentRow[this.Dialog.commonData.F_Pkey])
 				Vue.set(this.Me_tableData.currentRow, this.Dialog.code + "_F_MC", this.Dialog.currentRow[this.Dialog.commonData.F_Caption])
 				this.Dialog.Visible = false
+				this.Dialog.search_data = ''
 			},
 			Dialog_close() {
 				this.Dialog.Visible = false
@@ -195,10 +196,11 @@
 			tableData: Object,
 			tableHead: Array,
 			tableHeight: Number,
-			pageSize: {
-				type: [String, Number],
+			page: {
+				type: Object,
 				default: 10
 			},
+			pageSize:[Number,String],
 			handleCurrentChange: Function,
 		}
 	};

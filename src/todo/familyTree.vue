@@ -15,8 +15,8 @@
 </template>
 
 <script>
-	import lwhile from './l-while.vue'
-	import child from './l-child.vue'
+	import lwhile from '../tools/l-while.vue'
+	import child from '../tools/l-child.vue'
 	export default {
 		components: {
 			child,
@@ -46,6 +46,9 @@
 					.then(res => {
 						this.Array_data = this.$tools.composeTree(res.data.data)
 						this.Array_data = this.$tools.sort(this.Array_data, 'id')
+						let temp = JSON.parse(JSON.stringify(this.Array_data));
+						vm.Array_data=[{children:"",closed:true}]
+						this.Array_data[0].children = temp
 					})
 			},
 			queryfamilyOptions() {
@@ -66,10 +69,10 @@
 					})
 			},
 			userDrawer(val){
-				
+
 			},
 			handleClose(){
-				
+
 			}
 		},
 		mounted() {

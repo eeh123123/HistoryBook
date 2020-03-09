@@ -43,7 +43,8 @@ module.exports = {
 	},
 	QueryPerson: function(req, res) {
 		let id = req.query.id;
-		let QueryPerson_SQL = "SELECT A.*,B.attrId AS 'attrId',C.imgUrl AS 'attrUrl',c.F_caption AS 'attrF_caption',c.F_name FROM PERSON A,attributetime B,attribute C WHERE A.ID = '" + id + "' AND B.USERID='" + id + "' AND C.id = B.attrId"
+		let QueryPerson_SQL = "SELECT A.*,B.attrId AS 'attrId',B.isAllLife,B.getTime,B.endTime,C.imgUrl AS 'attrUrl',c.F_caption AS 'attrF_caption',c.F_name FROM PERSON A,attributetime B,attribute C WHERE A.ID = '" + id + "' AND B.USERID='" + id + "' AND C.id = B.attrId"
+		console.log(QueryPerson_SQL)
 		db.query(QueryPerson_SQL, (err, data) => {
 			if(err) {
 				res.send("查询失败" + err);
@@ -144,7 +145,7 @@ module.exports = {
 	},
 
 	//通用新增
-	InsertTableRow: function(req, res) {
+	InsertTableRow_Origin: function(req, res) {
 		var values = req.body.params.values
 		var InsertTableRow_SQL = "INSERT INTO " + req.body.params.tablename + "(" + req.body.params.Insertcol + ") VALUES ?";
 
@@ -171,6 +172,69 @@ module.exports = {
 				}
 			}
 		});
+	},
+		//通用新增
+	InsertTableRow: function(req, res) {
+		var values = req.body.params.values	//传参
+		var insert_str=[]					//插入的列
+		var insert_data = new Array(req.body.params.values.length)
+
+		for(let i = 0; i < insert_data.length; i++) { //初始化二维数组
+			insert_data[i] = [];
+		}
+
+		for(let i = 0; i < req.body.params.values.length; i++) {
+			for(let j in req.body.params.values[i]) {
+				if(insert_str[i] == undefined) {
+					insert_str[i] = ""
+				}
+				insert_str[i] += (j + " ,")
+				insert_data[i].push(req.body.params.values[i][j])
+			}
+			insert_str[i] = insert_str[i].substring(0, insert_str[i].length - 1)
+		}
+
+		console.log(insert_data);
+		console.log(insert_str);
+
+		InsertTableRow_SQL = "INSERT INTO " + req.body.params.tablename
+
+		let flag = {
+			changeNum: 0
+		};
+
+		let changeNum = 0 //db.query的执行成功次数。
+
+		Object.defineProperties(flag, {
+			changeNum: {
+				configurable: true,
+				set: function(newValue) {
+					console.log('你修改了changeNum的值：' + newValue)
+					if(newValue == values.length) {
+						var obj = {
+							total: changeNum,
+							msg: "新增成功，新增数量为：" + changeNum
+						}
+						res.send(obj).end();
+					}
+				}
+			}
+		})
+
+		for(let i = 0; i < insert_str.length; i++) {
+			console.log(InsertTableRow_SQL + "(" + insert_str[i] + ") VALUES ?")
+			console.log(insert_data[i])
+			db.query(InsertTableRow_SQL + "(" + insert_str[i] + ") VALUES ?", [[insert_data[i]]], function(err, result) {
+				if(err) {
+					console.log('[INSERT ERROR] - ', err);
+					return;
+				} else {
+					changeNum = changeNum + 1
+					flag.changeNum = changeNum
+					console.log("[INSERT Success],changeNum=" + changeNum)
+				}
+			});
+		}
 	},
 	//通用更新
 	UpdateTableRow: function(req, res) { //这里有个隐患，id，将来再改。
@@ -302,5 +366,5 @@ module.exports = {
 		p.then(function(datas) {
 			res.send(returnData)
 		});
-	},
+	}
 }

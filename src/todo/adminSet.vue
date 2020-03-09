@@ -1,8 +1,8 @@
 <template>
 	<div class="fillcontain">
 		<header class="admin_title">管理员信息</header>
-		{{LoginState}}
-		<div class="admin_set">
+<!--		{{LoginState}}
+-->		<div class="admin_set">
 			<ul>
 <!--				<li>
 					<span>姓名：</span><span>{{adminInfo.user_name}}</span>
@@ -57,7 +57,7 @@
 				const isLt2M = file.size / 1024 / 1024 < 2;
 
 				if(!isRightType) {
-					
+
 					this.$message.error('上传头像图片只能是 JPG 格式!');
 				}
 				if(!isLt2M) {
@@ -70,14 +70,14 @@
 </script>
 
 <style lang="less" scoped>
-	@import '../style/mixin';
+	@import '../assets/styles/mixin';
 	.explain_text {
 		margin-top: 20px;
 		text-align: center;
 		font-size: 20px;
 		color: #333;
 	}
-	
+
 	.admin_set {
 		width: 60%;
 		background-color: #F9FAFC;
@@ -91,13 +91,13 @@
 			}
 		}
 	}
-	
+
 	.admin_title {
 		margin-top: 20px;
 		.sc(24px, #666);
 		text-align: center;
 	}
-	
+
 	.avatar-uploader .el-upload {
 		border: 1px dashed #d9d9d9;
 		margin-top: 10px;
@@ -106,11 +106,11 @@
 		position: relative;
 		overflow: hidden;
 	}
-	
+
 	.avatar-uploader .el-upload:hover {
 		border-color: #20a0ff;
 	}
-	
+
 	.avatar-uploader-icon {
 		font-size: 28px;
 		color: #8c939d;
@@ -119,7 +119,7 @@
 		line-height: 120px;
 		text-align: center;
 	}
-	
+
 	.avatar {
 		width: 120px;
 		height: 120px;

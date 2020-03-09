@@ -32,15 +32,33 @@
 			userDrawer(children) {
 				axios.get(this.$store.state.MYURL + 'QueryPerson.do', {
 						params: {
-							id: children.id
+							id: children.id,
 						}
 					})
 					.then(res => {
-						debugger
 						this.$store.commit("setDrawer", true);
-						this.$store.commit("setPersonData", res.data);
+						if(res.data.length != 0) {
+							let data = this.dealData(res.data)
+							this.$store.commit("setPersonData", data);
+						} else {
+							this.$store.commit("setPersonData", [{
+								imgUrl: 'none.png'
+							}]);
+						}
 					})
 
+			},
+			dealData(data) {
+				for(let i = data.length - 1; i >= 0; i--) {
+					if(data[i].isAllLife == "0") {
+						if(moment(data[i].getTime, "YYYY-MM-DD").format("YYYYMMDD") > moment(this.$store.state.currentTime).format("YYYYMMDD") ||
+							moment(data[i].endTime, "YYYY-MM-DD").format("YYYYMMDD") < moment(this.$store.state.currentTime).format("YYYYMMDD")
+						) {
+							data.splice(i, 1)
+						}
+					}
+				}
+				return data
 			}
 		}
 	}

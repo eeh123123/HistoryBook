@@ -36,11 +36,11 @@
 						<img :src="scope.row.imgURL" @click="openImg(scope.$index,scope.row.imgURL,imgURL)" style="vertical-align: middle;height:40px;width: 40px" />
 					</template>
 				</el-table-column>
-				<el-table-column label="操作">
+				<!--<el-table-column label="操作">
 					<template slot-scope="scope">
 						<el-button type="danger" @click="deleteRow(scope.$index)">删除</el-button>
 					</template>
-				</el-table-column>
+				</el-table-column>-->
 			</el-table>
 		</template>
 		<el-dialog title="地区表" :visible.sync="DQVisible" :close-on-click-modal="false" v-dialogDrag custom-class="dialog-DQ">

@@ -10,12 +10,10 @@ import manage from './todo/manage.vue'
 import addPerson from './todo/addPerson.vue'
 import addJob from './todo/addJob.vue'
 import familyTree from './todo/familyTree.vue'
-import experience from './todo/experience.vue'
-import upFile from './todo/upFile.vue'
+import guanzhiTree from './todo/GuanZhiTree.vue'
 
-import explain from './todo/explain.vue'
-import WuJia from './todo/WuJia.vue'
-import FWQ from './todo/FWQ.vue'
+
+import experience from './todo/experience.vue'
 
 import calendar from './todo/calendar.vue'
 
@@ -23,16 +21,17 @@ import commonDct from './todo/commonDct.vue'
 import Dct from './todo/Dct.vue'
 
 import adminSet from './todo/adminSet.vue';
+import map from './todo/map.vue'
 
-import cardManage from './todo/cardManage.vue';
 
 import store from './store';
 
-import axios from './axios/index.js'
-import tools from './tools/tools.js'
-
+//import axios from './axios/index.js'
+import tools from './tools/js/tools.js'
 
 Vue.prototype.$tools=tools
+
+
 const routes = [{
 		path: '/',
 		component: login
@@ -44,62 +43,49 @@ const routes = [{
 		children: [{
 				path: '/addPerson',
 				component: addPerson,
-				meta: ['添加数据', '添加人物'],
+				meta: ['源数据', '添加人物'],
 			}, {
 				path: '/addJob',
 				component: addJob,
-				meta: ['添加数据', '添加官职'],
+				meta: ['源数据', '添加官职'],
 			}, {
 				path: '/experience',
 				component: experience,
-				meta: ['添加数据', '添加履历'],
+				meta: ['源数据', '添加履历'],
 			},
 			{
 				path: "/commonDCT",
 				component: commonDct,
-				meta: ['添加数据', '字典表'],
+				meta: ['源数据', '字典表'],
 			},
 			{
 				path: "/commonDCT?dctid=attribute&page=0",
 				component: commonDct,
-				meta: ['添加数据', '特性表'],
+				meta: ['源数据', '特性表'],
 			},
 			{
 				path: "/commonDCT?dctid=attributeTime",
 				component: commonDct,
-				meta: ['添加数据', '特性时间表'],
+				meta: ['源数据', '特性时间表'],
 			}, {
 				path: "/familyTree",
 				component: familyTree,
-				meta: ['添加数据', '家谱树'],
+				meta: ['数据展示', '家谱树'],
 			},
 			{
-				path: '/upFile',
-				component: upFile,
-				meta: ['添加数据', '上传物价表'],
+				path: "/GuanZhiTree",
+				component: guanzhiTree,
+				meta: ['数据展示', '家谱树'],
 			},
 			{
-				path: '/explain',
-				component: explain,
-				meta: ['技术说明', '技术说明'],
-			}, 
-//			{
-//				path: '/WuJia',
-//				component: WuJia,
-//				meta: ['物价表', '物价表'],
-//			}, {
-//				path: '/FWQ',
-//				component: FWQ,
-//				meta: ['服务器列表', '服务器列表'],
-//			}, 
+				path: "/map",
+				component: map,
+				meta: ['数据展示', '地图'],
+			},
 			{
 				path: '/calendar',
 				component: calendar,
-				meta: ['唐', '万年历'],
-			}, {
-				path: '/calendar',
-				component: calendar,
-				meta: ['唐', '万年历'],
+				meta: ['数据展示', '万年历'],
 			}, {
 				path: '/adminSet',
 				component: adminSet,
@@ -118,6 +104,48 @@ let router = new VueRouter({
 	routes: routes,
 	mode: 'history'
 });
+
+router.beforeEach(async (to, from, next) => {
+  if (to.path === '/login') {
+    next()
+  } else {
+  	next()
+
+//  if (Store.getters.menus.length === 0 || Store.getters.dict.size === 0) {
+//    if (Store.getters.menus.length === 0) {
+//      // 同步获取菜单
+//      await getMenuList()
+//    }
+//    if (Store.getters.dict.size === 0) {
+//      // 同步获取字典
+//      await getDictListAll()
+//    }
+//    next()
+//  } else {
+//    next()
+//  }
+  }
+})
+
+// 字典
+async function getDictListAll() {
+  try {
+    let res = await axios.get('/api/getMenus.do')
+    Store.commit('setMenu', res.data.data)
+  }
+  catch (e) {
+    console.log(e)
+  }
+}
+// 菜单
+async function getMenuList() {
+  try {
+    Store.commit('setMenu', [])
+  }
+  catch (e) {
+    console.log(e)
+  }
+}
 
 /* new Vue 启动 */
 new Vue({

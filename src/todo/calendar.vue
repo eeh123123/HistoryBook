@@ -5,7 +5,7 @@
 				<div class="tabbtn" @click="WNL()">万年历</div>
 				<div class="tabbtn" @click="SXT()">树形图</div>
 				<div class="tabbtn" @click="SJZ()">时间轴</div>
-				<div style="clear:both;"></div>
+				<div style="clear:both"></div>
 			</div>
 			<div id="calendar" v-show="WNL_flag" class="tab">
 				<el-calendar v-model="value">
@@ -36,12 +36,19 @@
 				</div>
 			</div>
 			<div class="bottom">
-				<el-form ref="form" :model="form" class="form">
+				<el-form ref="form" class="form">
 					<el-input v-model="Title" placeholder="标题" class="title"></el-input>
+					<div class="bgImage" :style="{backgroundImage: 'url(' + eventImgUrl + ')' }"></div>
 					<el-form-item class="textareaForm">
 						<textarea autocomplete="off" class="el-textarea__inner" rows="12" style="min-height: 33px;" v-model="Caption">{{Caption}</textarea>
+						<div class="info">编写：{{event.userName}}</div>
+						<div class="info">更新时间：{{event.updateTime}}</div>
+						<el-select v-model="eventType" clearable filterable class="eventType" placeholder="请选择类型" size="small">
+							<el-option v-for="item in eventType_All" :key="item.F_BH" :label="item.F_MC" :value="item.F_T1">
+							</el-option>
+						</el-select>
 						<el-button size="small" type="success" @click="save">记录</el-button>
-					<!--<div class="demo-image__error">
+						<!--<div class="demo-image__error">
 						<div class="block">
 							<el-image :src="imgUrl"></el-image>
 						</div>
@@ -60,7 +67,6 @@
 				</el-form>
 			</div>
 		</div>
-
 		<div style="clear:both;"></div>
 	</div>
 </template>
@@ -72,17 +78,6 @@
 		data() {
 			return {
 				value: new Date(700, 1, 1), //时间对象
-				story: "",
-				form: {
-					name: '',
-					region: '',
-					date1: '',
-					date2: '',
-					delivery: false,
-					type: [],
-					resource: '',
-					desc: ''
-				},
 				SXT_filterText: '', //树形图的过滤文本
 				//dynamicTags: ['标签一', '标签二', '标签三'], //标签对象
 				dynamicTags: [],
@@ -124,16 +119,17 @@
 				WNL_flag: true,
 				SJZ_flag: false,
 				SXT_flag: false,
-				SJZ_val: ""
+				SJZ_val: "",
+				event: {},
+				eventType: '',
+				eventType_All: [],
+				eventImgUrl: ''
 			}
 		},
 		filters: {
 			formatDate: function(value) {
 				return moment(value).format('YYYY-MM-DD');
 			}
-		},
-		beforecreated() {
-			vm = this;
 		},
 		created() {
 			vm = this;
@@ -142,25 +138,8 @@
 			vm.year = vm.value.getFullYear();
 			vm.month = vm.value.getMonth() - 1 + 2;
 			vm.day = vm.value.getDate();
-
 			vm.SearchMonthStories();
-			vm.$watch('value', function(val, old_val) {
-				vm.imgUrl = "";
-				vm.SearchMonthStories();
-				vm.year = moment(vm.value).format('YYYY') - 0 + 0;
-				vm.month = moment(vm.value).format('MM') - 0 + 0;
-				vm.day = moment(vm.value).format('DD') - 0 + 0;
-				//修改右侧对应的caption
-				for(var i = 0; i < vm.Event.length; i++) {
-					if(vm.Event[i].Time == moment(vm.value).format('YYYYMMDD')) {
-						vm.Title = vm.Event[i].Title;
-						vm.Caption = vm.Event[i].Caption;
-					} else {
-						vm.Title = "";
-						vm.Caption = "";
-					}
-				}
-			});
+			this.queryEventType()
 		},
 		methods: {
 			onSubmit() {
@@ -200,7 +179,11 @@
 				return vm.$confirm(`确定移除 ${ file.name }？`);
 			},
 			save() {
+				debugger
 				let year
+				if(vm.year >= 1000) {
+					year = vm.year
+				}
 				if(vm.year < 1000 && vm.year >= 100) {
 					year = '0' + vm.year
 				}
@@ -219,6 +202,9 @@
 					Tag: vm.dynamicTags.join(','), //Tag标签内容
 					Filename: "",
 					URL: vm.imgUrl,
+					userName: localStorage.getItem("username"),
+					updateTime: moment().format('YYYY-MM-DD HH:mm:ss'),
+					eventType: this.eventType
 				}
 				axios.post(this.MYURL + 'WriteStories.do?', {
 					params: option
@@ -239,9 +225,21 @@
 					let time = parseInt(moment(vm.value).format('YYYYMMDD'))
 					for(var i = 0; i < vm.Event.length; i++) {
 						if(vm.Event[i].Time == time) {
+							vm.event = vm.Event[i]
 							vm.Title = vm.Event[i].Title;
-							vm.Caption = vm.Event[i].Caption;
-							vm.imgUrl = vm.Event[i].url;
+							vm.Caption = vm.Event[i].caption;
+							vm.updateTime = vm.Event[i].updateTime;
+							if(vm.Event[i]["eventType"]) {
+								vm.eventImgUrl = vm.$store.state.FWQURL + "upload/" + vm.Event[i]["eventType"] + ".png" || ""
+							} else {
+								vm.eventImgUrl = vm.$store.state.FWQURL + "upload/bookBG.png" || ""
+							}
+							if(vm.Event[i].updateTime) {
+								vm.$refs.form.$el.style.height = '540px'
+							} else {
+								vm.$refs.form.$el.style.height = '500px'
+							}
+							break;
 						}
 					}
 					vm.drawWrited();
@@ -303,7 +301,6 @@
 					}
 					vm.value = new Date(year, month - 1, day, 1, 1, 1);
 				}
-				vm.SearchMonthStories();
 			},
 
 			WNL() {
@@ -367,7 +364,6 @@
 				if(time.length < 14) {
 					time += " 00:00:00";
 				}
-				//var timestamp = new Date(time).getTime();
 				vm.value = time;
 			},
 			upload(params) {
@@ -385,59 +381,60 @@
 					}
 				})
 			},
+			queryEventType() {
+				axios.get(this.$store.state.MYURL + 'QueryTableRow.do', {
+					params: {
+						tablename: "DCT_ENUMS",
+						showcol: ['*'],
+						sqlwhere: "F_PARENT='01'"
+					}
+				}).then(res => {
+					this.eventType_All = res.data.data
+				})
+			}
 		},
 		watch: {
 			SXT_filterText(val) {
 				this.$refs.Tree.filter(val);
+			},
+			eventType(val) {
+				if(val) {
+					vm.eventImgUrl = vm.$store.state.FWQURL + "upload/" + val + ".png" || ""
+				} else {
+					vm.eventImgUrl = vm.$store.state.FWQURL + "upload/bookBG.png" || ""
+				}
+			},
+			value(val, old_val) {
+				this.$store.commit("setcurrentTime", moment(vm.value).format('YYYYMMDD'));
+				vm.imgUrl = "";
+				vm.SearchMonthStories();
+				vm.year = moment(vm.value).format('YYYY') - 0 + 0;
+				vm.month = moment(vm.value).format('MM') - 0 + 0;
+				vm.day = moment(vm.value).format('DD') - 0 + 0;
+				//修改右侧对应的caption
+				for(var i = 0; i < vm.Event.length; i++) {
+					if(vm.Event[i].Time == moment(vm.value).format('YYYYMMDD')) {
+						vm.event = vm.Event[i]
+						vm.Title = vm.Event[i].Title;
+						vm.Caption = vm.Event[i].caption;
+						vm.updateTime = vm.Event[i].updateTime;
+						if(vm.Event[i]["eventType"]) {
+							vm.eventImgUrl = vm.$store.state.FWQURL + "upload/" + vm.Event[i]["eventType"] + ".png" || ""
+						} else {
+							vm.eventImgUrl = vm.$store.state.FWQURL + "upload/bookBG.png" || ""
+						}
+						vm.event = vm.Event[i]
+						break;
+					} else {
+						vm.Title = "";
+						vm.Caption = "";
+					}
+				}
 			}
 		}
 	};
 </script>
 
 <style lang="less">
-	@import '../assets/styles/calendar.css';
-	.calendar {
-		.left {
-			float: left;
-			width: calc(100% - 500px);
-			height: 100%;
-		}
-		.right {
-			float: right;
-			width: 500px;
-			padding: 15px;
-			.form {
-				position: relative;
-			}
-			* {
-				background-color: transparent!important;
-				color: black;
-			}
-			.title {
-				position: absolute;
-				left: 6%;
-				top: 5%;
-				width: 88%;
-				height: 26px;
-				.el-input__inner {
-					height: 26px;
-				}
-			}
-			.form {
-				background-image: url("../assets/images/commonEventBg.png");
-				background-size: 100% 100%;
-				background-repeat: no-repeat;
-				height: 500px;
-				.textareaForm {
-					width: 83%;
-					left: 8%;
-					top: 34%;
-					position: absolute;
-					.el-textarea__inner{
-						padding: 0;	
-					}
-				}
-			}
-		}
-	}
+	@import '../assets/styles/calendar';
 </style>

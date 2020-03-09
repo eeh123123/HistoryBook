@@ -5,7 +5,10 @@ const store = new Vuex.Store({
 		FWQURL: "http://49.235.128.250:8084/",
 		LoginState: false,
 		Dialog_show: false,
-		Dialog_data:{total:0,data:[]},
+		Dialog_data: {
+			total: 0,
+			data: []
+		},
 		PinJie_FBH: [],
 		Dialog_Col_Name: [],
 		Dialog_title: "",
@@ -15,9 +18,12 @@ const store = new Vuex.Store({
 		Dialog_sqlwhere: "",
 		Dialog_CallBack: "",
 		Sql_value: "",
-		Drawer:false,
-		FamilyData:{},
-		PersonData:[{imgUrl:''}],
+		Drawer: false,
+		FamilyData: {},
+		PersonData: [{
+			imgUrl: 'none.png'
+		}],
+		currentTime: '07000101'
 	},
 	mutations: {
 		setshow: (state, data) => {
@@ -62,6 +68,9 @@ const store = new Vuex.Store({
 		},
 		setPersonData: (state, data) => {
 			state.PersonData = data;
+		},
+		setcurrentTime: (state, data) => {
+			state.currentTime = data;
 		},
 	}
 })

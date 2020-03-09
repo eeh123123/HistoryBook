@@ -1,3 +1,7 @@
+* {
+    box-sizing: border-box;
+}
+
 .margin-left10 {
     margin-left: 10px;
 }
@@ -66,4 +70,194 @@
         width: 80px;
         height: 20px;
     }
+}
+
+.el-menu-item {
+    img {
+        margin-right: 10px
+    }
+}
+
+.sonVue {
+    float: left;
+    .el-input{
+        width: 150px;   
+    }
+    >*{
+        float: left;
+        margin-right: 15px;
+    }
+}
+
+.personDrawer {
+    height: 36.46vw;
+    .el-drawer__header {
+        display: none;
+    }
+    .el-drawer.ltr {
+        background-image: url("../images/personboard.png");
+        background-size: 100% 100%;
+        background-repeat: no-repeat;
+    }
+    .top {
+        height: 54%;
+        width: 100%;
+        >.floor1 {
+            height: 10%;
+            position: relative;
+            .close {
+                cursor: pointer;
+                height: 1.2vw;
+                width: 1.2vw;
+                position: absolute;
+                right: 3%;
+                top: 23%;
+                background-image: url("../images/close.png");
+                background-size: 100% 100%;
+                background-repeat: no-repeat;
+            }
+        }
+        >.floor2 {
+            height: 93%;
+            margin: 0 10px 10px 10px;
+            .left {
+                float: left;
+                width: 60%;
+                height: 100%;
+                .floor1 {
+                    height: 74%;
+                    width: 100%;
+                    position: relative;
+                    .circle {
+                        height: 100%;
+                        width: calc(100% + 4px);
+                        border-radius: 100%;
+                    }
+                    .lord {
+                        height: 3vw;
+                        width: 3vw;
+                        position: absolute;
+                        top: 1.4vw;
+                        right: 4vw;
+                        border-radius: 3vw;
+                        .lordName {
+                            height: 1vw;
+                            width: 3vw;
+                            background-image: url("../images/name.png");
+                            background-size: 100% 100%;
+                            background-repeat: no-repeat;
+                            position: absolute;
+                            bottom: -0.5vw;
+                            left: -4px;
+                            text-align: center;
+                            font-size: 0.8vw;
+                        }
+                    }
+                    .name {
+                        position: absolute;
+                        top: 9%;
+                        left: 45%;
+                    }
+                    .death {
+                        position: absolute;
+                        background-image: url("../images/death.png");
+                        background-size: 100% 100%;
+                        background-repeat: no-repeat;
+                        height: 1.6vw;
+                        width: 1.6vw;
+                        bottom: 10%;
+                        left: 56%;
+                        z-index: 2;
+                    }
+                    .you {
+                        height: 8vw;
+                        width: 8vw;
+                        border-radius: 8vw;
+                        position: absolute;
+                        bottom: 12%;
+                        left: 20%;
+                        z-index: 1;
+                        background-size: 100% 100%;
+                        background-repeat: no-repeat;
+                    }
+                    .yours {
+                        height: 5.55vw;
+                        width: 5.55vw;
+                        border-radius: 5.55vw;
+                        position: absolute;
+                        bottom: 14%;
+                        right: 1%;
+                        z-index: 2;
+                        .yoursName {
+                            height: 1.4vw;
+                            line-height: 1.4vw;
+                            width: 5.55vw;
+                            background-image: url("../images/name.png");
+                            background-size: 100% 100%;
+                            background-repeat: no-repeat;
+                            position: absolute;
+                            bottom: -14%;
+                            left: -4%;
+                            text-align: center;
+                            font-size: 0.8vw;
+                            z-index: 2;
+                        }
+                    }
+                    .official {}
+                    .king {}
+                }
+                .floor2 {
+                    height: 26%;
+                    width: 100%;
+                }
+            }
+            .right {
+                float: left;
+                width: 40%;
+                height: 100%;
+                .top {
+                    height: 85%;
+                    width: 100%;
+                    position: relative;
+                    .old {
+                        position: absolute;
+                        top: 8%;
+                        right: 16%;
+                    }
+                }
+                .bottom {
+                    height: 15%;
+                    width: 100%;
+                    .attribute1 {
+                        height: 45%;
+                        width: 100%;
+                        .item {
+                            height: 100%;
+                            width: 1.2vw;
+                            float: left;
+                            cursor: pointer;
+                        }
+                    }
+                    .attribute2 {
+                        height: 55%;
+                        width: 100%;
+                    }
+                }
+            }
+        }
+    }
+    .bottom {
+        height: 46%;
+        width: 100%
+    }
+}
+
+.verticalWord{
+    display: inline-block;
+    width: 20px;  
+    margin: 0 auto;  
+    line-height: 24px;  
+    font-size: 25px;
+    font-family: LiSu;
+    cursor:pointer;
 }

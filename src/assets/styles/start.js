@@ -33,8 +33,8 @@ var iconv = require('iconv-lite');
 var filename = "";
 
 //3 调用自定义组件
-var define = require('./define.js');
-var Func = require('./Func.js');
+var define = require('../../../define.js');
+var Func = require('../../../Func.js');
 
 var __dirname_mine = define.Get_Dirname();
 
@@ -46,11 +46,11 @@ app.all("*", function(req, res, next) {
 	res.header("Access-Control-Allow-Origin", "*");
 	//允许的header类型
 	res.header("Access-Control-Allow-Headers", "content-type,Access-Token,authorization");
-	//跨域允许的请求方式 
+	//跨域允许的请求方式
 	res.header("Access-Control-Allow-Methods", "DELETE,PUT,POST,GET,OPTIONS");
 	res.header("Content-Type", "application/json;charset=utf-8");
 	//res.header('Content-Type', 'text/plain; charset=utf-8');
-	
+
 	filename = req.url.split('/')[req.url.split('/').length - 1];
 	var suffix = req.url.split('.')[req.url.split('.').length - 1];
 	if(req.url.substring(0, 8) == "/upload/") {
@@ -105,7 +105,7 @@ app.post('/up', function(req, res) {
 					text: '上传成功',
 					status: 'success',
 					filename: filename_
-				});  
+				});
 			}
 		});
 	}
@@ -138,6 +138,11 @@ app.get('/Login.do', function(req, res) {
 				});
 			}
 		}
+	});
+	let updateSql="UPDATE SSF_USERS SET LOGIN_TIME=NOW(),IP='"+Func.getClientIp(req)+"' WHERE USER_NAME='"+req.query.username+"'"
+	console.log(updateSql)
+	db.query(updateSql, (err, data) => {
+
 	});
 });
 
@@ -454,6 +459,10 @@ app.post('/WriteStories.do', function(req, res) {
 	var Tag = req.body.params.Tag || "";
 	var Filename = req.body.params.Filename || "";
 	var URL = req.body.params.URL || "";
+	var userName = req.body.params.userName || "";
+	var updateTime = req.body.params.updateTime || "";
+	var eventType = req.body.params.eventType || "";
+
 
 	var values = [];
 	//先到数据库里查一把有没有这条数据。有的话，UPDATE，没有的话，INSERT
@@ -468,7 +477,7 @@ app.post('/WriteStories.do', function(req, res) {
 			var string = JSON.stringify(data);
 			var jsondata = JSON.parse(string);
 			if(data[0].NUM != "0") {
-				var sql = "UPDATE EVENT SET TITLE='" + title + "',Caption ='" + caption + "',Time='" + Time + "',Year='" + Year + "',Month='" + Month + "',Tag='" + Tag + "',Filename='" + Filename + "',URL='" + URL + "' WHERE TIME='" + Time + "'";
+				var sql = "UPDATE EVENT SET TITLE='" + title + "',Caption ='" + caption + "',Time='" + Time + "',Year='" + Year + "',Month='" + Month + "',Tag='" + Tag + "',Filename='" + Filename + "',URL='" + URL +"',userName = '"+userName+"',updateTime='"+updateTime+ "',eventType='"+eventType+"' WHERE TIME='" + Time + "'";
 				db.query(sql, function(err, rows, fields, Filename) {
 					if(err) {
 						console.log(sql);
@@ -488,8 +497,8 @@ app.post('/WriteStories.do', function(req, res) {
 					}
 				});
 			} else {
-				var sql = "INSERT INTO EVENT(TITLE,Caption,Time,Year,Month,Tag,Filename,URL) VALUES ?";
-				values = [title, caption, Time, Year, Month, Tag, Filename, URL];
+				var sql = "INSERT INTO EVENT(TITLE,Caption,Time,Year,Month,Tag,Filename,URL,userName,updateTime) VALUES ?";
+				values = [title, caption, Time, Year, Month, Tag, Filename, URL,userName,updateTime];
 				db.query(sql, [
 					[values]
 				], function(err, rows, fields, Filename) {
@@ -584,7 +593,7 @@ app.get('download_YDM/.do', function(req, res) {
 	res.download('New_TLBB_vue.7z')
 });
 
-var HB = require('./History_Book.js');
+var HB = require('../../../History_Book.js');
 
 //23 查询官职表
 app.get('/Select_GuanZhi.do', HB.Select_GuanZhi);
