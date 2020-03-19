@@ -23,7 +23,9 @@ const store = new Vuex.Store({
 		PersonData: [{
 			imgUrl: 'none.png'
 		}],
-		currentTime: '07000101'
+		currentTime: '07000101',
+		guanzhiDrawer:false,
+		guanzhiData:{}
 	},
 	mutations: {
 		setshow: (state, data) => {
@@ -72,6 +74,13 @@ const store = new Vuex.Store({
 		setcurrentTime: (state, data) => {
 			state.currentTime = data;
 		},
+		setguanzhiDrawer: (state, data) => {
+			state.guanzhiDrawer = data;
+		},
+		setguanzhiData: (state, data) => {
+			state.guanzhiData = data;
+		},
+		
 	}
 })
 

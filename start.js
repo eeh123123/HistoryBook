@@ -33,8 +33,8 @@ var iconv = require('iconv-lite');
 var filename = "";
 
 //3 调用自定义组件
-var define = require('../../../define.js');
-var Func = require('../../../Func.js');
+var define = require('./define.js');
+var Func = require('./Func.js');
 
 var __dirname_mine = define.Get_Dirname();
 
@@ -173,278 +173,6 @@ app.get('/Register.do', function(req, res) {
 				});
 			}
 		}
-	});
-});
-
-//10 查询物品
-app.get('/SearchNow.do', function(req, res) {
-	var wupin = req.query.wupin;
-	var array = [];
-	var SearchNow_sql = "SELECT * FROM TLBB WHERE SHIJIAN = (SELECT MAX(SHIJIAN) FROM TLBB) AND WUPIN='" + wupin + "'";
-	console.log(SearchNow_sql);
-	db.query(SearchNow_sql, (err, data) => {
-		if(err) {
-			res.send("查询失败" + err);
-		} else {
-			var string = JSON.stringify(data);
-			var jsondata = JSON.parse(string)
-			res.send(jsondata);
-		}
-	});
-});
-
-//11 查询物品，模糊查询
-app.get('/SearchLike.do', function(req, res) {
-	var wupin = req.query.wupin;
-	var array = [];
-	var SearchLike_sql = "SELECT DISTINCT WUPIN FROM TLBB_ZB WHERE WUPIN LIKE '%" + wupin + "%'";
-	console.log(SearchLike_sql);
-	db.query(SearchLike_sql, (err, data) => {
-		if(err) {
-			res.send("查询失败" + err);
-		} else {
-			var string = JSON.stringify(data);
-			var jsondata = JSON.parse(string)
-			res.send(jsondata);
-		}
-	});
-});
-
-//12 查询物品，查询Echarts折线图
-app.get('/SearchAxis.do', function(req, res) {
-	var wupin = req.query.wupin;
-	var array = [];
-	var SearchLike_sql = "SELECT * FROM TLBB_ZB WHERE WUPIN = '" + wupin + "' ORDER BY FILENAME";
-	console.log(SearchLike_sql);
-	db.query(SearchLike_sql, (err, data) => {
-		if(err) {
-			res.send("查询失败" + err);
-		} else {
-			var string = JSON.stringify(data);
-			var jsondata = JSON.parse(string)
-			res.send(jsondata);
-		}
-	});
-});
-
-//13 查询大区信息
-app.get('/SearchDaQu.do', function(req, res) {
-	var SearchDaQu_sql = "SELECT DISTINCT(DaQu) FROM FWQ";
-	console.log(SearchDaQu_sql);
-	db.query(SearchDaQu_sql, (err, data) => {
-		if(err) {
-			res.send("查询失败" + err);
-			res.send("查询失败" + err);
-		} else {
-			var string = JSON.stringify(data);
-			var jsondata = JSON.parse(string)
-			res.send(jsondata);
-		}
-	});
-});
-
-//14 查询服务器信息
-app.get('/SearchFWQ.do', function(req, res) {
-	var SearchFWQ_sql = "SELECT CONCAT(DaQu,':',FWQ) AS information,FWQ,DaQu FROM FWQ";
-	if(req.query.name != undefined) {
-		SearchFWQ_sql += " WHERE FWQ LIKE '%" + req.query.name + "%'"
-	}
-	console.log(SearchFWQ_sql);
-	db.query(SearchFWQ_sql, (err, data) => {
-		if(err) {
-			res.send("查询失败" + err);
-		} else {
-			var string = JSON.stringify(data);
-			var jsondata = JSON.parse(string)
-			res.send(jsondata);
-		}
-	});
-});
-
-//15 读取物价信息文件
-app.get('/read.do', function(req, res) {
-	filename = req.query.filename;
-	savename = req.query.savename;
-	Sql_Select = "SELECT * FROM FILE WHERE FILENAME='" + savename + "'";
-	db.query(Sql_Select, (err, data) => {
-		if(err) {
-			console.log('SELECT ERROR - ', err.message);
-			console.log(Sql_ZB);
-			return;
-		}
-		if(data.length != "0") {
-			res.send("数据库已有此文件");
-			return;
-		}
-		console.log(data.length);
-		if(data.length == "0") {
-			var data = fs.readFileSync("upload/" + filename);
-			filename = req.query.savename; //读取完文件数据后再把文件名转换过来。
-			var buff = new Buffer(data, 'binary');
-			var str = iconv.decode(buff, 'gbk');
-			var array = []; //总数组，每个数组存放的是 1种 商品的信息
-			str = str.replace(/\"/g, "");
-			str = str.replace(/.000000/g, "");
-			var shijian = Func.JieQu(str, "统计时间：", "，by");
-			var shijian_cal = filename.substring(0, 14);
-			array = str.split("\r\n\r\r\n");
-			var array_son = []; //子数组，每个数组存放的是1件 商品的信息
-			console.log("第一个商品：");
-			console.log(array[1]);
-
-			var Sql_InSert = "INSERT INTO FILE(SAVETIME,FILENAME)VALUES ?";
-			var File_values = [
-				[Func.getNowFormatDate(), savename]
-			];
-			db.query(Sql_InSert, [File_values], function(err, rows, fields) {
-				if(err) {
-					console.log('INSERT ERROR - ', err.message);
-					console.log(Sql_InSert);
-					console.log(File_values);
-					return;
-				}
-				console.log("INSERT SUCCESS");
-			});
-
-			var values = [];
-			var Value_ZB = [];
-			for(var i = 1; i < array.length; i++) {
-				values = [];
-				array_son = array[i].split("array");
-				var number_ObjName = array[i].indexOf("=>"); //商品名的下标
-				console.log("number_ObjName:");
-				console.log(number_ObjName);
-				var ObjName = array[i].substring(0, number_ObjName); //物品名
-				console.log("物品名:");
-				console.log(ObjName);
-
-				var ZongJia = Func.JieQu(array[i], "总价：", "，总量"); //总价
-				var ZongLiang = Func.JieQu(array[i], "总量：", "，均价"); //总量
-				var JunJia = Func.JieQu(array[i], "均价：", "\r"); //均价
-				var DangQsj = Func.getNowFormatDate(); //当前时间
-				var lee = "单价=";
-				var lee2 = ",摊主";
-				var ZuiDiJia = Func.JieQu(array[i], lee, lee2);
-				for(var j = 1; j < array_son.length; j++) {
-					var son_name = Func.JieQu(array_son[j], "物品=", ",数量"); //子表的物品名
-					var son_ShuL = Func.JieQu(array_son[j], "数量=", ",价格"); //子表的数量
-					var son_JiaG = Func.JieQu(array_son[j], "价格=", ",单价"); //子表的价格
-					var son_DanJ = Func.JieQu(array_son[j], "单价=", ",摊主"); //子表的单价
-					var son_TanZ = Func.JieQu(array_son[j], "摊主=", ",摊位"); //子表的摊主
-					var son_TanW = Func.JieQu(array_son[j], "摊位=", ",地图"); //子表的摊位
-					var son_DiT = Func.JieQu(array_son[j], "地图=", ",x"); //子表的地图
-					var son_X = Func.JieQu(array_son[j], "x=", ",y"); //子表的x
-					var son_Y = Func.JieQu(array_son[j], "y=", ")\r"); //子表的y
-					if(j == 1) {
-						var wupin = son_name; //物品名
-						var zdsl = son_ShuL; //最低价格的数量
-						var tanzhu = son_TanZ; //最低价格的摊主
-						var tanwei = son_TanW; //最低价格的摊位
-						var ditu = son_DiT; //最低价格的地图
-						var zuobiao = "(" + son_X + "," + son_Y + ")"; //最低价格的坐标
-					}
-					values.push(
-						[son_name, son_ShuL, son_JiaG, son_DanJ, son_TanZ, son_TanW, son_DiT, "(" + son_X + "," + son_Y + ")", shijian, filename, shijian_cal]
-					);
-					console.log(values);
-				}
-				var sonsql = "INSERT INTO TLBB(WUPIN,SHUL,JIAG,DANJ,TANZHU,TANWEI,DITU,ZUOBIAO,SHIJIAN,FILENAME,SHIJIAN_CAL) VALUES ?"
-				db.query(sonsql, [values], function(err, rows, fields) {
-					if(err) {
-						console.log('INSERT ERROR - ', err.message);
-						console.log(sonsql);
-						console.log(values);
-						return;
-					} else {
-						console.log(sonsql);
-						console.log(values);
-						console.log("INSERT SUCCESS");
-					}
-				});
-				Value_ZB.push([ZuiDiJia, JunJia, zdsl, shijian, wupin, tanzhu, tanwei, ditu, zuobiao, filename, shijian_cal]);
-			}
-			var Sql_ZB = "INSERT INTO TLBB_ZB(ZUIDIJIA,PINGJUNJIA,ZDSL,SHIJIAN,WUPIN,TANZHU,TANWEI,DITU,ZUOBIAO,FILENAME,SHIJIAN_CAL) VALUES ?"
-			db.query(Sql_ZB, [Value_ZB], function(err, rows, fields) {
-				if(err) {
-					console.log('INSERT ERROR - ', err.message);
-					console.log(Sql_ZB);
-					console.log(Value_ZB);
-					return;
-				}
-				console.log("INSERT SUCCESS");
-				chaxun(res);
-			});
-
-		}
-	});
-});
-
-//16 查询函数
-function chaxun(res) {
-	console.log("查询");
-	var txtdata = ""; //写入txt文本的内容
-	var select_sql = "SELECT WUPIN,ZUIDIJIA AS JIAGE FROM TLBB_ZB WHERE FILENAME ='" + filename + "'" + "ORDER BY CAST(ZUIDIJIA AS DECIMAL(9,2))DESC";
-	db.query(select_sql, (err, data) => {
-		if(err) {
-			console.log('查询失败', err);
-		} else {
-			console.log(JSON.stringify(data));
-			console.log(select_sql);
-			console.log(data[0].WUPIN);
-			for(var i = 0; i < data.length; i++) {
-				txtdata += data[i].WUPIN + "=" + data[i].JIAGE + "|";
-			}
-			txtdata = txtdata.substring(0, txtdata.length - 1);
-
-			console.log("txtdata==");
-			console.log(txtdata);
-			fs.writeFile('./answer.txt', txtdata, {
-					flag: 'w',
-					encoding: 'utf-8',
-					mode: '0666'
-				},
-				function(err) {
-					if(err) {
-						console.log("文件写入失败")
-					} else {
-						res.download('./answer.txt')
-						console.log("文件写入成功");
-					}
-				});
-		}
-	});
-}
-
-//17 更新服务器的接口
-app.get('/FWQ_File.do', function(req, res) {
-	filename = req.query.filename;
-	var data = fs.readFileSync("upload/" + filename);
-	var buff = new Buffer(data, 'binary');
-	var str = iconv.decode(buff, 'gbk');
-	var array = []; //总数组，每个数组存放一个服务器信息
-	str = str.replace(/\"/g, "");
-	array = str.split("\r\n");
-	var fwq = Func.JieQu(str, "统计时间：", "，by"); //服务器
-	var array_son = []; //子数组，每个数组存放的是1个服务器的信息
-	var values = [];
-	var DelSql = 'DELETE FROM FWQ';
-	db.query(DelSql, function(err, result) {
-		if(err) {
-			console.log('[DELETE ERROR] - ', err.message);
-			return;
-		}
-	});
-	for(var i = 3; i < array.length; i++) {
-		var DaQu = array[i].substring(0, Func.find(array[i], ",", 0)); //大区名
-		var fwq = array[i].substring(Func.find(array[i], ",", 0) - 1 + 2, Func.find(array[i], ",", 1)); //服务器名，-1+2就是为了把字符串+1
-		values.push([DaQu, fwq]);
-	}
-	var sql = "INSERT INTO FWQ (DaQu, FWQ) VALUES ?";
-	db.query(sql, [values], function(err, result) {
-		if(err) {
-			throw err;
-		}
-		console.log("Number of records inserted: " + result.affectedRows);
 	});
 });
 
@@ -588,12 +316,14 @@ app.get('/Search_SJZ.do', function(req, res) {
 });
 
 //22 下载压缩包
-app.get('download_YDM/.do', function(req, res) {
+app.get('download_File/.do', function(req, res) {
 	res.setHeader("Access-Control-Allow-Origin", "*");
-	res.download('New_TLBB_vue.7z')
+	if(req.query.fileName){
+		res.download(req.query.fileName)
+	}
 });
 
-var HB = require('../../../History_Book.js');
+var HB = require('./History_Book.js');
 
 //23 查询官职表
 app.get('/Select_GuanZhi.do', HB.Select_GuanZhi);

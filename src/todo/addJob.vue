@@ -1,18 +1,18 @@
 <template>
 	<div class="addJob">
-		<el-select v-model="query_Dept" clearable filterable class="margin-left10" placeholder="请选择部门" @change="searchs()" size="small">
+		<el-select v-model="query_Dept" clearable filterable class="margin-left10" placeholder="请选择部门" @change="searchs()">
 			<el-option v-for="item in GZB_data_All" :key="item.F_BH" :label="item.F_MC" :value="item.F_BH">
 			</el-option>
 		</el-select>
 		<div class="query-div">
-			<el-input v-model="query_Content" placeholder="请输入官职名称" size="small"></el-input>
+			<el-input v-model="query_Content" placeholder="请输入官职名称"></el-input>
 		</div>
-		<el-button type="primary" size="small" @click="searchs()" class="margin-left10" icon="el-icon-search" >搜索</el-button>
-		<el-button type="primary" size="small" @click="addRow(GuanZhi_Data)" class="margin-left10" icon="el-icon-circle-plus-outline">新增</el-button>
-		<el-button type="primary" size="small" @click="Save()" icon="el-icon-upload">保存</el-button>
-		<el-button type="primary" size="small" @click="KJ_add()">快捷添加官员</el-button>
-		<el-button type="primary" size="small" @click="PLadd()">批量添加官员</el-button>
-		<el-button type="primary" size="small" @click="Select_GuanZhi()">官职名去重</el-button>
+		<el-button @click="searchs()" class="margin-left10" icon="el-icon-search" >搜索</el-button>
+		<el-button @click="addRow(GuanZhi_Data)" class="margin-left10" icon="el-icon-circle-plus-outline">新增</el-button>
+		<el-button @click="Save()" icon="el-icon-upload">保存</el-button>
+		<el-button @click="KJ_add()">快捷添加官员</el-button>
+		<el-button @click="PLadd()">批量添加官员</el-button>
+		<el-button @click="Select_GuanZhi()">官职名去重</el-button>
 		<template>
 			<el-table :data="GuanZhi_Data" class="tb-edit" border style="width: 100%" height="calc(100% - 32px)" highlight-current-row>
 				<el-table-column label="ID" width="60" v-if="false">

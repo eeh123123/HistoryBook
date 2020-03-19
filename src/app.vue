@@ -2,20 +2,24 @@
 	<div id="app">
 		<router-view :key="key"></router-view>
 		<drawer></drawer>
+		<guanzhidrawer></guanzhidrawer>
 		<timeDiv></timeDiv>
 	</div>
 </template>
 
 <script>
 import login from './todo/login.vue'
-import drawer from './tools/drawer.vue'
+import drawer from './tools/person-Drawer.vue'
+import guanzhidrawer from './tools/guanzh-Draweri.vue'
+
 import timeDiv from './tools/timeDiv.vue'
 
 export default {
 	components: {
 		login,
 		drawer,
-		timeDiv
+		timeDiv,
+		guanzhidrawer
 	},
 	computed: {
 		key() {

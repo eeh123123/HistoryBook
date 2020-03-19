@@ -80,10 +80,10 @@
 
 .sonVue {
     float: left;
-    .el-input{
-        width: 150px;   
+    .el-input {
+        width: 150px;
     }
-    >*{
+    >* {
         float: left;
         margin-right: 15px;
     }
@@ -100,7 +100,7 @@
         background-repeat: no-repeat;
     }
     .top {
-        height: 54%;
+        height: 58%;
         width: 100%;
         >.floor1 {
             height: 10%;
@@ -118,7 +118,7 @@
             }
         }
         >.floor2 {
-            height: 93%;
+            height: 86%;
             margin: 0 10px 10px 10px;
             .left {
                 float: left;
@@ -155,7 +155,7 @@
                     }
                     .name {
                         position: absolute;
-                        top: 9%;
+                        top: 8%;
                         left: 45%;
                     }
                     .death {
@@ -221,7 +221,7 @@
                     position: relative;
                     .old {
                         position: absolute;
-                        top: 8%;
+                        top: 7.5%;
                         right: 16%;
                     }
                 }
@@ -231,11 +231,14 @@
                     .attribute1 {
                         height: 45%;
                         width: 100%;
+                        padding-left: 0.2vw;
                         .item {
                             height: 100%;
                             width: 1.2vw;
                             float: left;
                             cursor: pointer;
+                            background-size: 100% 100%;
+                            background-repeat: no-repeat;
                         }
                     }
                     .attribute2 {
@@ -247,17 +250,139 @@
         }
     }
     .bottom {
-        height: 46%;
-        width: 100%
+        height: 42%;
+        width: 100%;
+        >.floor1 {
+            height: 1.3vw;
+        }
+        >.floor2 {
+            height: calc(100% - 1.3vw);
+            padding: 0 0.7vw 0.7vw 0.7vw;
+            .content {
+                height: 100%;
+                background-image: url("../images/family2.png");
+                background-size: 100% 100%;
+                background-repeat: no-repeat;
+                >.floor1 {
+                    height: 33%;
+                    padding-top: 0.25vw;
+                    >.floor1 {
+                        height: 1vw;
+                        padding: 0 0.83vw 0 0.83vw;
+                        >.son1,
+                        >.son2,
+                        >.son3 {
+                            text-align: center;
+                            color: white;
+                            float: left;
+                            height: 100%;
+                            line-height: 1vw;
+                        }
+                        >.son1 {
+                            width: 33%;
+                        }
+                        >.son2 {
+                            width: 39%;
+                        }
+                        >.son3 {
+                            width: 28%;
+                        }
+                    }
+                    >.floor2 {
+                        height: calc(100% - 1vw);
+                        padding: 0 0.83vw 0 0.83vw;
+                        >.son1,
+                        >.son2,
+                        >.son3 {
+                            text-align: center;
+                            height: 100%;
+                            line-height: 3vw;
+                            display: flex;
+                            justify-content: center;
+                            align-items: center;
+                        }
+                        >.son1 {
+                            width: 33%;
+                        }
+                        >.son2 {
+                            width: 39%;
+                        }
+                        >.son3 {
+                            width: 28%;
+                        }
+                        .parentImg {
+                            height: 2.8vw;
+                            width: 2.8vw;
+                            border-radius: 100%;
+                            background-size: 100% 100%;
+                            background-repeat: no-repeat;
+                        }
+                    }
+                }
+                >.floor2 {
+                    height: 33%;
+                }
+                >.floor3 {
+                    height: 33%;
+                }
+            }
+        }
     }
 }
 
-.verticalWord{
+.verticalWord {
     display: inline-block;
-    width: 20px;  
-    margin: 0 auto;  
-    line-height: 24px;  
+    width: 20px;
+    margin: 0 auto;
+    line-height: 24px;
     font-size: 25px;
     font-family: LiSu;
-    cursor:pointer;
+    cursor: pointer;
+}
+
+.person-Image {
+    width: auto;
+    height: 282px;
+    max-width: 400px;
+    max-height: 400px;
+}
+
+.guanzhiDrawer {
+    height: 23.12vw;
+    .el-drawer {
+        box-shadow: none;
+        top: 10%;
+    }
+    .el-drawer.rtl {
+        background-image: url("../images/guanzhiBG.png");
+        background-size: 100% 96%;
+        background-repeat: no-repeat;
+        background-color: transparent;
+    }
+}
+
+//.el-select .el-input__inner {
+//  background-image: url("../images/CKselect.png");
+//  background-size: 100% 100%;
+//  background-repeat: no-repeat;
+//  border: none;
+//  width: 132px;
+//  height: 42px;
+//   ::-webkit-input-placeholder {
+//      color: white;
+//  }
+//}
+.el-button {
+    background-image: url("../images/nameBoard.png");
+    background-size: 100% 100%;
+    background-repeat: no-repeat;
+    background-color:transparent;
+    border: none;
+    color: white;
+    &:hover{
+            background-color:transparent;
+    }
+}
+
+.el-button:hover {
 }

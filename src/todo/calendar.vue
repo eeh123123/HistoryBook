@@ -32,7 +32,7 @@
 					<el-input v-model="year" placeholder="年" style="width:20%"></el-input>
 					<el-input v-model="month" placeholder="月" style="width:16%"></el-input>
 					<el-input v-model="day" placeholder="日" style="width:16%"></el-input>
-					<el-button type="primary" icon="el-icon-search" style="width:16%" @click="searchs()"></el-button>
+					<el-button icon="el-icon-search" style="width:16%" @click="searchs()"></el-button>
 				</div>
 			</div>
 			<div class="bottom">
@@ -43,11 +43,11 @@
 						<textarea autocomplete="off" class="el-textarea__inner" rows="12" style="min-height: 33px;" v-model="Caption">{{Caption}</textarea>
 						<div class="info">编写：{{event.userName}}</div>
 						<div class="info">更新时间：{{event.updateTime}}</div>
-						<el-select v-model="eventType" clearable filterable class="eventType" placeholder="请选择类型" size="small">
+						<el-select v-model="eventType" clearable filterable class="eventType" placeholder="请选择类型" size="mini">
 							<el-option v-for="item in eventType_All" :key="item.F_BH" :label="item.F_MC" :value="item.F_T1">
 							</el-option>
 						</el-select>
-						<el-button size="small" type="success" @click="save">记录</el-button>
+						<el-button size="small" @click="save">记录</el-button>
 						<!--<div class="demo-image__error">
 						<div class="block">
 							<el-image :src="imgUrl"></el-image>
@@ -179,7 +179,6 @@
 				return vm.$confirm(`确定移除 ${ file.name }？`);
 			},
 			save() {
-				debugger
 				let year
 				if(vm.year >= 1000) {
 					year = vm.year
@@ -437,4 +436,5 @@
 
 <style lang="less">
 	@import '../assets/styles/calendar';
+	
 </style>

@@ -1,13 +1,13 @@
 <template>
 	<div>
-		<el-select v-model="familyValue" placeholder="请选择" @change="queryData">
+		<el-select class="margin-left10 margin-top10" v-model="familyValue" placeholder="请选择" @change="queryData">
 			<el-option v-for="item in familyOptions" :key="item.F_ID" :label="item.F_caption" :value="item.F_ID">
 			</el-option>
 		</el-select>
 		<div class="tree">
 			<ul>
 				<child v-for="item in Array_data" :key="item.fatherid" :text="item">
-					<lwhile :item="item" @userDrawer=userDrawer(val)></lwhile>
+					<lwhile :item="item"></lwhile>
 				</child>
 			</ul>
 		</div>
@@ -15,7 +15,7 @@
 </template>
 
 <script>
-	import lwhile from '../tools/l-while.vue'
+	import lwhile from '../tools/l-while-person.vue'
 	import child from '../tools/l-child.vue'
 	export default {
 		components: {
@@ -47,7 +47,7 @@
 						this.Array_data = this.$tools.composeTree(res.data.data)
 						this.Array_data = this.$tools.sort(this.Array_data, 'id')
 						let temp = JSON.parse(JSON.stringify(this.Array_data));
-						vm.Array_data=[{children:"",closed:true}]
+						this.Array_data=[{children:"",closed:true}]
 						this.Array_data[0].children = temp
 					})
 			},
@@ -67,9 +67,6 @@
 					.then(res => {
 						this.familyOptions = res.data.data
 					})
-			},
-			userDrawer(val){
-
 			},
 			handleClose(){
 

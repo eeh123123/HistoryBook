@@ -1,5 +1,5 @@
 <template>
-	<el-drawer title="" :visible.sync="Drawer" :direction="direction" size='28.64%' class="personDrawer" :before-close="handleClose">
+	<el-drawer :visible.sync="Drawer" :direction="direction" size='28.64%' class="personDrawer" :before-close="handleClose">
 		<div class="top">
 			<div class="floor1">
 				<div class="close" @click="handleClose"></div>
@@ -40,7 +40,28 @@
 			</div>
 		</div>
 		<div class="bottom">
-
+			<div class="floor1"></div>
+			<div class="floor2">
+				<div class="content">
+					<div class="floor1">
+						<div class="floor1">
+							<div class="son1">父母</div>
+							<div class="son2">祖父母</div>
+							<div class="son3">监护人</div>
+						</div>
+						<div class="floor2">
+							<div class="son1">
+								<div v-bind:style="{backgroundImage:'url(' + PersonData[0]['fatherImg']||'' + ')'}" class="circle parentImg"></div>
+								<div v-bind:style="{backgroundImage:'url(' + PersonData[0]['motherImg']||'' + ')'}" class="circle parentImg"></div>
+							</div>
+							<div class="son2"></div>
+							<div class="son3"></div>
+						</div>
+					</div>
+					<div class="floor2"></div>
+					<div class="floor3"></div>
+				</div>
+			</div>
 		</div>
 	</el-drawer>
 </template>

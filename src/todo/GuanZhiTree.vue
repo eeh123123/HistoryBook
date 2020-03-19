@@ -1,13 +1,13 @@
 <template>
 	<div>
-		<el-select v-model="query_Dept" clearable filterable class="margin-left10" placeholder="请选择部门" @change="searchs()" size="small">
+		<el-select v-model="query_Dept" clearable filterable class="margin-left10 margin-top10" placeholder="请选择部门" @change="searchs()">
 			<el-option v-for="item in GZB_data_All" :key="item.F_BH" :label="item.F_MC" :value="item.F_BH">
 			</el-option>
 		</el-select>
 		<div class="tree">
 			<ul>
 				<child v-for="item in Array_data" :key="item.fatherid" :text="item">
-					<lwhile :item="item" @userDrawer=userDrawer(val)></lwhile>
+					<lwhile :item="item"></lwhile>
 				</child>
 			</ul>
 		</div>
@@ -50,9 +50,6 @@
 					.then(function(response) {
 						vm.GZB_data_All = response.data.data;
 					})
-					.catch(function(error) {
-						console.log(error);
-					});
 			},
 			searchs() {
 				let option = {
@@ -93,9 +90,6 @@
 					.then(res => {
 						this.familyOptions = res.data.data
 					})
-			},
-			userDrawer(val) {
-
 			},
 			handleClose() {
 

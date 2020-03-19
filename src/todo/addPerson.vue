@@ -1,7 +1,7 @@
 <template>
 	<div class="addPerson">
-		<el-button type="primary" @click="addRow()" class="margin-left10" size="small">新增</el-button>
-		<el-button type="primary" @click="Save()" size="small">保存</el-button>
+		<el-button @click="addRow()" class="margin-left10">新增</el-button>
+		<el-button @click="Save()">保存</el-button>
 		<template>
 			<el-table :data="tableData" class="tb-edit" height="calc(100% - 32px)" border highlight-current-row @row-click="handleCurrentChange">
 				<el-table-column label="姓名" width="180">
@@ -346,12 +346,6 @@
 		.dialog-Image {
 			width: 600px;
 			height: 400px;
-		}
-		.person-Image {
-			width: auto;
-			height: 282px;
-			max-width: 100%;
-			max-height: 100%;
 		}
 	}
 </style>

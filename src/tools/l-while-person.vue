@@ -40,6 +40,7 @@
 						if(res.data.length != 0) {
 							let data = this.dealData(res.data)
 							this.$store.commit("setPersonData", data);
+							debugger
 						} else {
 							this.$store.commit("setPersonData", [{
 								imgUrl: 'none.png'

@@ -13,8 +13,8 @@
 
 <script>
 	import person from '../sonVue/person.vue'
+	import attributeTime from '../sonVue/attributeTime.vue'
 	import BaseTable from '../tools/BaseTable.vue'
-		
 	let vm;
 	export default {
 		components: {
@@ -23,7 +23,13 @@
 		computed: {
 			currentView() {
 				if(this.$route.query.dctid=="person")
-				return person
+				{
+					return person
+				}
+				if(this.$route.query.dctid=="attributeTime")
+				{
+					return attributeTime
+				}
 			}
 		},
 		data() {
@@ -51,7 +57,8 @@
 				page: {
 					pageSize: 10
 				},
-				option:''
+				option:'',
+				searchFlag:true
 			}
 		},
 		mounted() {
@@ -105,14 +112,15 @@
 			queryTableData() {
 				let params = {
 					tablename: this.$route.query.dctid,
-					sqlwhere: " Limit " + (this.currentPage - 1) * 15 + ",15"
+					pageSqlwhere: " Limit " + (this.currentPage - 1) * 15 + ",15",
+					searchFlag:this.searchFlag
+					
 				}
 				if(this.$route.query.page == 0) {
-					params.sqlwhere = ""
+					params.pageSqlwhere = ""
 				}
-				debugger
 				if(this.option){
-					params.sqlwhere = this.option + params.sqlwhere
+					params.sqlwhere = this.option ||"" + params.sqlwhere
 				}
 				axios.get(this.$store.state.MYURL + 'QueryDct.do', {
 					params: params

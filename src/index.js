@@ -12,7 +12,6 @@ import addJob from './todo/addJob.vue'
 import familyTree from './todo/familyTree.vue'
 import guanzhiTree from './todo/GuanZhiTree.vue'
 
-
 import experience from './todo/experience.vue'
 
 import calendar from './todo/calendar.vue'
@@ -22,15 +21,14 @@ import Dct from './todo/Dct.vue'
 
 import adminSet from './todo/adminSet.vue';
 import map from './todo/map.vue'
-
+import map1 from './todo/map1.vue'
 
 import store from './store';
 
 //import axios from './axios/index.js'
 import tools from './tools/js/tools.js'
 
-Vue.prototype.$tools=tools
-
+Vue.prototype.$tools = tools
 
 const routes = [{
 		path: '/',
@@ -83,6 +81,11 @@ const routes = [{
 				meta: ['数据展示', '地图'],
 			},
 			{
+				path: "/map1",
+				component: map1,
+				meta: ['数据展示', '地图1'],
+			},
+			{
 				path: '/calendar',
 				component: calendar,
 				meta: ['数据展示', '万年历'],
@@ -105,46 +108,44 @@ let router = new VueRouter({
 	mode: 'history'
 });
 
-router.beforeEach(async (to, from, next) => {
-  if (to.path === '/login') {
-    next()
-  } else {
-  	next()
+router.beforeEach(async(to, from, next) => {
+	if(to.path === '/login') {
+		next()
+	} else {
+		next()
 
-//  if (Store.getters.menus.length === 0 || Store.getters.dict.size === 0) {
-//    if (Store.getters.menus.length === 0) {
-//      // 同步获取菜单
-//      await getMenuList()
-//    }
-//    if (Store.getters.dict.size === 0) {
-//      // 同步获取字典
-//      await getDictListAll()
-//    }
-//    next()
-//  } else {
-//    next()
-//  }
-  }
+		//  if (Store.getters.menus.length === 0 || Store.getters.dict.size === 0) {
+		//    if (Store.getters.menus.length === 0) {
+		//      // 同步获取菜单
+		//      await getMenuList()
+		//    }
+		//    if (Store.getters.dict.size === 0) {
+		//      // 同步获取字典
+		//      await getDictListAll()
+		//    }
+		//    next()
+		//  } else {
+		//    next()
+		//  }
+	}
 })
 
 // 字典
 async function getDictListAll() {
-  try {
-    let res = await axios.get('/api/getMenus.do')
-    Store.commit('setMenu', res.data.data)
-  }
-  catch (e) {
-    console.log(e)
-  }
+	try {
+		let res = await axios.get('/api/getMenus.do')
+		Store.commit('setMenu', res.data.data)
+	} catch(e) {
+		console.log(e)
+	}
 }
 // 菜单
 async function getMenuList() {
-  try {
-    Store.commit('setMenu', [])
-  }
-  catch (e) {
-    console.log(e)
-  }
+	try {
+		Store.commit('setMenu', [])
+	} catch(e) {
+		console.log(e)
+	}
 }
 
 /* new Vue 启动 */
@@ -156,4 +157,3 @@ new Vue({
 	router, //可以简写为router
 	store
 })
-

@@ -43,7 +43,7 @@ module.exports = {
 	},
 	QueryPerson: function(req, res) {
 		let id = req.query.id;
-		let QueryPerson_SQL = "SELECT A.*,B.attrId AS 'attrId',B.isAllLife,B.getTime,B.endTime,C.imgUrl AS 'attrUrl',c.F_caption AS 'attrF_caption',c.F_name FROM PERSON A,attributetime B,attribute C WHERE A.ID = '" + id + "' AND B.USERID='" + id + "' AND C.id = B.attrId"
+		let QueryPerson_SQL = "SELECT A.*,B.attrId AS 'attrId',B.isAllLife,B.getTime,B.endTime,C.imgUrl AS 'attrUrl',c.F_caption AS 'attrF_caption',c.F_name,D.imgURL AS 'motherImg',E.imgURL AS 'fatherImg' FROM PERSON A,attributetime B,attribute C,PERSON D,PERSON E WHERE A.ID = '" + id + "' AND B.USERID='" + id + "' AND C.id = B.attrId AND A.motherid = D.id AND A.fatherid = E.id"
 		console.log(QueryPerson_SQL)
 		db.query(QueryPerson_SQL, (err, data) => {
 			if(err) {
@@ -173,10 +173,10 @@ module.exports = {
 			}
 		});
 	},
-		//通用新增
+	//通用新增
 	InsertTableRow: function(req, res) {
-		var values = req.body.params.values	//传参
-		var insert_str=[]					//插入的列
+		var values = req.body.params.values //传参
+		var insert_str = [] //插入的列
 		var insert_data = new Array(req.body.params.values.length)
 
 		for(let i = 0; i < insert_data.length; i++) { //初始化二维数组
@@ -224,7 +224,9 @@ module.exports = {
 		for(let i = 0; i < insert_str.length; i++) {
 			console.log(InsertTableRow_SQL + "(" + insert_str[i] + ") VALUES ?")
 			console.log(insert_data[i])
-			db.query(InsertTableRow_SQL + "(" + insert_str[i] + ") VALUES ?", [[insert_data[i]]], function(err, result) {
+			db.query(InsertTableRow_SQL + "(" + insert_str[i] + ") VALUES ?", [
+				[insert_data[i]]
+			], function(err, result) {
 				if(err) {
 					console.log('[INSERT ERROR] - ', err);
 					return;
@@ -332,7 +334,7 @@ module.exports = {
 								col_SQL += (",B" + i + "." + data[i].DCT_FID + " AS " + col[i] + "_F_BH," + "B" + i + "." + data[i].DCT_F_NAME + " AS " + col[i] + "_F_MC ")
 								table_SQL += (" LEFT JOIN " + data[i].DCT_ID + " B" + i + " ON A." + col[i] + "=B" + i + "." + data[i].DCT_FID)
 							}
-							table_SQL += req.query.sqlwhere
+							table_SQL += (req.query.sqlwhere || '' + req.query.pageSqlwhere)
 							col_SQL = col_SQL.substring(0, col_SQL.length - 1);
 							console.log(col_SQL)
 							console.log(table_SQL)
@@ -343,6 +345,10 @@ module.exports = {
 									res.send("查询失败" + err);
 								} else {
 									returnData.data = data
+									if(req.query.searchFlag == "false") {
+										returnData.total = data.length;
+										res.send(returnData)
+									}
 									resolve("Success")
 								}
 							});
@@ -351,15 +357,19 @@ module.exports = {
 				}
 			});
 		}), new Promise(function(resolve, reject) {
-			var QueryCount_Sql = "SELECT * FROM " + req.query.tablename;
-			db.query(QueryCount_Sql, (err, data) => {
-				if(err) {
-					res.send("查询失败" + err);
-				} else {
-					returnData.total = data.length;
-					resolve("Success")
-				}
-			});
+			var QueryCount_Sql = "SELECT * FROM " + req.query.tablename + " A" + req.query.sqlwhere;
+			if(req.query.searchFlag == "false") {
+				resolve("Success")
+			} else {
+				db.query(QueryCount_Sql, (err, data) => {
+					if(err) {
+						res.send("查询失败" + err);
+					} else {
+						returnData.total = data.length;
+						resolve("Success")
+					}
+				});
+			}
 
 		})]);
 

@@ -14,9 +14,13 @@
 		},
 		methods: {
 			searchs() {
-				if(this.person){
-					this.$parent.option = " where A.person_name like '%"+this.person + "%'"
+				if(this.person) {
+					this.$parent.option = " where B1.person_name like '%" + this.person + "%'"
 					this.$parent.searchFlag = false
+					this.$parent.queryTableData()
+				} else {
+					this.$parent.option = ""
+					this.$parent.searchFlag = true
 					this.$parent.queryTableData()
 				}
 			}

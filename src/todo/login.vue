@@ -18,10 +18,9 @@
 			</div>
 			<div class="line button_line">
 				<el-row>
-					<el-button type="primary" @click="Login()">登录</el-button>
+					<el-button @click="Login()">登录</el-button>
 				</el-row>
-				<!--				<p class="tip">温馨提示：未登录过的新用户,自动注册</p>
--->
+				<p class="tip">温馨提示：未登录过的新用户,自动注册</p>
 			</div>
 		</div>
 	</div>
@@ -77,7 +76,7 @@
 							message: "用户名或密码错误",
 							type: 'success'
 						});
-						//vm.Register();
+						vm.Register();
 					} else if(res.data.rows == "1") {
 						vm.$message({
 							showClose: true,
@@ -96,23 +95,23 @@
 					}
 				})
 			},
-//			Register: function() {
-//				$.get(vm.MYURL + 'Register.do', {
-//					username: vm.username,
-//					password: vm.password
-//				}, function(data) {
-//					if(data.rows == "1") {
-//						vm.$message({
-//							showClose: true,
-//							message: data.text,
-//							type: 'success'
-//						});
-//						localStorage.setItem("username", vm.username);
-//						localStorage.setItem("password", vm.password);
-//						vm.$router.push('manage')
-//					}
-//				}, "json");
-//			}
+			Register: function() {
+				$.get(vm.MYURL + 'Register.do', {
+					username: vm.username,
+					password: vm.password
+				}, function(data) {
+					if(data.rows == "1") {
+						vm.$message({
+							showClose: true,
+							message: data.text,
+							type: 'success'
+						});
+						localStorage.setItem("username", vm.username);
+						localStorage.setItem("password", vm.password);
+						vm.$router.push('manage')
+					}
+				}, "json");
+			}
 		}
 	}
 </script>

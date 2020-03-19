@@ -2,9 +2,10 @@
 	<ul v-if="item.children && item.children.length > 0 && item.closed==true">
 		<template v-for="children in item.children">
 			<child :text="item">
-				<span class="verticalWord" @click="clickFunc(children)" @click.right="userDrawer(children)">
-					<span class="person" :style="{'background-image':'url(' + children.imgURL + ')'}" v-if="children.person_name"></span>
-				<span class="verticalWord">{{children.GuanZhi_MC}}</span>
+				<span class="verticalWord" @click="clickFunc(children)" @click.right="guanzhiDrawer(children)">
+				<el-tooltip class="item" effect="dark" :content="children.PinJie_FMC"  placement="bottom" :effect="'light'">
+					<span class="verticalWord">{{children.GuanZhi_MC}}</span>
+				</el-tooltip>
 				</span>
 				<l-while :item="children">
 				</l-while>
@@ -29,40 +30,10 @@
 			clickFunc(children) {
 				children.closed = !children.closed
 			},
-			userDrawer(children) {
-				if(children.GuanZhi_MC){
-					return
-				}
-				axios.get(this.$store.state.MYURL + 'QueryPerson.do', {
-						params: {
-							id: children.id,
-						}
-					})
-					.then(res => {
-						this.$store.commit("setDrawer", true);
-						if(res.data.length != 0) {
-							let data = this.dealData(res.data)
-							this.$store.commit("setPersonData", data);
-						} else {
-							this.$store.commit("setPersonData", [{
-								imgUrl: 'none.png'
-							}]);
-						}
-					})
-
+			guanzhiDrawer(children) {
+				this.$store.commit("setguanzhiDrawer", true);
+				this.$store.commit("setguanzhiData", children);
 			},
-			dealData(data) {
-				for(let i = data.length - 1; i >= 0; i--) {
-					if(data[i].isAllLife == "0") {
-						if(moment(data[i].getTime, "YYYY-MM-DD").format("YYYYMMDD") > moment(this.$store.state.currentTime).format("YYYYMMDD") ||
-							moment(data[i].endTime, "YYYY-MM-DD").format("YYYYMMDD") < moment(this.$store.state.currentTime).format("YYYYMMDD")
-						) {
-							data.splice(i, 1)
-						}
-					}
-				}
-				return data
-			}
 		}
 	}
 </script>
