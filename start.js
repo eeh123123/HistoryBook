@@ -316,7 +316,7 @@ app.get('/Search_SJZ.do', function(req, res) {
 });
 
 //22 下载压缩包
-app.get('download_File/.do', function(req, res) {
+app.get('download_File.do', function(req, res) {
 	res.setHeader("Access-Control-Allow-Origin", "*");
 	if(req.query.fileName){
 		res.download(req.query.fileName)
@@ -339,6 +339,9 @@ app.get('/QueryTableRow_NoTotal.do', HB.QueryTableRow_NoTotal);
 
 //27 通用新增
 app.post('/InsertTableRow.do', HB.InsertTableRow);
+
+app.post('/InsertTableRow_Origin.do', HB.InsertTableRow_Origin);
+
 
 //28 通用更新
 app.post('/UpdateTableRow.do', HB.UpdateTableRow);

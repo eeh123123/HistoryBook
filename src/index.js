@@ -21,7 +21,6 @@ import Dct from './todo/Dct.vue'
 
 import adminSet from './todo/adminSet.vue';
 import map from './todo/map.vue'
-import map1 from './todo/map1.vue'
 
 import store from './store';
 
@@ -79,11 +78,6 @@ const routes = [{
 				path: "/map",
 				component: map,
 				meta: ['数据展示', '地图'],
-			},
-			{
-				path: "/map1",
-				component: map1,
-				meta: ['数据展示', '地图1'],
 			},
 			{
 				path: '/calendar',

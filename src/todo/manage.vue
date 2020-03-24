@@ -25,7 +25,6 @@
 						<el-menu-item index="GuanZhiTree"><img src="../assets/smallimg/guanzhishu.png"></img>官职树</el-menu-item>
 						<el-menu-item index="calendar"><img src="../assets/smallimg/calendar.png"></img>万年历</el-menu-item>
 						<el-menu-item index="map"><img src="../assets/smallimg/map.png"></img>地图</el-menu-item>
-						<el-menu-item index="map1"><img src="../assets/smallimg/map.png"></img>地图1</el-menu-item>
 					</el-submenu>
 					<!--<el-submenu index="4">
 						<template slot="title"><i class="el-icon-warning"></i>账号管理（未完）</template>

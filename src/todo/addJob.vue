@@ -442,11 +442,11 @@
 			},
 			GZB_Sure() {
 				if(vm.GuanZhiType == 0) {
-					vm.GuanZhi_Data[vm.GuanZhi_EditIndex].Belong = vm.$refs.Tree.getCheckedNodes()[0].label
+					vm.GuanZhi_Data[vm.GuanZhi_EditIndex].Belong = vm.$refs.Tree.getCheckedNodes()[0].value
 				} else if(vm.GuanZhiType == 1) {
-					vm.PLAdd_Data.Belong = vm.$refs.Tree.getCheckedNodes()[0].label
+					vm.PLAdd_Data.Belong = vm.$refs.Tree.getCheckedNodes()[0].value
 				} else if(vm.GuanZhiType == 2) {
-					vm.KJ_GuanZhi = vm.$refs.Tree.getCheckedNodes()[0].label
+					vm.KJ_GuanZhi = vm.$refs.Tree.getCheckedNodes()[0].value
 				}
 				vm.GZBVisible = false
 
@@ -484,13 +484,13 @@
 					for(let j = 0; j < Number_Array.length; j++) {
 						if(array[i].indexOf(Number_Array[j]) != -1) {
 							index = array[i].indexOf(Number_Array[j])
-							values[i] = ["", "", vm.KJ_FirstName + array[i].substr(0, index), ChineseToNumber(array[i].substr(index)) + "人", vm.KJ_GuanZhi];
+							values[i] = ["", "", vm.KJ_FirstName + array[i].substr(0, index), this.$tools.ChineseToNumber(array[i].substr(index)) + "人", vm.KJ_GuanZhi];
 							break;
 						}
 					}
 				}
 
-				axios.post(this.$store.state.MYURL + 'InsertTableRow.do', {
+				axios.post(this.$store.state.MYURL + 'InsertTableRow_Origin.do', {
 						params: {
 							tablename: "GuanZhi",
 							Insertcol: "PinJie_FBH,PinJie_FMC,GuanZhi_MC,F_Caption,Belong",
