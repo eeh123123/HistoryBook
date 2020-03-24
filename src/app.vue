@@ -8,49 +8,62 @@
 </template>
 
 <script>
-import login from './todo/login.vue'
-import drawer from './tools/person-Drawer.vue'
-import guanzhidrawer from './tools/guanzh-Draweri.vue'
+	import login from './todo/login.vue'
+	import drawer from './tools/person-Drawer.vue'
+	import guanzhidrawer from './tools/guanzh-Draweri.vue'
 
-import timeDiv from './tools/timeDiv.vue'
+	import timeDiv from './tools/timeDiv.vue'
 
-export default {
-	components: {
-		login,
-		drawer,
-		timeDiv,
-		guanzhidrawer
-	},
-	computed: {
-		key() {
-			return this.$route.fullPath
+	export default {
+		components: {
+			login,
+			drawer,
+			timeDiv,
+			guanzhidrawer
 		},
-		Drawer() {
-			return this.$store.state.Drawer
+		beforeCreate() {
+			let count = 0;
+			let imgs = [
+				//用require的方式添加图片地址，直接添加图片地址的话，在build打包之后会查找不到图片，因为打包之后的图片名称会有一个加密的字符串
+				require('./assets/images/commonEventBg.png'),
+				require('./assets/images/guanzhiBG.png'),
+				require('./assets/images/personBoard.png')
+			]
+			for(let img of imgs) {
+				let image = new Image();
+				image.src = img;
+				image.onload = () => {
+					count++;
+				};
+			}
 		},
-	},
-	data() {
-		return {
-			direction: 'ltr',
-		}
-	},
-	methods: {
-		handleClose() {
-			this.$store.commit("setDrawer", false);
+		computed: {
+			key() {
+				return this.$route.fullPath
+			},
+			Drawer() {
+				return this.$store.state.Drawer
+			},
 		},
-		QueryData() {
+		data() {
+			return {
+				direction: 'ltr',
+			}
+		},
+		methods: {
+			handleClose() {
+				this.$store.commit("setDrawer", false);
+			},
+			QueryData() {
 
+			}
 		}
 	}
-}
 </script>
 
 <style lang="less">
 	@import 'assets/styles/common';
-	/*body {
-	cursor: url('http://49.235.128.250:8084/upload/normal.cur'),auto;
-}*/
-
+	
 	#app {
 		position: absolute;
 		left: 0;
@@ -61,7 +74,7 @@ export default {
 		justify-content: center;
 		align-items: center;
 	}
-
+	
 	#login {
 		width: 60%;
 	}
