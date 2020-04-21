@@ -2,8 +2,8 @@
 	<ul v-if="item.children && item.children.length > 0 && item.closed==true">
 		<template v-for="children in item.children">
 			<child :text="item">
-				<span class="verticalWord" @click="clickFunc(children)" @click.right="guanzhiDrawer(children)">
-				<el-tooltip class="item" effect="dark" :content="children.PinJie_FMC"  placement="bottom" :effect="'light'">
+				<span class="verticalWord" @click="clickFunc(children)" @contextmenu.prevent="guanzhiDrawer(children)">
+				<el-tooltip class="item" effect="dark" :content="children.PinJie_F_MC"  placement="bottom" :effect="'light'">
 					<span class="verticalWord">{{children.GuanZhi_MC}}</span>
 				</el-tooltip>
 				</span>

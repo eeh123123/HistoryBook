@@ -1,5 +1,5 @@
 <template>
-	<iframe src="mapUrl" frameborder="0" class="full"></iframe>
+	<iframe :src="mapUrl" frameborder="0" class="full"></iframe>
 </template>
 
 <style>
@@ -13,7 +13,7 @@
 	module.exports = {
 		data: function() {
 			return {
-				mapUrl:require('../../map.html')
+				mapUrl:'map.html'
 			};
 		},
 		mounted() {

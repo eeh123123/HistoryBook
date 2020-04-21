@@ -203,9 +203,6 @@
 					.then(function(response) {
 						vm.GZB_data_All = response.data.data;
 					})
-					.catch(function(error) {
-						console.log(error);
-					});
 			},
 			searchs() {
 				let option = {
@@ -222,7 +219,7 @@
 						params: {
 							tablename: option.tablename,
 							showcol: "*",
-							sqlwhere: option.sqlwhere + " Order By Belong,(PinJie_FBH+0) ,ID"
+							sqlwhere: option.sqlwhere + " Order By Belong,(PinJie+0) ,ID"
 						}
 					})
 					.then(function(response) {
@@ -484,7 +481,7 @@
 					for(let j = 0; j < Number_Array.length; j++) {
 						if(array[i].indexOf(Number_Array[j]) != -1) {
 							index = array[i].indexOf(Number_Array[j])
-							values[i] = ["", "", vm.KJ_FirstName + array[i].substr(0, index), this.$tools.ChineseToNumber(array[i].substr(index)) + "人", vm.KJ_GuanZhi];
+							values[i] = ["",  vm.KJ_FirstName + array[i].substr(0, index), this.$tools.ChineseToNumber(array[i].substr(index)), vm.KJ_GuanZhi];
 							break;
 						}
 					}
@@ -493,7 +490,7 @@
 				axios.post(this.$store.state.MYURL + 'InsertTableRow_Origin.do', {
 						params: {
 							tablename: "GuanZhi",
-							Insertcol: "PinJie_FBH,PinJie_FMC,GuanZhi_MC,F_Caption,Belong",
+							Insertcol: "PinJie,GuanZhi_MC,personSize,Belong",
 							values: values
 						}
 					})
@@ -522,8 +519,7 @@
 				let value = []
 				for(let i = 0; i < vm.PLAdd_Data.Count; i++) {
 					value.push(
-						[vm.PLAdd_Data.PinJie_FBH,
-							vm.PLAdd_Data.PinJie_FMC,
+						[vm.PLAdd_Data.PinJie,
 							vm.PLAdd_Data.GuanZhi_MC + "(" + (i - 1 + 2) + ")",
 							vm.PLAdd_Data.F_Caption,
 							vm.PLAdd_Data.Belong
@@ -533,7 +529,7 @@
 				axios.post(this.$store.state.MYURL + 'InsertTableRow.do', {
 						params: {
 							tablename: "GuanZhi",
-							Insertcol: "PinJie_FBH,PinJie_FMC,GuanZhi_MC,F_Caption,Belong",
+							Insertcol: "PinJie,GuanZhi_MC,F_Caption,Belong",
 							values: value
 						}
 					})

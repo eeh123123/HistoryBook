@@ -7,14 +7,16 @@
 				</el-input>
 			</div>
 			<div class="bottom">
-				<el-select v-model="guanzhiData.PinJie_FMC" filterable placeholder="请选择" @change="changeLocationValue">
+				品阶：
+				<el-select v-model="guanzhiData.PinJie_F_MC" filterable placeholder="请选择" @change="changeLocationValue" style="width: 120px;">
 					<el-option v-for="item in pinjieOptions" :key="item.F_BH" :label="item.F_MC" :value="item.F_BH">
 					</el-option>
 				</el-select>
+				人数：
+				<el-input v-model="guanzhiData.personSize" style="width: 80px">
+				</el-input>
 				<el-button size="medium " @click="save">记录</el-button>
-
 			</div>
-
 		</div>
 	</el-drawer>
 </template>
@@ -65,16 +67,15 @@
 				});
 				this.pinJieLable=obj.F_MC
 				this.pinjieValue=obj.F_BH
-				this.guanzhiData.PinJie_FMC = obj.F_MC
+				this.guanzhiData.PinJie_F_MC = obj.F_MC
+				this.guanzhiData.PinJie_F_BH = obj.F_BH
 			},
 			save() {
-				debugger
-				this.pinjieValue
 				let array_update = [{
 					id: this.guanzhiData.id,
-					F_Caption: this.guanzhiData.F_Caption,
-					PinJie_FMC:this.pinJieLable,
-					PinJie_FBH:this.pinjieValue
+					F_Caption: this.guanzhiData.F_Caption||'',
+					PinJie:this.pinjieValue,
+					personSize:this.guanzhiData.personSize,
 				}]
 				axios.post(this.$store.state.MYURL + 'UpdateTableRow.do', {
 						params: {
@@ -135,7 +136,7 @@
 			height: 2.71vw;
 			line-height: 2.71vw;
 			width: 25.05vw;
-			color: white;
+			color: black;
 			bottom: 12.6%;
 			left: 6%;
 			padding-left: 20px;

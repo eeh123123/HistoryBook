@@ -1,116 +1,273 @@
-<!doctype html>
-<html lang="zh-CN">
+<!DOCTYPE html>
+<html>
 
-<head>
-    <!-- 原始地址：//webapi.amap.com/ui/1.0/ui/misc/PoiPicker/examples/index.html -->
-    <base href="http://webapi.amap.com/ui/1.0/ui/misc/PoiPicker/examples/" />
-    <meta charset="UTF-8">
-    <meta name="viewport" content="initial-scale=1.0, user-scalable=no, width=device-width">
-    <title>输入框选择POI点</title>
-    <style>
-    html,
-    body,
-    #container {
-        width: 100%;
-        height: 100%;
-        margin: 0px;
-        font-size: 13px;
-    }
+	<head>
+		<meta charset="utf-8" />
+		<meta http-equiv="X-UA-Compatible" content="IE=edge" />
+		<meta name="viewport" content="initial-scale=1.0, user-scalable=no, width=device-width" />
+		<title>历史书-地图</title>
+		<script type="text/javascript" src="http://webapi.amap.com/maps?v=1.4.1&key=f1c8c370f7738e458c5c70a1df52984b&plugin=AMap.Autocomplete,AMap.PlaceSearch"></script>
+		<script src="https://unpkg.com/axios/dist/axios.min.js"></script>
+		<style>
+			#mapBox,
+			body,
+			html {
+				position: relative;
+				height: 100%;
+				margin: 0;
+				padding: 0;
+			}
+			
+			#container {
+				width: 100%;
+				height: 100%;
+			}
+			
+			* {
+				box-sizing: border-box;
+			}
+			
+			#myPage {
+				position: absolute;
+				right: 10px;
+				bottom: 0px;
+				background-color: #fff;
+				text-align: center;
+				border-radius: 10px;
+				box-shadow: 0px 2px 4px 0px silver;
+			}
+			
+			#tipinput {
+				width: 400px;
+			}
+			
+			.amap-sug-result {
+				display: none;
+			}
+			
+			.amap-logo {
+				display: none !important;
+			}
+			
+			.toolsBar {
+				position: absolute;
+				height: 1.5vw;
+				width: 80%;
+				background-color: #F4F3F1;
+				z-index: 1;
+			}
+			
+			.toolsBar-btn {
+				border: 1px solid #A3A7A6;
+				z-index: 2;
+				height: 1.5vw;
+				width: 1.5vw;
+				background-size: 100% 100%;
+				background-repeat: no-repeat;
+				background-color: transparent;
+				position: absolute;
+			}
+			
+			.tuding1 {
+				background-image: url("http://49.235.128.250:8084/upload/tuding1.png");
+			}
+			
+			.windowInput {
+				width: 260px;
+			}
+			
+			.saveBtn {
+				color: #fff;
+				background-color: #99d465;
+				border-color: #8cce51;
+				cursor: pointer;
+				background-image: none;
+				border: 1px solid transparent;
+				white-space: nowrap;
+				padding: 6px 12px;
+				font-size: 14px;
+				line-height: 2.4;
+				border-radius: 4px;
+			}
+		</style>
+	</head>
 
-    #pickerBox {
-        position: absolute;
-        z-index: 9999;
-        top: 50px;
-        right: 30px;
-        width: 300px;
-    }
+	<body>
+		<div class="toolsBar">
+			<a class="tuding1 toolsBar-btn" @click="btnClick(1)"></a>
+		</div>
+		<div id="mapBox">
+			<div id="container"></div>
+			<div id="myPage">
+				<!--<p>请输入关键字：</p>-->
+				<input id="tipinput" placeholder="  请输入关键字：" />
+			</div>
+		</div>
+	</body>
+	<script type="text/javascript">
+		var btnFlag = 0;
+		var mapObj = [{
+			currentX: 0,
+			currentY: 0,
+			positionName: '' //全局的地标名字
+		}]
+		var MYURL = "http://49.235.128.250:8084/"
+		var currentX, currentY
+		window.onload = function() {
+			queryAxios()
+		};
 
-    #pickerInput {
-        width: 200px;
-        padding: 5px 5px;
-    }
+		function btnClick(num) {
+			btnFlag = num;
+		}
 
-    #poiInfo {
-        background: #fff;
-    }
+		//地图加载
+		var infoWindow;
+		var map = new AMap.Map("container", {
+			mapStyle: "amap://styles/8e37443f34f0cdda4db2fef99e5e9fb4", //设置地图的显示样式
+			resizeEnable: true,
+			zoom: 13 //放大比例
+		});
+		//输入提示
+		var autoOptions = {
+			input: "tipinput" //绑定地图的输入框
+		};
+		var auto = new AMap.Autocomplete(autoOptions);
+		var placeSearch = new AMap.PlaceSearch({
+			//新建的一个map
+			map: map
+		}); //构造地点查询类
 
-    .amap_lib_placeSearch .poibox.highlight {
-        background-color: #CAE1FF;
-    }
+		var satelliteLayer = new AMap.TileLayer.Satellite();
+		//批量添加图层
+		map.add([satelliteLayer]);
 
-    .amap_lib_placeSearch .poi-more {
-        display: none!important;
-    }
-    </style>
-</head>
+		AMap.event.addListener(auto, "select", select); //注册监听，当选中某条记录时会触发
+		function select(e) {
+			console.log(e);
+			placeSearch.setCity(e.poi.adcode);
+			placeSearch.search(e.poi.name); //关键字查询查询
+		}
+		AMap.event.addListener(placeSearch, "markerClick", function(e) {
+			//监听搜索显示的Mark点击事件
+			console.log(e.data.name);
+			document.getElementById("tipinput").value = e.data.name;
+		});
+		/**---------++++++...............|||||||||||||||||||........++++++--------***/
+		AMap.plugin("AMap.Geocoder", function() {
+			var geocoder = new AMap.Geocoder({
+				city: "010" //城市，默认：“全国”
+			});
+			var marker = new AMap.Marker({
+				map: map,
+				bubble: true
+			});
+			map.on("click", function(e) {
+				console.log("map-click");
+				var lat = e.lnglat.lat;
+				var lng = e.lnglat.lng;
+				var lnglatmsg = [];
+				var daddress, addressname;
+				lnglatmsg.push(lng);
+				lnglatmsg.push(lat);
+				marker.setPosition(e.lnglat);
+				geocoder.getAddress(e.lnglat, function(status, result) {
+					//console.log(result);
+					daddress =
+						result.regeocode.addressComponent.province +
+						result.regeocode.addressComponent.district +
+						result.regeocode.addressComponent.township +
+						result.regeocode.addressComponent.street +
+						result.regeocode.addressComponent.streetNumber;
+					addressname = result.regeocode.formattedAddress;
+					if(status == "complete") {
+						document.getElementById("tipinput").value =
+							result.regeocode.formattedAddress;
+					}
+					openInfo(lnglatmsg, addressname, daddress);
+				});
+			});
+		});
+		//在指定位置打开信息窗体
+		function openInfo(lnglatmsg, addressname, daddress) {
+			currentX = lnglatmsg[0];
+			currentY = lnglatmsg[1];
+			positionName = addressname
+			positionAdress = daddress
+			//构建信息窗体中显示的内容
+			let infoWindowHtml =
+				`
+            <div style=\"padding:0px 0px 0px 4px;\"><b style=\"color:#2a2a2a;font-size: 14px;\">已将坐标定位为</b><br>
+            <hr>
+            <input class="windowInput" id ="windowInput" value=` +
+				addressname +
+				`>` +
+				`</input><br>
+            <span style=\"padding: 5px 0px;font-size: 12px;color: #a0a0a0;\">地址 :` +
+				daddress +
+				`</span><br>
+           		 <a id="certainInfo" class="saveBtn" onclick="saveAxios()">保存</a>
+            </div>`;
+			infoWindow = new AMap.InfoWindow({
+				panel: "panel",
+				placeSearch: true,
+				asOrigin: true,
+				asDestination: true,
+				content: infoWindowHtml //使用默认信息窗体框样式，显示信息内容
+			});
+			infoWindow.open(map, lnglatmsg);
+		}
 
-<body>
-    <div id="container" class="map" tabindex="0"></div>
-    <div id="pickerBox">
-        <input id="pickerInput" placeholder="输入关键字选取地点" />
-        <div id="poiInfo"></div>
-    </div>
-    <script src="https://webapi.amap.com/maps?v=1.4.15&key=f1c8c370f7738e458c5c70a1df52984b"></script>
+		function saveAxios() {
+			var values = [currentX, currentY, document.getElementById('windowInput').value]
+			axios.post(MYURL + 'InsertTableRow_Origin.do', {
+					params: {
+						tablename: "map",
+						Insertcol: "positionX,positionY,positionName",
+						values: [values]
+					}
+				})
+				.then(function(res) {
+					alert(res.data.msg)
+				})
+		}
 
-    <!-- UI组件库 1.0 -->
-    <script src="http://webapi.amap.com/ui/1.0/main.js?v=1.0.11"></script>
-    <script type="text/javascript">
-    	
-	var map = new AMap.Map('container',{
-	   	 mapStyle: 'amap://styles/8e37443f34f0cdda4db2fef99e5e9fb4', //设置地图的显示样式
-	});
+		function queryAxios() {
+			axios.get(MYURL + 'QueryTableRow.do', {
+					params: {
+						tablename: "map",
+						showcol: "*",
+						sqlwhere: " 1=1"
+					}
+				})
+				.then(function(res) {
+					mapObj = res.data.data
+					for(let i = 0; i < mapObj.length; i++) {
+						writePoint(mapObj[i].positionX, mapObj[i].positionY, mapObj[i].positionName)
+					}
+				})
+		}
 
-    AMapUI.loadUI(['misc/PoiPicker'], function(PoiPicker) {
+		function writePoint(x, y, positionName) {
+			var marker = new AMap.Marker({
+				position: map.getCenter(),
+				icon: 'http://49.235.128.250:8084/upload/maker.png',
+				position: [x, y],
+			});
 
-        var poiPicker = new PoiPicker({
-            //city:'北京',
-            input: 'pickerInput'
-        });
+			marker.setMap(map);
 
-        //初始化poiPicker
-        poiPickerReady(poiPicker);
-    });
+			// 设置鼠标划过点标记显示的文字提示
+			//			marker.setTitle('我是marker的title');
 
-    function poiPickerReady(poiPicker) {
-
-        window.poiPicker = poiPicker;
-
-        var marker = new AMap.Marker();
-
-        var infoWindow = new AMap.InfoWindow({
-            offset: new AMap.Pixel(0, -20)
-        });
-
-        //选取了某个POI
-        poiPicker.on('poiPicked', function(poiResult) {
-
-            <!-- var source = poiResult.source, -->
-                poi = poiResult.item,
-                info = {
-                    <!-- source: source, -->
-                    <!-- id: poi.id, -->
-                    name: poi.name,
-                    <!-- location: poi.location.toString(), -->
-                    <!-- address: poi.address -->
-                };
-
-            marker.setMap(map);
-            infoWindow.setMap(map);
-
-            marker.setPosition(poi.location);
-            infoWindow.setPosition(poi.location);
-
-            infoWindow.setContent('POI信息: <pre>' + JSON.stringify(info, null, 2) + '</pre>');
-            infoWindow.open(map, marker.getPosition());
-
-            map.setCenter(marker.getPosition());
-        });
-
-        poiPicker.onCityReady(function() {
-            poiPicker.suggest('美食');
-        });
-    }
-    </script>
-</body>
+			// 设置label标签
+			// label默认蓝框白底左上角显示，样式className为：amap-marker-label
+			marker.setLabel({
+				offset: new AMap.Pixel(0, 0), //设置文本标注偏移量
+				content: "<div class='info'>" + positionName + "</div>", //设置文本标注内容
+				direction: 'bottom' //设置文本标注方位
+			});
+		}
+	</script>
 
 </html>

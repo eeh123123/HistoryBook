@@ -13,7 +13,9 @@
 
 <script>
 	import person from '../sonVue/person.vue'
+	import attribute from '../sonVue/attribute.vue'
 	import attributeTime from '../sonVue/attributeTime.vue'
+	import guanzhi from '../sonVue/guanzhi.vue'
 	import BaseTable from '../tools/BaseTable.vue'
 	let vm;
 	export default {
@@ -26,9 +28,17 @@
 				{
 					return person
 				}
+				if(this.$route.query.dctid=="attribute")
+				{
+					return attribute
+				}
 				if(this.$route.query.dctid=="attributeTime")
 				{
 					return attributeTime
+				}
+				if(this.$route.query.dctid=="guanzhi")
+				{
+					return guanzhi
 				}
 			}
 		},
@@ -104,8 +114,21 @@
 							code: res.data.data[i].COL_ID,
 							label: res.data.data[i].COL_CAPTION,
 							COL_APP_TYPE: res.data.data[i].COL_APP_TYPE,
+							COL_ENUM_KEY:res.data.data[i].COL_ENUM_KEY,
+							COL_SHOW_SIZE:res.data.data[i].COL_SHOW_SIZE,
+							ENUM_LIST:[]
 						})
 					}
+					let dct_enums_Array = JSON.parse(localStorage.getItem("dct_enums"))
+					for(let i =0;i<tableHead.length;i++){
+						for(let j=0;j<dct_enums_Array.length;j++){
+							if(tableHead[i].COL_ENUM_KEY==dct_enums_Array[j].F_T3 ){
+								tableHead[i].ENUM_LIST.push({label:dct_enums_Array[j].F_MC,value:dct_enums_Array[j].F_BH})
+							}
+						}
+					}
+					
+					
 					this.tableHead = tableHead
 				})
 			},
@@ -225,6 +248,16 @@
 			},
 			updateAxios(resolve) {
 				let updateData = this.$tools.ComparArray(this.Orign_Data, this.tableData.data, 'id')
+				for(let i = 0; i < updateData.length; i++) {
+					for(let j in updateData[i]) {
+						if(j.indexOf("_F_BH") != -1) {
+							delete updateData[i][j]
+						}
+						if(j.indexOf("_F_MC") != -1) {
+							delete updateData[i][j]
+						}
+					}
+				}
 				if(updateData.length != 0) {
 					axios.post(this.$store.state.MYURL + 'UpdateTableRow.do', {
 							params: {

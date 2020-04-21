@@ -2,7 +2,7 @@
 	<div>
 		<el-table class="baseTable" stripe tooltip-effect="light" :data.sync="tableData.data" :height.sync="tableHeight" @current-change="selectedTableData" highlight-current-row>
 			<!--class="tb-edit"-->
-			<el-table-column v-for="(item, index) in tableHead" :value="item.code" :key="index" :show-overflow-tooltip="true" :prop="item.code" :label="item.label" align="center" :width="item.code == 'index' ? 50 : item.width" :min-width="item['min-width']">
+			<el-table-column v-for="(item, index) in tableHead" :value="item.code" :key="index" :show-overflow-tooltip="true" :prop="item.code" :label="item.label" align="center" :width="item.code == 'index' ? 50 : item.COL_SHOW_SIZE" :min-width="item['min-width']">
 				<template slot-scope="scope">
 					<!--<span>{{ scope.row[item.code] }}</span>-->
 					<span v-if="item.code == 'index'">{{(Me_tableData.currentPage - 1) * pageSize + (scope.$index + 1)}}</span>
@@ -32,6 +32,12 @@
 					<div v-else-if="item.COL_APP_TYPE == 'boolean'">
 						<el-switch v-model="scope.row[item.code]" active-value="1" inactive-value="0">
 						</el-switch>
+					</div>
+					<div v-else-if="item.COL_APP_TYPE == 'enum'">
+						<el-select v-model="scope.row[item.code]" filterable placeholder="请选择">
+							<el-option v-for="item in item.ENUM_LIST" :key="item.value" :label="item.label" :value="item.value">
+							</el-option>
+						</el-select>
 					</div>
 					<span v-else>{{ scope.row[item.code] }}</span>
 				</template>
@@ -200,7 +206,7 @@
 				type: Object,
 				default: 10
 			},
-			pageSize:[Number,String],
+			pageSize: [Number, String],
 			handleCurrentChange: Function,
 		}
 	};

@@ -14,10 +14,6 @@
     margin-top: 10px;
 }
 
-.width-half {
-    width: 50%;
-}
-
 .width-40 {
     width: 40%;
 }
@@ -46,6 +42,9 @@
     }
     .el-input--small .el-input__icon {
         line-height: 28px;
+    }
+    .cell .el-tooltip{
+        width: 100%;
     }
 }
 
@@ -80,7 +79,7 @@
 
 .sonVue {
     float: left;
-    .el-input {
+    >.el-input {
         width: 150px;
     }
     >* {
@@ -95,7 +94,7 @@
         display: none;
     }
     .el-drawer.ltr {
-        background-image: url("../images/personboard.png");
+        background-image: url("../../../static/img/personBoard.png");
         background-size: 100% 100%;
         background-repeat: no-repeat;
     }
@@ -342,7 +341,7 @@
 
 .person-Image {
     width: auto;
-    height: 282px;
+    height: 350px;
     max-width: 400px;
     max-height: 400px;
 }
@@ -354,7 +353,7 @@
         top: 10%;
     }
     .el-drawer.rtl {
-        background-image: url("../images/guanzhiBG.png");
+        background-image: url("../../../static/img/guanzhiBG.png");
         background-size: 100% 96%;
         background-repeat: no-repeat;
         background-color: transparent;
@@ -372,11 +371,21 @@
 //      color: white;
 //  }
 //}
-.el-button,.el-button:hover,.el-button:active {
+.el-button,
+.el-button:hover,
+.el-button:active,
+.el-button:visited,
+.el-button:link {
     background-image: url("../images/nameBoard.png");
     background-size: 100% 100%;
     background-repeat: no-repeat;
-    background-color:transparent;
+    background-color: transparent;
     border: none;
     color: white;
+}
+
+.dialog-Image {
+    width: fit-content;
+    min-width: 350px;
+    min-height: 350px;
 }

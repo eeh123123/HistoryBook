@@ -10,7 +10,7 @@
 <script>
 	import login from './todo/login.vue'
 	import drawer from './tools/person-Drawer.vue'
-	import guanzhidrawer from './tools/guanzh-Draweri.vue'
+	import guanzhidrawer from './tools/guanzh-Drawer.vue'
 
 	import timeDiv from './tools/timeDiv.vue'
 
@@ -25,9 +25,9 @@
 			let count = 0;
 			let imgs = [
 				//用require的方式添加图片地址，直接添加图片地址的话，在build打包之后会查找不到图片，因为打包之后的图片名称会有一个加密的字符串
-				require('./assets/images/commonEventBg.png'),
-				require('./assets/images/guanzhiBG.png'),
-				require('./assets/images/personBoard.png')
+				require('../static/img/commonEventBg.png'),
+				require('../static/img/guanzhiBG.png'),
+				require('../static/img/personBoard.png')
 			]
 			for(let img of imgs) {
 				let image = new Image();
@@ -45,6 +45,9 @@
 				return this.$store.state.Drawer
 			},
 		},
+		mounted() {
+			this.QueryEnum()
+		},
 		data() {
 			return {
 				direction: 'ltr',
@@ -54,16 +57,33 @@
 			handleClose() {
 				this.$store.commit("setDrawer", false);
 			},
-			QueryData() {
+			QueryEnum() {
+				let option = {
+					tablename: "dct_enums",
+					showcol: ['*'],
+					sqlwhere: " 1=1"
+				}
+				axios.get(this.$store.state.MYURL + 'QueryTableRow.do', {
+						params: {
+							tablename: option.tablename,
+							showcol: option.showcol.join(","),
+							sqlwhere: option.sqlwhere
+						}
+					})
+					.then(function(response) {
+						localStorage.setItem("dct_enums",JSON.stringify(response.data.data))
+					})
+			},
+			GetImg() {
 
 			}
+
 		}
 	}
 </script>
 
 <style lang="less">
 	@import 'assets/styles/common';
-	
 	#app {
 		position: absolute;
 		left: 0;
@@ -74,7 +94,7 @@
 		justify-content: center;
 		align-items: center;
 	}
-	
+
 	#login {
 		width: 60%;
 	}

@@ -2,7 +2,7 @@
 	<ul v-if="item.children && item.children.length > 0 && item.closed==true">
 		<template v-for="children in item.children">
 			<child :text="item">
-				<span class="child-item" @click="clickFunc(children)" @click.right="userDrawer(children)">
+				<span class="child-item" @click="clickFunc(children)" @contextmenu.prevent="userDrawer(children)">
 					<span class="person" :style="{'background-image':'url(' + children.imgURL + ')'}"></span>
 				<span class="name">{{children.person_name}}</span>
 				</span>
@@ -40,7 +40,6 @@
 						if(res.data.length != 0) {
 							let data = this.dealData(res.data)
 							this.$store.commit("setPersonData", data);
-							debugger
 						} else {
 							this.$store.commit("setPersonData", [{
 								imgUrl: 'none.png'

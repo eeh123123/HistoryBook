@@ -7,7 +7,6 @@ import './assets/styles/tree.less'
 import login from './todo/login.vue'
 import manage from './todo/manage.vue'
 
-import addPerson from './todo/addPerson.vue'
 import addJob from './todo/addJob.vue'
 import familyTree from './todo/familyTree.vue'
 import guanzhiTree from './todo/GuanZhiTree.vue'
@@ -19,8 +18,14 @@ import calendar from './todo/calendar.vue'
 import commonDct from './todo/commonDct.vue'
 import Dct from './todo/Dct.vue'
 
+import buoList from './todo/buoList.vue'
+
+
 import adminSet from './todo/adminSet.vue';
 import map from './todo/map.vue'
+import dctEnum from './todo/dctEnum.vue'
+
+
 
 import store from './store';
 
@@ -37,11 +42,7 @@ const routes = [{
 		path: '/manage',
 		component: manage,
 		name: '管理页',
-		children: [{
-				path: '/addPerson',
-				component: addPerson,
-				meta: ['源数据', '添加人物'],
-			}, {
+		children: [ {
 				path: '/addJob',
 				component: addJob,
 				meta: ['源数据', '添加官职'],
@@ -64,7 +65,14 @@ const routes = [{
 				path: "/commonDCT?dctid=attributeTime",
 				component: commonDct,
 				meta: ['源数据', '特性时间表'],
-			}, {
+			}, 
+			{
+				path: "/dctEnum",
+				component: dctEnum,
+				meta: ['源数据', '枚举表'],
+			}, 
+			
+			{
 				path: "/familyTree",
 				component: familyTree,
 				meta: ['数据展示', '家谱树'],
@@ -91,6 +99,11 @@ const routes = [{
 				path: '/Dct',
 				component: Dct,
 				meta: ['建模管理', '字典管理'],
+			},
+			{
+				path: '/buoList',
+				component: buoList,
+				meta: ['猫之百科', '布偶猫名录'],
 			}
 		]
 	}
