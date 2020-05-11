@@ -26,7 +26,6 @@
 	export default {
 		computed: {
 			guanzhiDrawer() {
-				this.QueryPinJie()
 				return this.$store.state.guanzhiDrawer
 			},
 			guanzhiData() {
@@ -42,6 +41,7 @@
 		},
 		mounted() {
 			vm = this
+			this.QueryPinJie()
 		},
 		methods: {
 			handleClose() {
@@ -52,7 +52,7 @@
 						params: {
 							tablename: "PinJie",
 							showcol: "*",
-							sqlwhere: " 1=1"
+							sqlwhere: " 1=1",
 						}
 					})
 					.then(function(response) {

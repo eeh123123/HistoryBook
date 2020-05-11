@@ -66,7 +66,7 @@
 			getInfo(item) {
 				let dct_enums_Array = JSON.parse(localStorage.getItem("dct_enums"))
 				for(let j = 0; j < dct_enums_Array.length; j++) {
-					if(dct_enums_Array[j].F_BH == item.F_From ) {
+					if(dct_enums_Array[j].id == item.F_From ) {
 							return "来源："+dct_enums_Array[j].F_MC+ ";主人：" + (item.fromUrl||'')
 					}
 				}
@@ -104,12 +104,12 @@
 					if(dct_enums_Array[j].F_T3 == '02') {
 						this.flowerList.push({
 							label: dct_enums_Array[j].F_MC,
-							value: dct_enums_Array[j].F_BH
+							value: dct_enums_Array[j].id
 						})
 					} else if(dct_enums_Array[j].F_T3 == '03') {
 						this.maskList.push({
 							label: dct_enums_Array[j].F_MC,
-							value: dct_enums_Array[j].F_BH
+							value: dct_enums_Array[j].id
 						})
 					}
 				}

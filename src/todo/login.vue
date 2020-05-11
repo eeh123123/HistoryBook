@@ -27,6 +27,8 @@
 </template>
 
 <script>
+	import Cookies from 'js-cookie'
+	
 	let vm;
 	export default {
 		data() {
@@ -64,7 +66,7 @@
 					this.$message.error("密码不能为全空格");
 					return;
 				}
-				axios.get(vm.MYURL + 'Login.do', {
+				axios.post(vm.MYURL + 'Login.do', {
 					params: {
 						username: vm.username,
 						password: vm.password
@@ -83,6 +85,8 @@
 							message: res.data.text,
 							type: 'success'
 						});
+						vm.QueryEnum()
+						Cookies.set('Authorization',res.data.token)
 						localStorage.setItem("username", vm.username);
 						localStorage.setItem("password", vm.password);
 						vm.$router.push('manage')
@@ -111,7 +115,24 @@
 						vm.$router.push('manage')
 					}
 				}, "json");
-			}
+			},
+			QueryEnum() {
+				let option = {
+					tablename: "dct_enums",
+					showcol: ['*'],
+					sqlwhere: " 1=1"
+				}
+				axios.get(this.$store.state.MYURL + 'QueryTableRow.do', {
+						params: {
+							tablename: option.tablename,
+							showcol: option.showcol.join(","),
+							sqlwhere: option.sqlwhere
+						}
+					})
+					.then(res => {
+						localStorage.setItem("dct_enums",JSON.stringify(res.data.data))
+					})
+			},
 		}
 	}
 </script>

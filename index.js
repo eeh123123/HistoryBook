@@ -1,12 +1,14 @@
-var express = require('express');
-var app = express();
-var path = require('path');
-var mysql = require('mysql'); //Mysql的模块
-var multer = require('multer'); //文件上传模块
-var http = require('http');
-var bodyparser = require('body-parser'); // 添加post解析
-var upload = multer();
-var fs = require('fs');
+var express = require('express');//express模块
+var app = express();			 //express对象
+var path = require('path');		 //路径模块
+var mysql = require('mysql'); 	 //Mysql的模块
+var multer = require('multer');  //文件上传模块
+var http = require('http');		 //http模块
+var bodyparser = require('body-parser');// 添加post解析
+var upload = multer();			 //
+var fs = require('fs');			 //文件解析模块
+
+const JwtUtil = require('./jwt.js');//token处理模块
 
 var history = require('connect-history-api-fallback');
 app.use(history());
@@ -45,7 +47,9 @@ app.all("*", function(req, res, next) {
 	//设置允许跨域的域名，*代表允许任意域名跨域
 	res.header("Access-Control-Allow-Origin", "*");
 	//允许的header类型
-	res.header("Access-Control-Allow-Headers", "content-type,Access-Token,authorization");
+	res.header("Access-Control-Allow-Headers", "Origin, X-Requested-With, Content-Type,token,Accept, Authorization");
+ 	res.header('Access-Control-Allow-Credentials', true);
+ 	
 	//跨域允许的请求方式
 	res.header("Access-Control-Allow-Methods", "DELETE,PUT,POST,GET,OPTIONS");
 	res.header("Content-Type", "application/json;charset=utf-8");
@@ -64,6 +68,31 @@ app.all("*", function(req, res, next) {
 	else
 		next();
 });
+
+app.use(function (req, res, next) {
+    if (req.url != '/Login.do') {
+    	let token
+    	if(req.headers.hasOwnProperty('token')){
+    		 token = req.headers.token
+    	}
+    	else{
+            res.send({code: 403, msg: '登录已过期,请重新登录'}).end();
+            return
+    	}
+        let jwt = new JwtUtil(token);
+        let result = jwt.verifyToken(token);
+        // 如果考验通过就next，否则就返回登陆信息不正确
+        if (result == 'err') {
+            console.log(result);
+            res.send({code: 403, msg: '登录已过期,请重新登录'}).end();
+        } else {
+            next();
+        }
+    } else {
+        next();
+    }
+});
+
 
 //6 抛异常的函数
 process.on('uncaughtException', function(err) {
@@ -102,6 +131,7 @@ app.post('/up', function(req, res) {
 			} else {
 				console.log("写入文件成功");
 				res.send({
+					code:0,
 					text: '上传成功',
 					status: 'success',
 					filename: filename_
@@ -112,34 +142,42 @@ app.post('/up', function(req, res) {
 });
 
 //8 登录接口
-app.get('/Login.do', function(req, res) {
+app.post('/Login.do', function(req, res) {
 	console.log("当前登陆时间：" + Func.getNowFormatDate());
-	console.log(req.query);
-	var loginsql = "SELECT * FROM SSF_USERS WHERE USER_NAME='" + req.query.username + "'";
+	var loginsql = "SELECT * FROM SSF_USERS WHERE USER_NAME='" + req.body.params.username + "'";
 	console.log(loginsql);
 	db.query(loginsql, (err, data) => {
 		var string = JSON.stringify(data);
 		var jsondata = JSON.parse(string);
 		if(jsondata.length == "0") {
 			res.send({
+				code: 1001,
 				rows: 0,
 				text: "登陆失败，无此用户"
 			});
 		} else if(jsondata.length == "1") {
-			if(jsondata[0].USER_PASSWORD == req.query.password) {
+			if(jsondata[0].USER_PASSWORD == req.body.params.password) {
+				// 登陆成功，添加token验证
+                let _id = (req.body.params.username+req.body.params.password).toString();
+                // 将用户id传入并生成token
+                let jwt = new JwtUtil(_id);
+                let token = jwt.generateToken();
 				res.send({
+					code:0,
 					rows: 1,
-					text: "登陆成功"
+					text: "登陆成功",
+					token:token
 				});
 			} else {
 				res.send({
+					code: 1001,
 					rows: -1,
 					text: "密码错误"
 				});
 			}
 		}
 	});
-	let updateSql="UPDATE SSF_USERS SET LOGIN_TIME=NOW(),IP='"+Func.getClientIp(req)+"' WHERE USER_NAME='"+req.query.username+"'"
+	let updateSql="UPDATE SSF_USERS SET LOGIN_TIME=NOW(),IP='"+Func.getClientIp(req)+"' WHERE USER_NAME='"+req.body.params.username+"'"
 	console.log(updateSql)
 	db.query(updateSql, (err, data) => {
 
@@ -155,6 +193,7 @@ app.get('/Register.do', function(req, res) {
 	db.query(registersql, (err, data) => {
 		if(err) {
 			res.send({
+				code: 1001,
 				rows: "0",
 				text: "注册失败" + err
 			});
@@ -163,11 +202,13 @@ app.get('/Register.do', function(req, res) {
 			var jsondata = JSON.parse(string)
 			if(data.affectedRows == "1") {
 				res.send({
+					code: 0,
 					rows: data.affectedRows,
 					text: "注册成功"
 				});
 			} else {
 				res.send({
+					code: 1001,
 					rows: 0,
 					data: jsondata
 				});
@@ -218,6 +259,7 @@ app.post('/WriteStories.do', function(req, res) {
 						console.log(values);
 						console.log("UPDATE SUCCESS");
 						res.send({
+							code: 0,
 							text: '记录成功',
 							status: 'success',
 							sql: sql
@@ -242,6 +284,7 @@ app.post('/WriteStories.do', function(req, res) {
 						console.log(values);
 						console.log("INSERT SUCCESS");
 						res.send({
+							code: 0,
 							text: '记录成功',
 							status: 'success',
 							sql: ""

@@ -593,6 +593,7 @@
 				}
 			},
 			open_Dialog1(index, row) { //告诉子组件
+				debugger
 				vm.GuanZhi_EditIndex = index
 				let option = {
 					tablename: "PinJie",
@@ -621,6 +622,7 @@
 				}, "json");
 			},
 			handleCurrentChange(row) {
+				debugger
 				let option = {
 					tablename: "PinJie",
 					showcol: ['F_MC', 'F_BH'],

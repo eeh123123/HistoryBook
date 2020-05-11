@@ -45,7 +45,7 @@
 		mounted() {
 			this.tree = this.$refs.tree
 			this.rootFun = new RootFun({
-				parentCode: 'F_BH'
+				parentCode: 'id'
 			})
 			this.getLeftScene()
 		},
@@ -54,7 +54,7 @@
 			getLeftScene() {
 				let option = {
 					tablename: "DCT_ENUMS",
-					showcol: ['F_MC', 'F_BH', 'F_T3'],
+					showcol: ['F_MC', 'id', 'F_T3'],
 					sqlwhere: "1=1"
 				}
 				axios.get(this.$store.state.MYURL + 'QueryTableRow.do', {
@@ -75,11 +75,11 @@
 					dataType: 'list',
 					parentCode: 'F_T3',
 					label: 'F_MC',
-					code: 'F_BH',
+					code: 'id',
 					sortCode: 'sort',
 					isFilter: true
 				})
-				this.$refs.tree.setCurrentKey(data[0].F_BH)
+				this.$refs.tree.setCurrentKey(data[0].id)
 			},
 			treeClick() {
 

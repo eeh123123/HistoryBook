@@ -6,7 +6,9 @@
 			<component v-bind:is="currentView"></component>
 		</div>
 		<div class="floor2">
-			<BaseTable pageSize="15" :handleCurrentChange="handleCurrentChange" :handleSizeChange="handleSizeChange" @selectedTableData="Left1_selectedTableData" :callBack="cbFunc" :page="page" :tableHead="tableHead" :tableData.sync="tableData" :tableHeight="tableData.tableHeight"></BaseTable>
+			<BaseTable pageSize="15" :handleCurrentChange="handleCurrentChange" :handleSizeChange="handleSizeChange" 
+				@sortBy="queryTableData"
+				@selectedTableData="Left1_selectedTableData" :callBack="cbFunc" :page="page" :tableHead="tableHead" :tableData.sync="tableData" :tableHeight="tableData.tableHeight"></BaseTable>
 		</div>
 	</div>
 </template>
@@ -16,6 +18,7 @@
 	import attribute from '../sonVue/attribute.vue'
 	import attributeTime from '../sonVue/attributeTime.vue'
 	import guanzhi from '../sonVue/guanzhi.vue'
+	import stone from '../sonVue/stone.vue'
 	import BaseTable from '../tools/BaseTable.vue'
 	let vm;
 	export default {
@@ -39,6 +42,10 @@
 				if(this.$route.query.dctid=="guanzhi")
 				{
 					return guanzhi
+				}
+				if(this.$route.query.dctid=="stone")
+				{
+					return stone
 				}
 			}
 		},
@@ -96,6 +103,7 @@
 
 			},
 			queryTableHead() {
+				debugger
 				axios.get(this.$store.state.MYURL + 'QueryTableRow.do', {
 					params: {
 						tablename: "DOF_DCT_COLS",
@@ -116,6 +124,7 @@
 							COL_APP_TYPE: res.data.data[i].COL_APP_TYPE,
 							COL_ENUM_KEY:res.data.data[i].COL_ENUM_KEY,
 							COL_SHOW_SIZE:res.data.data[i].COL_SHOW_SIZE,
+							COL_SORTABLE:res.data.data[i].COL_SORTABLE,
 							ENUM_LIST:[]
 						})
 					}
@@ -123,7 +132,7 @@
 					for(let i =0;i<tableHead.length;i++){
 						for(let j=0;j<dct_enums_Array.length;j++){
 							if(tableHead[i].COL_ENUM_KEY==dct_enums_Array[j].F_T3 ){
-								tableHead[i].ENUM_LIST.push({label:dct_enums_Array[j].F_MC,value:dct_enums_Array[j].F_BH})
+								tableHead[i].ENUM_LIST.push({label:dct_enums_Array[j].F_MC,value:dct_enums_Array[j].id})
 							}
 						}
 					}
@@ -132,18 +141,25 @@
 					this.tableHead = tableHead
 				})
 			},
-			queryTableData() {
+			queryTableData(column) {
 				let params = {
 					tablename: this.$route.query.dctid,
 					pageSqlwhere: " Limit " + (this.currentPage - 1) * 15 + ",15",
 					searchFlag:this.searchFlag
-					
 				}
 				if(this.$route.query.page == 0) {
 					params.pageSqlwhere = ""
 				}
 				if(this.option){
 					params.sqlwhere = this.option ||"" + params.sqlwhere
+				}
+				if(column){
+					if(column.order=="descending"){
+						params.sortBy = " ORDER BY convert("+column.prop+" using gbk) asc "
+					}					
+					else if(column.order=="ascending"){
+						params.sortBy = " ORDER BY convert("+column.prop+" using gbk) desc "
+					}
 				}
 				axios.get(this.$store.state.MYURL + 'QueryDct.do', {
 					params: params

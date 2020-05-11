@@ -11,7 +11,7 @@
 	import login from './todo/login.vue'
 	import drawer from './tools/person-Drawer.vue'
 	import guanzhidrawer from './tools/guanzh-Drawer.vue'
-
+	import axios from './axios'
 	import timeDiv from './tools/timeDiv.vue'
 
 	export default {
@@ -45,9 +45,6 @@
 				return this.$store.state.Drawer
 			},
 		},
-		mounted() {
-			this.QueryEnum()
-		},
 		data() {
 			return {
 				direction: 'ltr',
@@ -57,27 +54,6 @@
 			handleClose() {
 				this.$store.commit("setDrawer", false);
 			},
-			QueryEnum() {
-				let option = {
-					tablename: "dct_enums",
-					showcol: ['*'],
-					sqlwhere: " 1=1"
-				}
-				axios.get(this.$store.state.MYURL + 'QueryTableRow.do', {
-						params: {
-							tablename: option.tablename,
-							showcol: option.showcol.join(","),
-							sqlwhere: option.sqlwhere
-						}
-					})
-					.then(function(response) {
-						localStorage.setItem("dct_enums",JSON.stringify(response.data.data))
-					})
-			},
-			GetImg() {
-
-			}
-
 		}
 	}
 </script>

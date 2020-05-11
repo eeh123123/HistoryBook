@@ -20,7 +20,7 @@ function queryDct1(req, res) {
 					res.send("查询失败" + err);
 				} else {
 					if(data.length == 0) { //说明不需要引用字典。
-						var Query_Sql = "SELECT * FROM " + req.query.tablename + " A" + (req.query.sqlwhere || '') + (req.query.pageSqlwhere || '');
+						var Query_Sql = "SELECT * FROM " + req.query.tablename + " A" + (req.query.sqlwhere || '') + (req.query.sortBy||'') + (req.query.pageSqlwhere || '') ;
 						console.log("Query_Sql:" + Query_Sql)
 						db.query(Query_Sql, (err, data) => {
 							if(err) {
@@ -56,7 +56,10 @@ function queryDct1(req, res) {
 									col_SQL += (",B" + i + "." + data[i].DCT_FID + " AS " + col[i] + "_F_BH," + "B" + i + "." + data[i].DCT_F_NAME + " AS " + col[i] + "_F_MC ")
 									table_SQL += (" LEFT JOIN " + data[i].DCT_ID + " B" + i + " ON A." + col[i] + "=B" + i + "." + data[i].DCT_FID)
 								}
-								table_SQL += (req.query.sqlwhere || '' + req.query.pageSqlwhere)
+								table_SQL += (req.query.sqlwhere || '')
+										  + (req.query.sortBy||'') 
+										  + req.query.pageSqlwhere
+										  
 								col_SQL = col_SQL.substring(0, col_SQL.length - 1);
 
 								selectFinal_SQL += (col_SQL + table_SQL)
@@ -149,7 +152,7 @@ module.exports = {
 	//通用查询
 	QueryTableRow: function(req, res) {
 		console.log("QueryTableRow");
-		var QueryTableRow_SQL = "SELECT " + req.query.showcol + " FROM " + req.query.tablename + " WHERE " + req.query.sqlwhere;
+		var QueryTableRow_SQL = "SELECT " + req.query.showcol + " FROM " + req.query.tablename + " WHERE " + req.query.sqlwhere + (req.query.sortBy||'');
 		console.log("QueryTableRow_SQL：" + QueryTableRow_SQL);
 		var QueryCount_Sql = "SELECT " + req.query.showcol + " FROM " + req.query.tablename;
 		console.log("QueryCount_Sql：" + QueryCount_Sql)

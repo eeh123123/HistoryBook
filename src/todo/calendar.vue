@@ -44,7 +44,7 @@
 						<div class="info">编写：{{event.userName}}</div>
 						<div class="info">更新时间：{{event.updateTime}}</div>
 						<el-select v-model="eventType" clearable filterable class="eventType" placeholder="请选择类型" size="mini">
-							<el-option v-for="item in eventType_All" :key="item.F_BH" :label="item.F_MC" :value="item.F_T1">
+							<el-option v-for="item in eventType_All" :key="item.id" :label="item.F_MC" :value="item.F_T1">
 							</el-option>
 						</el-select>
 						<el-button size="small" @click="save">记录</el-button>
@@ -216,11 +216,13 @@
 				return;
 			},
 			SearchMonthStories() {
-				$.get(vm.MYURL + 'SelectStories.do', {
-					Month: moment(vm.value).format('MM') - 0, //准确时间。减0是为了把字符串转换成数字，去0
-					Year: moment(vm.value).format('YYYY') - 0 //年份
-				}, function(data) {
-					vm.Event = data; //这里没法用this了
+				axios.get(this.MYURL + 'SelectStories.do', {
+					params: {
+						Month: moment(vm.value).format('MM') - 0, //准确时间。减0是为了把字符串转换成数字，去0
+						Year: moment(vm.value).format('YYYY') - 0 //年份
+					}
+				}).then(res => {
+					vm.Event = res.data
 					let time = parseInt(moment(vm.value).format('YYYYMMDD'))
 					for(var i = 0; i < vm.Event.length; i++) {
 						if(vm.Event[i].Time == time) {
@@ -242,7 +244,7 @@
 						}
 					}
 					vm.drawWrited();
-				}, "json");
+				})
 			},
 			searchs() {
 				vm.value = new Date(vm.year, vm.month - 1, vm.day, 12, 0, 0)
@@ -252,28 +254,34 @@
 				if(node.level === 0) {
 					vm.node_had = node; //这里是关键！在data里面定义一个变量，将node.level == 0的node存起来
 					vm.resolve_had = resolve; //同上，把node.level == 0的resolve也存起来
-					$.get(vm.MYURL + 'Search_Tree.do?', {
+					axios.get(vm.MYURL + 'Search_Tree.do?', {
+					  params: {
 						Type: "1"
-					}, function(data) {
-						resolve(data);
-					});
+					  }
+					}).then(res => {
+						resolve(res.data)
+					})
 				} else if(node.level === 1) {
-					$.get(vm.MYURL + 'Search_Tree.do?', {
+					axios.get(vm.MYURL + 'Search_Tree.do?', {
+					  params: {
 						Type: "2",
 						Year: node.data.name.substring(0, node.data.name.length - 1)
-					}, function(data) {
-						resolve(data);
-					});
+					  }
+					}).then(res => {
+						resolve(res.data)
+					})
 				} else if(node.level === 2) {
 					var year = node.parent.label.substring(0, node.parent.label.length - 1);
 					var month = node.data.name.substring(0, node.data.name.length - 1);
-					$.get(vm.MYURL + 'Search_Tree.do?', {
+					axios.get(vm.MYURL + 'Search_Tree.do?', {
+					  params: {
 						Type: "3",
 						Year: year,
 						Month: month
-					}, function(data) {
-						resolve(data);
-					});
+					  }
+					}).then(res => {
+						resolve(res.data)
+					})
 				} else {
 					return resolve([]);
 				}
@@ -352,11 +360,13 @@
 
 			},
 			SJZ_search() {
-				$.get(vm.MYURL + 'Search_SJZ.do?', {
+				axios.get(vm.MYURL + 'Search_SJZ.do?',{
+				  params: {
 					Caption: vm.SJZ_val, //时间轴查找的关键字
-				}, function(data) {
-					vm.SJZ_data = data;
-				}, "json");
+				  }
+				}).then(res => {
+					vm.SJZ_data = res.data;
+				})
 			},
 			SJZ_click(data) {
 				var time = data;
@@ -436,5 +446,4 @@
 
 <style lang="less">
 	@import '../assets/styles/calendar';
-	
 </style>

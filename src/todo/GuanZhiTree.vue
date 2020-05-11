@@ -40,8 +40,6 @@
 				query_Dept: "",
 				GZB_data_All: [],
 				Array_data: [],
-				familyOptions: [],
-				
 				GZBVisible: false,
 				GZB_data: [],
 				GZB_filterText: '',
@@ -57,7 +55,7 @@
 				let option = {
 					tablename: "dept",
 					showcol: ['F_MC', 'F_BH', 'F_Parent'],
-					sqlwhere: "1=1 AND Dynasty = '唐'"
+					sqlwhere: "1=1 AND Dynasty = '唐' AND F_PARENT !='#'"
 				}
 				axios.get(this.$store.state.MYURL + 'QueryTableRow.do', {
 						params: {
@@ -91,23 +89,6 @@
 					}]
 					vm.Array_data[0].children = temp
 				})
-			},
-			queryfamilyOptions() {
-				let option = {
-					tablename: "family",
-					showcol: ["*"],
-					sqlwhere: "1=1"
-				}
-				axios.get(this.$store.state.MYURL + 'QueryTableRow.do', {
-						params: {
-							tablename: option.tablename,
-							showcol: option.showcol.join(","),
-							sqlwhere: option.sqlwhere
-						}
-					})
-					.then(res => {
-						this.familyOptions = res.data.data
-					})
 			},
 			handleClose() {
 
@@ -148,7 +129,7 @@
 				let option = {
 					tablename: "dept",
 					showcol: ['F_MC', 'F_BH', 'F_Parent'],
-					sqlwhere: "1=1 AND Dynasty = '唐'"
+					sqlwhere: "1=1 AND Dynasty = '唐' AND F_PARENT !='#'"
 				}
 				axios.get(this.$store.state.MYURL + 'QueryTableRow.do', {
 						params: {
@@ -184,7 +165,6 @@
 		mounted() {
 			vm = this
 			this.query_GZB_data_All()
-			this.queryfamilyOptions()
 		}
 	}
 </script>

@@ -15,6 +15,7 @@
 						<el-menu-item index="/commonDCT?dctid=item"><img src="../assets/smallimg/treasure.png"></img>物品表</el-menu-item>
 						<el-menu-item index="/commonDCT?dctid=ssf_users"><img src="../assets/smallimg/user.png"></img>登陆用户表</el-menu-item>
 						<el-menu-item index="/dctEnum"><img src="../assets/smallimg/user.png"></img>枚举表</el-menu-item>
+						<el-menu-item index="/commonDCT?dctid=stone"><img src="../assets/images/stone.png" style="height: 28px;width: 28px;"></img>矿石表</el-menu-item>
 						<!--<el-menu-item index="experience">履历表(未做)</el-menu-item>-->
 					</el-submenu>
 					<el-submenu index="2">
