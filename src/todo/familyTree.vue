@@ -1,9 +1,14 @@
 <template>
 	<div>
 		<el-select class="margin-left10 margin-top10" v-model="familyValue" placeholder="请选择" @change="queryData">
-			<el-option v-for="item in familyOptions" :key="item.F_ID" :label="item.F_caption" :value="item.F_ID">
+			<el-option v-for="item in familyOptions" :key="item.id" :label="item.F_caption" :value="item.id">
 			</el-option>
 		</el-select>
+		<el-select class="margin-left10 margin-top10" v-model="numberValue" placeholder="第几代" @change="changeNumber" clearable>
+			<el-option v-for="item in numberOptions" :key="item.id" :label="item.F_caption" :value="item.id">
+			</el-option>
+		</el-select>
+		
 		<div class="tree">
 			<ul>
 				<child v-for="item in Array_data" :key="item.fatherid" :text="item">
@@ -25,12 +30,24 @@
 		data() {
 			return {
 				Array_data: [],
+				Array_data_Orign:[],
 				familyOptions: [],
 				familyValue: '',
+				numberOptions:[],
+				numberValue :'',
 			};
 		},
 		methods: {
+			setNumber(){
+				for(let i=0;i<=15;i++){
+					this.numberOptions[i]={
+						id:i+1,
+						F_caption:'第'+(i-1+2)+'代'
+					}
+				}
+			},
 			queryData() {
+				this.numberValue = ''
 				let option = {
 					tablename: "person",
 					showcol: ["*"],
@@ -44,12 +61,20 @@
 						}
 					})
 					.then(res => {
+						for(let i =0;i<res.data.data.length;i++){
+							res.data.data[i].closed=true
+						}
 						this.Array_data = this.$tools.composeTree(res.data.data)
-						this.Array_data = this.$tools.sort(this.Array_data, 'id')
-						let temp = JSON.parse(JSON.stringify(this.Array_data));
-						this.Array_data=[{children:"",closed:true}]
-						this.Array_data[0].children = temp
+						this.Array_data_Orign = JSON.parse(JSON.stringify(this.Array_data));
 					})
+			},
+			changeNumber(){
+				if(this.numberValue==''){
+					this.Array_data[0].children = this.Array_data_Orign[0].children
+				}
+				else{
+					this.Array_data[0].children=this.$tools.dealTree(this.Array_data_Orign[0].children,this.numberValue-1)
+				}
 			},
 			queryfamilyOptions() {
 				let option = {
@@ -74,6 +99,7 @@
 		},
 		mounted() {
 			this.queryData()
+			this.setNumber()
 			this.queryfamilyOptions()
 		}
 	}

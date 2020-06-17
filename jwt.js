@@ -15,7 +15,6 @@ class Jwt {
 		};
 		let secret = 'Dota2';
 		let token = jwt.sign(payload, secret);
-		debugger
 		return token;
 	}
 

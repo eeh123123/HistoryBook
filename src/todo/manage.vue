@@ -6,9 +6,11 @@
 					<el-menu-item index="manage"><i class="el-icon-menu"></i>首页</el-menu-item>
 					<el-submenu index="1">
 						<template slot="title"><i class="el-icon-plus"></i>源数据</template>
-						<el-menu-item index="addJob"><img src="../assets/smallimg/guanzhi.png"></img>官职表(不分页)</el-menu-item>
+<!--						<el-menu-item index="addJob"><img src="../assets/smallimg/guanzhi.png"></img>官职表(不分页)</el-menu-item>
+-->						<el-menu-item index="/commonDCT?dctid=guanzhi"><img src="../assets/smallimg/guanzhi.png"></img>官职表</el-menu-item>
+						<el-menu-item index="/commonDCT?dctid=dept"><img src="../assets/smallimg/user.png"></img>部门表</el-menu-item>
 						<el-menu-item index="/commonDCT?dctid=person"><img src="../assets/smallimg/renwu.png"></img>人物表</el-menu-item>
-						<el-menu-item index="/commonDCT?dctid=guanzhi"><img src="../assets/smallimg/guanzhi.png"></img>官职表</el-menu-item>
+						<el-menu-item index="/commonDCT?dctid=jobtime"><img src="../assets/smallimg/guanzhi.png"></img>履历表</el-menu-item>
 						<el-menu-item index="/commonDCT?dctid=attribute"><img src="../assets/smallimg/attribute.png"></img>特性表</el-menu-item>
 						<el-menu-item index="/commonDCT?dctid=attributeTime">特性时间表</el-menu-item>
 						<el-menu-item index="/commonDCT?dctid=family"><img src="../assets/smallimg/family.png"></img>家族表</el-menu-item>

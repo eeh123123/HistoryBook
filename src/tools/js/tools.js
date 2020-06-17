@@ -116,7 +116,6 @@ function getInsert_original(array1, array2, id) {
 	}
 }
 
-
 var chnNumChar = ["零", "一", "二", "三", "四", "五", "六", "七", "八", "九"];
 var chnUnitSection = ["", "万", "亿", "万亿", "亿亿"];
 var chnUnitChar = ["", "十", "百", "千"];
@@ -239,8 +238,77 @@ function ChineseToNumber(chnStr) {
 	return rtn + section;
 }
 
+function composeTree(data) {
+	const childrenArray = data.filter(item => {
+		if(item.fatherid !== '' && item.fatherid !== null) {
+			return true
+		} else {
+			return false
+		}
+	})
+	const rootArray = data.filter(item => {
+		if(item.fatherid === '' || item.fatherid === null) {
+			return true
+		} else {
+			return false
+		}
+	})
+	const pushedArray = rootArray.map(item => {
+		return item.id
+	})
+	const root = [{
+		children: rootArray,
+		closed: true
+	}]
+	root[0].children.forEach(item => {
+		item.closed = true
+		item.level = 1
+		item.children = getChildren(pushedArray, childrenArray, item)
+	})
+	return root
+}
+
+function getChildren(pushedArray, childrenArray, father) {
+	childrenArray.forEach(item => {
+		if(!pushedArray.includes(item.id)) {
+			if(item.fatherid == father.id) { // 这里两个类型不一样，不能用强等
+				item.level = father.level + 1
+				pushedArray.push(item.id)
+				if(!father.children) {
+					father.children = []
+				}
+				father.children.push(item)
+			}
+		}
+	})
+	if(father.children) {
+		father.children.forEach(item => {
+			item.children = getChildren(pushedArray, childrenArray, item)
+		})
+	}
+	return father.children
+}
+
+function dealTree(data,num) {
+	let root = JSON.parse(JSON.stringify(data))
+	setName(root,num)
+	return root
+}
+
+
+function setName(datas,num){ //遍历树  获取id数组
+  for(var i in datas){
+  	if(datas[i].level>num){
+  		datas[i].closed = false
+  	}
+    if(datas[i].children){
+      setName(datas[i].children,num);
+    }
+  }
+}
+
 //6 数组转tree
-function composeTree(list = []) {
+function composeTree_Orign(list = []) {
 	//const data = JSON.parse(JSON.stringify(list)) // 浅拷贝不改变源数据
 	const data = list
 	const result = []
@@ -256,6 +324,7 @@ function composeTree(list = []) {
 	data.forEach(item => {
 		map[item.id] = item
 	})
+	let i =0 
 	data.forEach(item => {
 		const parent = map[item.fatherid]
 		if(parent) {
@@ -266,6 +335,8 @@ function composeTree(list = []) {
 	})
 	return result
 }
+
+
 //7 树结构排序
 function sort(data, id) {
 	function sortArr(data) {
@@ -282,6 +353,7 @@ function sort(data, id) {
 	sortArr(data)
 	return data
 }
+
 
 function getQueryVariable(variable) {
 	var query = window.location.search.substring(1);
@@ -303,5 +375,7 @@ export default {
 	NumberToChinese: NumberToChinese,
 	ChineseToNumber: ChineseToNumber,
 	composeTree: composeTree,
-	sort: sort
+	composeTree_Orign:composeTree_Orign,
+	sort: sort,
+	dealTree:dealTree
 }

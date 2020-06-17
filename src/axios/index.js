@@ -52,6 +52,7 @@ axios.interceptors.response.use(
 			code == '400'||
 			code == '1001'
 		) {
+			debugger
 			// 登陆问题
 			window.location.href = '/#/login'
 			alert(response.data.msg)

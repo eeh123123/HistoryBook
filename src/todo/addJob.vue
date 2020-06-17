@@ -1,7 +1,7 @@
 <template>
 	<div class="addJob">
 		<el-select v-model="query_Dept" clearable filterable class="margin-left10" placeholder="请选择部门" @change="searchs()">
-			<el-option v-for="item in GZB_data_All" :key="item.F_BH" :label="item.F_MC" :value="item.F_BH">
+			<el-option v-for="item in GZB_data_All" :key="item.id" :label="item.F_MC" :value="item.id">
 			</el-option>
 		</el-select>
 		<div class="query-div">
@@ -174,7 +174,7 @@
 					code: "F_MC",
 					label: "名称"
 				}, {
-					code: "F_BH",
+					code: "id",
 					label: "编号"
 				}],
 				currentPage: 1
@@ -190,7 +190,7 @@
 			query_GZB_data_All() {
 				let option = {
 					tablename: "dept",
-					showcol: ['F_MC', 'F_BH', 'F_Parent'],
+					showcol: ['F_MC', 'id', 'F_Parent'],
 					sqlwhere: "1=1 AND Dynasty = '唐'"
 				}
 				axios.get(this.$store.state.MYURL + 'QueryTableRow.do', {
@@ -234,7 +234,7 @@
 			queryTableData() {
 				let option = {
 					tablename: "GuanZhi",
-					sqlwhere: "1=1 Order By Belong,(PinJie_FBH+0) ,ID"
+					sqlwhere: "1=1 Order By Belong,(PinJie+0) ,ID"
 				}
 				axios.get(this.$store.state.MYURL + 'QueryTableRow.do', {
 						params: {
@@ -397,7 +397,7 @@
 				}
 				let option = {
 					tablename: "dept",
-					showcol: ['F_MC', 'F_BH', 'F_Parent'],
+					showcol: ['F_MC', 'id', 'F_Parent'],
 					sqlwhere: "1=1 AND Dynasty = '唐'"
 				}
 				axios.get(this.$store.state.MYURL + 'QueryTableRow.do', {
@@ -412,8 +412,8 @@
 							if(response.data.data[i].F_Parent === "#") {
 								vm.GZB_data.push({
 									label: response.data.data[i].F_MC,
-									value: response.data.data[i].F_BH,
-									id: response.data.data[i].F_BH,
+									value: response.data.data[i].id,
+									id: response.data.data[i].id,
 									children: []
 								})
 							}
@@ -423,7 +423,7 @@
 								if(response.data.data[i].F_Parent == vm.GZB_data[j].value) {
 									vm.GZB_data[j].children.push({
 										label: response.data.data[i].F_MC,
-										value: response.data.data[i].F_BH,
+										value: response.data.data[i].id,
 									})
 								}
 							}
@@ -446,7 +446,6 @@
 					vm.KJ_GuanZhi = vm.$refs.Tree.getCheckedNodes()[0].value
 				}
 				vm.GZBVisible = false
-
 			},
 			GZB_checkGroupNode(a, b) {
 				if(b.checkedKeys.length > 0) {
@@ -454,7 +453,7 @@
 				}
 			},
 			PLadd(index, row) {
-				this.editFormVisible = true;
+				this.editFormVisibKJFormVisiblele = true;
 				this.editForm = Object.assign({}, row); //这句是关键！！！
 			},
 			//快捷添加官员方法
@@ -593,7 +592,6 @@
 				}
 			},
 			open_Dialog1(index, row) { //告诉子组件
-				debugger
 				vm.GuanZhi_EditIndex = index
 				let option = {
 					tablename: "PinJie",
@@ -622,7 +620,6 @@
 				}, "json");
 			},
 			handleCurrentChange(row) {
-				debugger
 				let option = {
 					tablename: "PinJie",
 					showcol: ['F_MC', 'F_BH'],

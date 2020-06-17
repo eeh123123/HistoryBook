@@ -29,7 +29,7 @@
 			#mapBox {
 				position: absolute;
 				z-index: 2;
-				top: 0;
+				bottom: 0;
 				left: 0;
 				width: 100%;
 			}
@@ -55,6 +55,8 @@
 			
 			#tipinput {
 				width: 400px;
+				height:30px;
+				bottom: 0;
 			}
 			
 			.amap-sug-result {
@@ -253,7 +255,6 @@
 		}
 		AMap.event.addListener(placeSearch, "markerClick", function(e) {
 			//监听搜索显示的Mark点击事件
-			debugger
 			console.log(e.data.name);
 			document.getElementById("tipinput").value = e.data.name;
 		});
@@ -294,7 +295,6 @@
 		});
 
 		function showInfoM(e) {
-			debugger
 		}
 		//在指定位置打开信息窗体
 		function openInfo(lnglatmsg, addressname, daddress) {

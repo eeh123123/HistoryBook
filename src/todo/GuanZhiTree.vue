@@ -1,7 +1,7 @@
 <template>
 	<div>
 		<el-select v-model="query_Dept" clearable filterable class="margin-left10 margin-top10" placeholder="请选择部门" @change="searchs()">
-			<el-option v-for="item in GZB_data_All" :key="item.F_BH" :label="item.F_MC" :value="item.F_BH">
+			<el-option v-for="item in GZB_data_All" :key="item.id" :label="item.F_MC" :value="item.id">
 			</el-option>
 		</el-select>
 		<!--<el-input suffix-icon="el-icon-circle-plus" @click.native="SSBM()" v-model="query_Dept" class="margin-left10 margin-top10" style="width: 100px;">
@@ -54,8 +54,8 @@
 			query_GZB_data_All() {
 				let option = {
 					tablename: "dept",
-					showcol: ['F_MC', 'F_BH', 'F_Parent'],
-					sqlwhere: "1=1 AND Dynasty = '唐' AND F_PARENT !='#'"
+					showcol: ['F_MC', 'id', 'F_Parent'],
+					sqlwhere: "1=1 AND Dynasty = '唐'"
 				}
 				axios.get(this.$store.state.MYURL + 'QueryTableRow.do', {
 						params: {
@@ -80,7 +80,8 @@
 				axios.get(this.$store.state.MYURL + 'QueryDct.do', {
 					params: params
 				}).then(res => {
-					vm.Array_data = vm.$tools.composeTree(res.data.data)
+					debugger
+					vm.Array_data = vm.$tools.composeTree_Orign(res.data.data)
 					vm.Array_data = vm.$tools.sort(vm.Array_data, 'id')
 					let temp = JSON.parse(JSON.stringify(vm.Array_data));
 					vm.Array_data = [{
@@ -112,54 +113,6 @@
 				if(b.checkedKeys.length > 0) {
 					this.$refs.Tree.setCheckedKeys([a.value]);
 				}
-			},
-			SSBM(index, row, type) {
-				vm.GZB_data = []
-				vm.GZBVisible = true
-				vm.GZB_filterText = '' //每次打开官职表时，置空查询条件
-				if(type == 0) {
-					vm.GuanZhiType = 0;
-					vm.GuanZhi_EditIndex = index || 0
-				}
-				if(index == undefined) {
-					vm.GuanZhiType = 1;
-				} else if(index == "KJ") {
-					vm.GuanZhiType = 2;
-				}
-				let option = {
-					tablename: "dept",
-					showcol: ['F_MC', 'F_BH', 'F_Parent'],
-					sqlwhere: "1=1 AND Dynasty = '唐' AND F_PARENT !='#'"
-				}
-				axios.get(this.$store.state.MYURL + 'QueryTableRow.do', {
-						params: {
-							tablename: option.tablename,
-							showcol: option.showcol.join(","),
-							sqlwhere: option.sqlwhere
-						}
-					})
-					.then(function(response) {
-						for(let i = 0; i < response.data.data.length; i++) {
-							if(response.data.data[i].F_Parent === "#") {
-								vm.GZB_data.push({
-									label: response.data.data[i].F_MC,
-									value: response.data.data[i].F_BH,
-									id: response.data.data[i].F_BH,
-									children: []
-								})
-							}
-						}
-						for(let i = 0; i < response.data.data.length; i++) {
-							for(let j = 0; j < vm.GZB_data.length; j++) {
-								if(response.data.data[i].F_Parent == vm.GZB_data[j].value) {
-									vm.GZB_data[j].children.push({
-										label: response.data.data[i].F_MC,
-										value: response.data.data[i].F_BH,
-									})
-								}
-							}
-						}
-					})
 			},
 		},
 		mounted() {

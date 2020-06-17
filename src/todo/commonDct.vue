@@ -103,7 +103,6 @@
 
 			},
 			queryTableHead() {
-				debugger
 				axios.get(this.$store.state.MYURL + 'QueryTableRow.do', {
 					params: {
 						tablename: "DOF_DCT_COLS",
@@ -120,7 +119,7 @@
 						}
 						tableHead.push({
 							code: res.data.data[i].COL_ID,
-							label: res.data.data[i].COL_CAPTION,
+							label: res.data.data[i].COL_TITLE,
 							COL_APP_TYPE: res.data.data[i].COL_APP_TYPE,
 							COL_ENUM_KEY:res.data.data[i].COL_ENUM_KEY,
 							COL_SHOW_SIZE:res.data.data[i].COL_SHOW_SIZE,
@@ -182,7 +181,7 @@
 				}).then(res => {
 					this.tableData.map.set(colId, {
 						F_Pkey: res.data.data[0].DCT_FID,
-						F_Caption: res.data.data[0].DCT_F_NAME,
+						F_Caption: res.data.data[0].DCT_FNAME,
 						F_Pkey_Name: '',
 						F_Caption_Name: '',
 						tablename: dctid

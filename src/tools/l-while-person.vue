@@ -30,6 +30,8 @@
 				children.closed = !children.closed
 			},
 			userDrawer(children) {
+				debugger
+				console.log(children)
 				axios.get(this.$store.state.MYURL + 'QueryPerson.do', {
 						params: {
 							id: children.id,
