@@ -70,18 +70,18 @@
 					})
 			},
 			searchs() {
-				this.$parent.option = " where 1 = 1"
+				this.$parent.option = ""
+				this.$parent.searchFlag = true
+				if(this.person||this.query_Dept){
+					this.$parent.option = " where 1 = 1"
+				}
 				if(this.person) {
 					this.$parent.option += " AND A.GuanZhi_MC like '%" + this.person + "%'"
-					this.$parent.searchFlag = false
+//					this.$parent.searchFlag = false
 				}
 				if(this.query_Dept){
 					this.$parent.option += " AND A.Belong =" + this.query_Dept + ""
 
-				}
-				else {
-					this.$parent.option = ""
-					this.$parent.searchFlag = true
 				}
 				this.$parent.queryTableData()
 			},
@@ -117,7 +117,7 @@
 
 				axios.post(this.$store.state.MYURL + 'InsertTableRow_Origin.do', {
 						params: {
-							tablename: "GuanZhi",
+							tablename: "guanzhi",
 							Insertcol: "PinJie,GuanZhi_MC,personSize,Belong",
 							values: values
 						}

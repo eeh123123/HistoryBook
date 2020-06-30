@@ -148,7 +148,7 @@
 				}
 				axios.get(this.$store.state.MYURL + 'QueryTableRow.do', {
 						params: {
-							tablename: "DCT_DICTS",
+							tablename: "dct_dicts",
 							showcol: option.showcol.join(","),
 							sqlwhere: option.sqlwhere
 						}
@@ -170,7 +170,7 @@
 				}
 				axios.get(this.$store.state.MYURL + 'QueryTableRow.do', {
 						params: {
-							tablename: "DCT_DICTS",
+							tablename: "dct_dicts",
 							showcol: option.showcol.join(","),
 							sqlwhere: option.sqlwhere
 						}

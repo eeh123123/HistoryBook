@@ -105,7 +105,7 @@
 			queryTableHead() {
 				axios.get(this.$store.state.MYURL + 'QueryTableRow.do', {
 					params: {
-						tablename: "DOF_DCT_COLS",
+						tablename: "dof_dct_cols",
 						showcol: ['*'],
 						sqlwhere: "DCT_ID = '" + this.$route.query.dctid + "' AND COL_VISIBLE ='1' ORDER BY COL_DISP_ORDER"
 					}
@@ -174,7 +174,7 @@
 			getF_Pkey_F_Caption(colId, dctid) {
 				axios.get(this.$store.state.MYURL + "QueryTableRow.do", {
 					params: {
-						tablename: "DCT_DICTS",
+						tablename: "dct_dicts",
 						showcol: ['*'],
 						sqlwhere: "DCT_ID = '" + dctid + "'"
 					}
@@ -191,7 +191,7 @@
 			getF_Pkey_Name_F_Caption_Name(colId, dctid) {
 				axios.get(this.$store.state.MYURL + "QueryTableRow.do", {
 					params: {
-						tablename: "DOF_DCT_COLS",
+						tablename: "dof_dct_cols",
 						showcol: ['*'],
 						sqlwhere: "DCT_ID = '" + dctid + "'"
 					}

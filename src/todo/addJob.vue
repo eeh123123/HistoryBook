@@ -594,7 +594,7 @@
 			open_Dialog1(index, row) { //告诉子组件
 				vm.GuanZhi_EditIndex = index
 				let option = {
-					tablename: "PinJie",
+					tablename: "pinjie",
 					showcol: ['F_MC', 'F_BH'],
 					sqlwhere: "1=1 Limit 0,10"
 				};
@@ -621,7 +621,7 @@
 			},
 			handleCurrentChange(row) {
 				let option = {
-					tablename: "PinJie",
+					tablename: "pinjie",
 					showcol: ['F_MC', 'F_BH'],
 					sqlwhere: "1=1 Limit " + (row - 1) * 10 + ",10"
 				};

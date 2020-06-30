@@ -4,8 +4,9 @@
 			<el-option v-for="item in GZB_data_All" :key="item.id" :label="item.F_MC" :value="item.id">
 			</el-option>
 		</el-select>
-		<!--<el-input suffix-icon="el-icon-circle-plus" @click.native="SSBM()" v-model="query_Dept" class="margin-left10 margin-top10" style="width: 100px;">
-		</el-input>-->
+		是否校验
+		<el-switch v-model="CheckIn" active-color="blue" inactive-color="red" @change="setChechIn" inactive-value="0" active-value="1">
+		</el-switch>
 		<div class="tree">
 			<ul>
 				<child v-for="item in Array_data" :key="item.fatherid" :text="item">
@@ -47,6 +48,7 @@
 					children: 'children',
 					label: 'label'
 				},
+				CheckIn: ''
 			};
 		},
 		methods: {
@@ -54,7 +56,7 @@
 			query_GZB_data_All() {
 				let option = {
 					tablename: "dept",
-					showcol: ['F_MC', 'id', 'F_Parent'],
+					showcol: ['F_MC', 'id', 'F_Parent', 'CheckIn'],
 					sqlwhere: "1=1 AND Dynasty = '唐'"
 				}
 				axios.get(this.$store.state.MYURL + 'QueryTableRow.do', {
@@ -69,6 +71,11 @@
 					})
 			},
 			searchs() {
+				for(let i = 0; i < this.GZB_data_All.length; i++) {
+					if(this.query_Dept == this.GZB_data_All[i].id) {
+						this.CheckIn = this.GZB_data_All[i].CheckIn
+					}
+				}
 				let params = {
 					tablename: "guanzhi",
 					pageSqlwhere: "",
@@ -80,7 +87,6 @@
 				axios.get(this.$store.state.MYURL + 'QueryDct.do', {
 					params: params
 				}).then(res => {
-					debugger
 					vm.Array_data = vm.$tools.composeTree_Orign(res.data.data)
 					vm.Array_data = vm.$tools.sort(vm.Array_data, 'id')
 					let temp = JSON.parse(JSON.stringify(vm.Array_data));
@@ -90,6 +96,21 @@
 					}]
 					vm.Array_data[0].children = temp
 				})
+			},
+			setChechIn() {
+				var array_update=[{id:this.query_Dept,Checkin:this.CheckIn}]
+				axios.post(this.$store.state.MYURL + 'UpdateTableRow.do', {
+						params: {
+							tablename: 'dept',
+							values: array_update,
+						}
+					})
+					.then(function(response) {
+						vm.$message({
+							type: 'success',
+							message: response.data.msg
+						});
+					})
 			},
 			handleClose() {
 

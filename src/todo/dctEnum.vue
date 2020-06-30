@@ -53,7 +53,7 @@
 			// 获取左侧的应用场景
 			getLeftScene() {
 				let option = {
-					tablename: "DCT_ENUMS",
+					tablename: "dct_enums",
 					showcol: ['F_MC', 'id', 'F_T3'],
 					sqlwhere: "1=1"
 				}

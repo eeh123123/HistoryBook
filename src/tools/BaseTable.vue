@@ -106,7 +106,7 @@
 			getF_PKEY() {
 				axios.get(this.$store.state.MYURL + "QueryTableRow.do", {
 					params: {
-						tablename: "DCT_DICTS",
+						tablename: "dct_dicts",
 						showcol: ['*'],
 						sqlwhere: "DCT_ID = '" + this.$route.query.dctid + "'"
 					}
@@ -144,6 +144,7 @@
 			},
 
 			open_Dialog(index, item, code) {
+				debugger
 				this.Dialog.code = code
 				let data = this.tableData.map.get(code)
 				this.Dialog.commonData = data

@@ -393,7 +393,7 @@
 			queryEventType() {
 				axios.get(this.$store.state.MYURL + 'QueryTableRow.do', {
 					params: {
-						tablename: "dct_enums",
+						tablename: "DCT_ENUMS",
 						showcol: ['*'],
 						sqlwhere: "F_PARENT='01'"
 					}
@@ -414,7 +414,6 @@
 				}
 			},
 			value(val, old_val) {
-				debugger
 				this.$store.commit("setcurrentTime", moment(vm.value).format('YYYYMMDD'));
 				vm.imgUrl = "";
 				vm.SearchMonthStories();

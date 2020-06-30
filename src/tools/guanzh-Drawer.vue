@@ -8,7 +8,7 @@
 			</div>
 			<div class="bottom">
 				品阶：
-				<el-select v-model="guanzhiData.PinJie_F_MC" filterable placeholder="请选择" @change="changeLocationValue" style="width: 120px;">
+				<el-select v-model="guanzhiData.pinjie_F_MC" filterable placeholder="请选择" @change="changeLocationValue" style="width: 120px;">
 					<el-option v-for="item in pinjieOptions" :key="item.F_BH" :label="item.F_MC" :value="item.F_BH">
 					</el-option>
 				</el-select>
@@ -29,6 +29,7 @@
 				return this.$store.state.guanzhiDrawer
 			},
 			guanzhiData() {
+				debugger
 				return this.$store.state.guanzhiData
 			},
 		},
@@ -50,7 +51,7 @@
 			QueryPinJie() {
 				axios.get(this.$store.state.MYURL + 'QueryTableRow.do', {
 						params: {
-							tablename: "PinJie",
+							tablename: "pinjie",
 							showcol: "*",
 							sqlwhere: " 1=1",
 						}
