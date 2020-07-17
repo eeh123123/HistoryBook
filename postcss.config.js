@@ -2,8 +2,13 @@ const autoprefixer = require('autoprefixer')
 
 module.exports = {
     plugins: [
-        autoprefixer()      //优化的过程通过一系列的组件进行优化,此次采用的是autoprefixer
-    ]
+        autoprefixer(),      //优化的过程通过一系列的组件进行优化,此次采用的是autoprefixer
+       	{
+	  		src: '@/plugins/element-ui',
+	  		ssr: false
+	  	}
+
+	   ]
 }
 
 //PostCss会对CSS代码进行优化,主要是解决不同浏览器识别码的问题,具体作用自行查阅

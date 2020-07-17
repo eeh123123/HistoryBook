@@ -19,6 +19,7 @@
 	import attributeTime from '../sonVue/attributeTime.vue'
 	import guanzhi from '../sonVue/guanzhi.vue'
 	import stone from '../sonVue/stone.vue'
+	import county from '../sonVue/county.vue'
 	import BaseTable from '../tools/BaseTable.vue'
 	let vm;
 	export default {
@@ -46,6 +47,10 @@
 				if(this.$route.query.dctid=="stone")
 				{
 					return stone
+				}
+				if(this.$route.query.dctid=="county")
+				{
+					return county
 				}
 			}
 		},
@@ -124,6 +129,7 @@
 							COL_ENUM_KEY:res.data.data[i].COL_ENUM_KEY,
 							COL_SHOW_SIZE:res.data.data[i].COL_SHOW_SIZE,
 							COL_SORTABLE:res.data.data[i].COL_SORTABLE,
+							COL_SHOWMASK:res.data.data[i].COL_SHOWMASK,
 							ENUM_LIST:[]
 						})
 					}
@@ -153,11 +159,27 @@
 					params.sqlwhere = this.option ||"" + params.sqlwhere
 				}
 				if(column){
+					let flag = 0 //不是数字
+					for(let i=0;i<this.tableHead.length;i++){
+						if(this.tableHead[i].code==column.prop){
+							flag = this.tableHead[i].COL_SHOWMASK
+						}
+					}
 					if(column.order=="descending"){
-						params.sortBy = " ORDER BY convert("+column.prop+" using gbk) asc "
+						if(flag == 1){
+							params.sortBy = " ORDER BY "+column.prop+" asc "
+						}
+						else{
+							params.sortBy = " ORDER BY convert("+column.prop+" using gbk) asc "
+						}
 					}					
 					else if(column.order=="ascending"){
-						params.sortBy = " ORDER BY convert("+column.prop+" using gbk) desc "
+						if(flag == 1){
+							params.sortBy = " ORDER BY "+column.prop+" desc "
+						}
+						else{
+							params.sortBy = " ORDER BY convert("+column.prop+" using gbk) desc "
+						}
 					}
 				}
 				axios.get(this.$store.state.MYURL + 'QueryDct.do', {

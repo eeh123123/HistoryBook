@@ -144,7 +144,6 @@
 			},
 
 			open_Dialog(index, item, code) {
-				debugger
 				this.Dialog.code = code
 				let data = this.tableData.map.get(code)
 				this.Dialog.commonData = data

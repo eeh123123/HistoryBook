@@ -49,17 +49,19 @@
 						</el-select>
 						<el-button size="small" @click="save">记录</el-button>
 						<!--<div class="demo-image__error">
-						<div class="block">
-							<el-image :src="imgUrl"></el-image>
-						</div>
-					</div>
+							<div class="block">
+								<el-image :src="imgUrl"></el-image>
+							</div>
+						</div>-->
+					</el-form-item>
+					<div class="tagdiv">
+						<el-input class="input-new-tag" v-if="inputVisible" v-model="inputValue" ref="saveTagInput" size="small" @keyup.enter.native="handleInputConfirm" @blur="handleInputConfirm">
+						</el-input>
+						<el-button v-else class="button-new-tag" size="small" @click="showInput">+ New Tag</el-button>
 						<el-tag :key="tag" v-for="tag in dynamicTags" closable :disable-transitions="false" @close="handleClose(tag)">
 							{{tag}}
-						</el-tag>-->
-					</el-form-item>
-					<!--<el-input class="input-new-tag" v-if="inputVisible" v-model="inputValue" ref="saveTagInput" size="small" @keyup.enter.native="handleInputConfirm" @blur="handleInputConfirm">
-					</el-input>
-					<el-button v-else class="button-new-tag" size="small" @click="showInput">+ New Tag</el-button>-->
+						</el-tag>
+					</div>
 					<!--<el-upload class="upload-demo" :http-request="upload" action="localhost:8084/up" ref="upload" :on-preview="handlePreview" :on-remove="handleRemove" :before-remove="beforeRemove" multiple :limit="1" :on-exceed="handleExceed" :file-list="fileList">
 					<el-button size="small" type="primary" slot="trigger">选择文件</el-button>
 					<div slot="tip" class="el-upload__tip">只能上传jpg/png文件，且不超过500kb</div>
@@ -236,9 +238,9 @@
 								vm.eventImgUrl = vm.$store.state.FWQURL + "upload/bookBG.png" || ""
 							}
 							if(vm.Event[i].updateTime) {
-								vm.$refs.form.$el.style.height = '540px'
+								vm.$refs.form.$el.style.height = '740px'
 							} else {
-								vm.$refs.form.$el.style.height = '500px'
+								vm.$refs.form.$el.style.height = '700px'
 							}
 							break;
 						}

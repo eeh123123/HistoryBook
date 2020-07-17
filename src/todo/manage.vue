@@ -9,6 +9,7 @@
 <!--						<el-menu-item index="addJob"><img src="../assets/smallimg/guanzhi.png"></img>官职表(不分页)</el-menu-item>
 -->						<el-menu-item index="/commonDCT?dctid=guanzhi"><img src="../assets/smallimg/guanzhi.png"></img>官职表</el-menu-item>
 						<el-menu-item index="/commonDCT?dctid=dept"><img src="../assets/smallimg/user.png"></img>部门表</el-menu-item>
+						<el-menu-item index="/commonDCT?dctid=county"><img src="../assets/smallimg/county.png"></img>州府表</el-menu-item>
 						<el-menu-item index="/commonDCT?dctid=person"><img src="../assets/smallimg/renwu.png"></img>人物表</el-menu-item>
 						<el-menu-item index="/commonDCT?dctid=jobtime"><img src="../assets/smallimg/guanzhi.png"></img>履历表</el-menu-item>
 						<el-menu-item index="/commonDCT?dctid=attribute"><img src="../assets/smallimg/attribute.png"></img>特性表</el-menu-item>

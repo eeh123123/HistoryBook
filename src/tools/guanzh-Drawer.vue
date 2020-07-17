@@ -72,10 +72,11 @@
 				this.guanzhiData.PinJie_F_BH = obj.F_BH
 			},
 			save() {
+				debugger
 				let array_update = [{
 					id: this.guanzhiData.id,
 					F_Caption: this.guanzhiData.F_Caption||'',
-					PinJie:this.pinjieValue,
+					PinJie:this.guanzhiData.PinJie_F_BH||this.pinjieValue,
 					personSize:this.guanzhiData.personSize,
 				}]
 				axios.post(this.$store.state.MYURL + 'UpdateTableRow.do', {
