@@ -7,33 +7,15 @@
 		<meta name="viewport" content="initial-scale=1.0, user-scalable=no, width=device-width" />
 		<title>历史书-地图</title>
 		<script type="text/javascript" src="http://webapi.amap.com/maps?v=1.4.1&key=f1c8c370f7738e458c5c70a1df52984b&plugin=AMap.Autocomplete,AMap.PlaceSearch"></script>
-		<!-- 引入样式 -->
-		<script src="https://cdn.jsdelivr.net/npm/vue/dist/vue.js"></script>
-		<link rel="stylesheet" href="https://unpkg.com/element-ui/lib/theme-chalk/index.css">
-		<!-- 引入组件库 -->
-		<script src="https://unpkg.com/element-ui/lib/index.js"></script>
 		<script src="https://unpkg.com/axios/dist/axios.min.js"></script>
-	    <!-- UI组件库 1.0 -->
-    	<script src="http://webapi.amap.com/ui/1.0/main.js?v=1.0.11"></script>
 		<style>
+			#mapBox,
 			body,
 			html {
 				position: relative;
 				height: 100%;
 				margin: 0;
 				padding: 0;
-			}
-			
-			.amap-container {
-				z-index: 1;
-			}
-			
-			#mapBox {
-				position: absolute;
-				z-index: 2;
-				bottom: 0;
-				left: 0;
-				width: 100%;
 			}
 			
 			#container {
@@ -57,8 +39,6 @@
 			
 			#tipinput {
 				width: 400px;
-				height:30px;
-				bottom: 0;
 			}
 			
 			.amap-sug-result {
@@ -72,10 +52,9 @@
 			.toolsBar {
 				position: absolute;
 				height: 1.5vw;
-				top: 0;
 				width: 80%;
 				background-color: #F4F3F1;
-				z-index: 2;
+				z-index: 1;
 			}
 			
 			.toolsBar-btn {
@@ -86,8 +65,11 @@
 				background-size: 100% 100%;
 				background-repeat: no-repeat;
 				background-color: transparent;
-				float: left;
-				cursor: pointer;
+				position: absolute;
+			}
+			
+			.tuding1 {
+				background-image: url("http://49.235.128.250:8084/upload/tuding1.png");
 			}
 			
 			.windowInput {
@@ -107,90 +89,23 @@
 				line-height: 2.4;
 				border-radius: 4px;
 			}
-			
-			.tuding1 {
-				background-image: url("http://49.235.128.250:8084/upload/tuding1.png");
-			}
-			
-			.tuding2 {
-				background-image: url("http://49.235.128.250:8084/upload/panel.png");
-			}
-			
-			.tuding3 {
-				background-image: url("http://49.235.128.250:8084/upload/panel.png");
-			}
-			
-			.panel {
-				width: 10vw;
-				height: calc(100% - 1.5vw);
-				position: absolute;
-				top: 1.5vw;
-			}
-			
-			.full {
-				height: 100%;
-				width: 100%;
-			}
-			#poiInfo {
-		        background: #fff;
-		    }
 		</style>
 	</head>
 
 	<body>
-		<div id="container"></div>
+		<div class="toolsBar">
+			<a class="tuding1 toolsBar-btn" @click="btnClick(1)"></a>
+		</div>
 		<div id="mapBox">
+			<div id="container"></div>
 			<div id="myPage">
 				<!--<p>请输入关键字：</p>-->
-				<input id="tipinput" placeholder="请输入关键字：" />
-				<div id="poiInfo"></div>
-			</div>
-			<div class="toolsBar">
-				<a class="tuding1 toolsBar-btn" @click="btnClick(1)"></a>
-				<a class="tuding2 toolsBar-btn" @click="btnClick(2)"></a>
-			</div>
-			<div class="panel" v-if="btnShow2">
-				<el-tree :data="data" :props="defaultProps" @node-click="handleNodeClick"></el-tree>
+				<input id="tipinput" placeholder="  请输入关键字：" />
 			</div>
 		</div>
-
 	</body>
 	<script type="text/javascript">
-		//axios加请求头
-		axios.interceptors.request.use(
-			config => {
-				config.cancelToken = new axios.CancelToken(c => {
-					config.cancel = c
-				})
-				let authorization = getcookie('Authorization')
-				if(
-					authorization === '' ||
-					authorization === undefined ||
-					authorization === null
-				) {
-					// cookies里面不存在token则跳转到login界面
-					window.location.href = '/#/login'
-				} else {
-					// 增加token
-					config.headers['token'] = authorization
-					//允许的header类型
-					return config
-				}
-				return config
-			},
-			function(error) {
-				return Promise.reject(error)
-			}
-		)
-
-		function getcookie(objname) { //获取指定名称的cookie的值
-			var arrstr = document.cookie.split("; ");
-			for(var i = 0; i < arrstr.length; i++) {
-				var temp = arrstr[i].split("=");
-				if(temp[0] == objname) return unescape(temp[1]);
-			}
-		}
-
+		var btnFlag = 0;
 		var mapObj = [{
 			currentX: 0,
 			currentY: 0,
@@ -199,36 +114,11 @@
 		var MYURL = "http://49.235.128.250:8084/"
 		var currentX, currentY
 		window.onload = function() {
-			queryAxios() //查询州县树的数据
+			queryAxios()
 		};
-		function queryAxios() {
-			axios.get(MYURL + 'QueryTableRow.do', {
-					params: {
-						tablename: "map",
-						showcol: "*",
-						sqlwhere: " 1=1"
-					}
-				})
-				.then(function(res) {
-					mapObj = res.data.data
-					for(let i = 0; i < mapObj.length; i++) {
-						writePoint(mapObj[i].positionX, mapObj[i].positionY, mapObj[i].positionName)
-					}
-				})
-		}
 
-		function saveAxios() {
-			var values = [currentX, currentY, document.getElementById('windowInput').value,localStorage.getItem('username')]
-			axios.post(MYURL + 'InsertTableRow_Origin.do', {
-					params: {
-						tablename: "map",
-						Insertcol: "positionX,positionY,positionName,creator",
-						values: [values]
-					}
-				})
-				.then(function(res) {
-					alert(res.data.msg)
-				})
+		function btnClick(num) {
+			btnFlag = num;
 		}
 
 		//地图加载
@@ -242,7 +132,6 @@
 		var autoOptions = {
 			input: "tipinput" //绑定地图的输入框
 		};
-		
 		var auto = new AMap.Autocomplete(autoOptions);
 		var placeSearch = new AMap.PlaceSearch({
 			//新建的一个map
@@ -252,20 +141,10 @@
 		var satelliteLayer = new AMap.TileLayer.Satellite();
 		//批量添加图层
 		map.add([satelliteLayer]);
-		setTimeout(function(){
-		AMapUI.loadUI(['misc/PoiPicker'], function(PoiPicker) {
-	        var poiPicker = new PoiPicker({
-	            //city:'北京',
-	            input: 'tipinput'
-	        });
-	
-	        //初始化poiPicker
-	        poiPickerReady(poiPicker);
-		    });
-		},2000)
 
 		AMap.event.addListener(auto, "select", select); //注册监听，当选中某条记录时会触发
 		function select(e) {
+			console.log(e);
 			placeSearch.setCity(e.poi.adcode);
 			placeSearch.search(e.poi.name); //关键字查询查询
 		}
@@ -284,6 +163,7 @@
 				bubble: true
 			});
 			map.on("click", function(e) {
+				console.log("map-click");
 				var lat = e.lnglat.lat;
 				var lng = e.lnglat.lng;
 				var lnglatmsg = [];
@@ -308,9 +188,6 @@
 				});
 			});
 		});
-
-		function showInfoM(e) {
-		}
 		//在指定位置打开信息窗体
 		function openInfo(lnglatmsg, addressname, daddress) {
 			currentX = lnglatmsg[0];
@@ -340,7 +217,37 @@
 			});
 			infoWindow.open(map, lnglatmsg);
 		}
-		//写点
+
+		function saveAxios() {
+			var values = [currentX, currentY, document.getElementById('windowInput').value]
+			axios.post(MYURL + 'InsertTableRow_Origin.do', {
+					params: {
+						tablename: "map",
+						Insertcol: "positionX,positionY,positionName",
+						values: [values]
+					}
+				})
+				.then(function(res) {
+					alert(res.data.msg)
+				})
+		}
+
+		function queryAxios() {
+			axios.get(MYURL + 'QueryTableRow.do', {
+					params: {
+						tablename: "map",
+						showcol: "*",
+						sqlwhere: " 1=1"
+					}
+				})
+				.then(function(res) {
+					mapObj = res.data.data
+					for(let i = 0; i < mapObj.length; i++) {
+						writePoint(mapObj[i].positionX, mapObj[i].positionY, mapObj[i].positionName)
+					}
+				})
+		}
+
 		function writePoint(x, y, positionName) {
 			var marker = new AMap.Marker({
 				position: map.getCenter(),
@@ -349,6 +256,7 @@
 			});
 
 			marker.setMap(map);
+
 			// 设置鼠标划过点标记显示的文字提示
 			//			marker.setTitle('我是marker的title');
 
@@ -359,128 +267,7 @@
 				content: "<div class='info'>" + positionName + "</div>", //设置文本标注内容
 				direction: 'bottom' //设置文本标注方位
 			});
-			marker.on('click', showInfoM);
-			
 		}
-
-		//5 数组转tree
-		function composeTree(list = []) {
-			//const data = JSON.parse(JSON.stringify(list)) // 浅拷贝不改变源数据
-			const data = list
-			const result = []
-			if(!Array.isArray(data)) {
-				return result
-			}
-			data.forEach(item => {
-				// delete item.children
-				item.children = []
-			})
-			const map = {}
-			data.forEach(item => {
-				map[item.id] = item
-			})
-			data.forEach(item => {
-				const parent = map[item.F_parent]
-				if(parent) {
-					(parent.children || (parent.children = [])).push(item)
-				} else {
-					result.push(item)
-				}
-			})
-			return result
-		}
-		
-		// 树结构排序
-		function sort(data, id) {
-			function sortArr(data) {
-				if(Array.isArray(data)) {
-					data = data.sort(function(a, b) {
-						return a[id] - b[id]
-					})
-					// 排序子对象
-					for(let i = 0; i < data.length; i++) {
-						sortArr(data[i].children)
-					}
-				}
-			}
-			sortArr(data)
-			return data
-		}
-
-		var vm = new Vue({
-			el: '#mapBox',
-			data: {
-				btnShow2: false,
-				data: [],
-				defaultProps: {
-					children: 'children',
-					label: 'name'
-				}
-			},
-			methods: {
-				btnClick(num) {
-					if(num == 1) {
-
-					}
-					if(num == 2) {
-						vm.btnShow2 = !vm.btnShow2
-					}
-				},
-				handleNodeClick(data) {
-					console.log(data);
-				},
-				queryCounty() {
-					axios.get(MYURL + 'QueryTableRow.do', {
-							params: {
-								tablename: "county",
-								showcol: "*",
-								sqlwhere: " 1=1",
-							}
-						})
-						.then(res => {
-							vm.data = composeTree(res.data.data)
-						})
-				}
-			},
-			mounted() {
-				this.queryCounty()
-			}
-		})
-
-
-    function poiPickerReady(poiPicker) {
-        window.poiPicker = poiPicker;
-        var marker = new AMap.Marker();
-        var infoWindow = new AMap.InfoWindow({
-            offset: new AMap.Pixel(0, -20)
-        });
-        //选取了某个POI
-        poiPicker.on('poiPicked', function(poiResult) {
-
-            <!-- var source = poiResult.source, -->
-                poi = poiResult.item,
-                info = {
-                    <!-- source: source, -->
-                    <!-- id: poi.id, -->
-                    name: poi.name,
-                    <!-- location: poi.location.toString(), -->
-                    <!-- address: poi.address -->
-                };
-
-            marker.setMap(map);
-            infoWindow.setMap(map);
-            marker.setPosition(poi.location);
-            infoWindow.setPosition(poi.location);
-            infoWindow.setContent('POI信息: <pre>' + JSON.stringify(info, null, 2) + '</pre>');
-            infoWindow.open(map, marker.getPosition());
-
-            map.setCenter(marker.getPosition());
-        });
-
-        poiPicker.onCityReady(function() {
-            poiPicker.suggest('美食');
-        });
-    }
 	</script>
 
 </html>
