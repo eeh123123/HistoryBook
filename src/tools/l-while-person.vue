@@ -2,10 +2,12 @@
 	<ul v-if="item.children && item.children.length > 0 && item.closed==true">
 		<template v-for="children in item.children">
 			<child :text="item">
-				<span class="child-item" @click="clickFunc(children)" @contextmenu.prevent="userDrawer(children)">
-					<span class="person" :style="{'background-image':'url(' + children.imgURL + ')'}"></span>
-				<span class="name">{{children.person_name}}</span>
-				</span>
+				 	<span class="child-item" @click="clickFunc(children)" @contextmenu.prevent="userDrawer(children)">
+				 		<span :class="{rainbow:children.isCreator == 1}">
+				 			<span class="person" :style="{'background-image':'url(' + children.imgURL + ')'}" :title="children.f_caption"></span>
+				 		</span>
+						<span class="name">{{children.person_name}}</span>
+					</span>
 				<l-while :item="children">
 				</l-while>
 			</child>
@@ -30,7 +32,6 @@
 				children.closed = !children.closed
 			},
 			userDrawer(children) {
-				debugger
 				console.log(children)
 				axios.get(this.$store.state.MYURL + 'QueryPerson.do', {
 						params: {
