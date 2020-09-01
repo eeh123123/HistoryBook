@@ -51,7 +51,7 @@
 				let option = {
 					tablename: "person",
 					showcol: ["*"],
-					sqlwhere: "FAMILYID=" + this.familyValue
+					sqlwhere: "FAMILYID=" + this.familyValue +" OR parentFamilyid =" + this.familyValue
 				}
 				axios.get(this.$store.state.MYURL + 'QueryTableRow.do', {
 						params: {
@@ -63,6 +63,9 @@
 					.then(res => {
 						for(let i =0;i<res.data.data.length;i++){
 							res.data.data[i].closed=true
+							if(res.data.data[i].isCreator==1&&res.data.data[i].familyid!=this.familyValue){
+								res.data.data[i].fatherid=""
+							}
 						}
 						this.Array_data = this.$tools.composeTree(res.data.data)
 						this.Array_data_Orign = JSON.parse(JSON.stringify(this.Array_data));
@@ -98,11 +101,9 @@
 			}
 		},
 		mounted() {
-			this.queryData()
 			this.setNumber()
 			this.queryfamilyOptions()
 		}
 	}
 </script>
 
-<style scoped="scoped"></style>

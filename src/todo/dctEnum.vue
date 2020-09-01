@@ -54,7 +54,7 @@
 			getLeftScene() {
 				let option = {
 					tablename: "dct_enums",
-					showcol: ['F_MC', 'id', 'F_T3'],
+					showcol: ['F_MC', 'id', 'F_T2','F_T3'],
 					sqlwhere: "1=1"
 				}
 				axios.get(this.$store.state.MYURL + 'QueryTableRow.do', {
@@ -73,7 +73,7 @@
 				this.tree.init({
 					data: data,
 					dataType: 'list',
-					parentCode: 'F_T3',
+					parentCode: 'F_T2',
 					label: 'F_MC',
 					code: 'id',
 					sortCode: 'sort',
@@ -140,8 +140,8 @@
 			resetIndTypeNode(data) {
 				return {
 					id: data.id || '',
-					pSceneId: data.pSceneId || '',
-					sceneName: data.sceneName || '', //场景名称
+					pSceneId: data.F_T2 || '',
+					sceneName: data.F_MC || '', //场景名称
 					monContnet: data.monContnet || '' //场景概述
 				}
 			},

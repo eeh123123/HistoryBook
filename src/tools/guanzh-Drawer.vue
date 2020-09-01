@@ -29,7 +29,6 @@
 				return this.$store.state.guanzhiDrawer
 			},
 			guanzhiData() {
-				debugger
 				return this.$store.state.guanzhiData
 			},
 		},
@@ -72,7 +71,6 @@
 				this.guanzhiData.PinJie_F_BH = obj.F_BH
 			},
 			save() {
-				debugger
 				let array_update = [{
 					id: this.guanzhiData.id,
 					F_Caption: this.guanzhiData.F_Caption||'',

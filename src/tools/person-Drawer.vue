@@ -26,11 +26,24 @@
 				<div class="right">
 					<div class="top">
 						<div class="old">{{old}}</div>
+						<div class="attribute5Num">
+							<div class="son"><div class="shejiao"></div>{{shejiao}}</div>
+							<div class="son"><div class="junshi"></div>{{junshi}}</div>
+							<div class="son"><div class="guanli"></div>{{guanli}}</div>
+							<div class="son"><div class="mimou"></div>{{mimou}}</div>
+							<div class="son"><div class="xueshi"></div>{{xueshi}}</div>						
+						</div>
 					</div>
 					<div class="bottom">
 						<div class="attribute1">
 							<el-tooltip class="item" effect="light" v-for="(item,index) in PersonData" placement="bottom">
-								<div slot="content">{{item.F_name}}<br/>{{item.attrF_caption}}</div>
+								<div slot="content">{{item.F_name}}<br/>{{item.attrF_caption}}
+									<span v-if="item.waijiao"><br>外交：{{item.waijiao}}</span>
+									<span v-if="item.guanli"><br>管理：{{item.guanli}}</span>
+									<span v-if="item.junshi"><br>军事：{{item.junshi}}</span>
+									<span v-if="item.mimou"><br>密谋：{{item.mimou}}</span>
+									<span v-if="item.xueshi"><br>学识：{{item.xueshi}}</span>
+								</div>
 								<div class="item" :key="index" v-bind:style="{backgroundImage:'url(' + item.attrUrl + ')'}"></div>
 							</el-tooltip>
 						</div>
@@ -73,6 +86,23 @@
 				return this.$store.state.Drawer
 			},
 			PersonData() {
+				let shejiao=5
+				let guanli=5
+				let junshi=5
+				let mimou=5
+				let xueshi=5
+				for(let i=0;i<this.$store.state.PersonData.length;i++){
+					shejiao+=parseInt(this.$store.state.PersonData[i].shejiao||0)  
+					guanli+=parseInt(this.$store.state.PersonData[i].guanli||0)  
+					junshi+=parseInt(this.$store.state.PersonData[i].junshi||0)  
+					mimou+=parseInt(this.$store.state.PersonData[i].mimou||0)  
+					xueshi+=parseInt(this.$store.state.PersonData[i].xueshi||0)  
+				}
+				this.shejiao = shejiao
+				this.guanli = guanli
+				this.junshi = junshi
+				this.mimou = mimou
+				this.xueshi = xueshi
 				return this.$store.state.PersonData
 			},
 			old() {
@@ -86,7 +116,12 @@
 		data() {
 			return {
 				direction: 'ltr',
-				death:false
+				death:false,
+				shejiao:0,
+				guanli:0,
+				junshi:0,
+				mimou:0,
+				xueshi:0
 			}
 		},
 		methods: {

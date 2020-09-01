@@ -1,8 +1,9 @@
 //创建Vue实例
 const store = new Vuex.Store({
 	state: {
-		MYURL: process.env.NODE_ENV ==="development"?"http://localhost:8084/":"http://49.235.128.250:8084/",
-		FWQURL: "http://49.235.128.250:8084/",
+		MYURL: process.env.NODE_ENV ==="development"?"http://localhost:8084/":"http://119.45.27.191:8084/",
+		FWQURL: "http://119.45.27.191:8084/",
+		AliYunURL: "https://historybook.oss-cn-beijing.aliyuncs.com/background/",
 		LoginState: false,
 		Dialog_show: false,
 		Dialog_data: {

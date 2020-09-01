@@ -15,6 +15,7 @@
 		methods: {
 			searchs() {
 				if(this.attribute) {
+					this.$parent.currentPage = 1
 					this.$parent.option = " where A.F_name like '%" + this.attribute + "%'"
 					this.$parent.searchFlag = false
 					this.$parent.queryTableData()

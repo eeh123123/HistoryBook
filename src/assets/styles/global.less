@@ -43,7 +43,7 @@
     .el-input--small .el-input__icon {
         line-height: 28px;
     }
-    .cell .el-tooltip{
+    .cell .el-tooltip {
         width: 100%;
     }
 }
@@ -223,6 +223,50 @@
                         top: 7.5%;
                         right: 16%;
                     }
+                    .attribute5Num {
+                        height: 5vw;
+                        width: 5vw;
+                        position: relative;
+                        top: 67%;
+                        right: 0%;
+                        .son{
+                            height: 20%;
+                            width: 100%;
+                            color: white;
+                            text-align: left;
+                            >div{
+                                height: 1vw;
+                                width: 1vw;
+                                cursor: pointer;
+                                background-size: 110% 110%;
+                                background-repeat: no-repeat;
+                                margin-left: 0.6vw;
+                                margin-right: 0.6vw;
+                                float: left;
+                            }
+                            span{
+                                position: relative;
+                            }
+                        }
+                        .shejiao{
+                            background-image:url(../smallimg/map.png)
+                        }
+                        .junshi{
+                            background-image:url(../smallimg/junshi.png)
+
+                        }
+                        .guanli{
+                            background-image:url(../smallimg/treasure.png)
+
+                        }                        
+                        .mimou{
+                            background-image:url(../smallimg/mimou.png)
+
+                        }                        
+                        .xueshi{
+                            background-image:url(../smallimg/xueshi.png)
+                        }
+                    }
                 }
                 .bottom {
                     height: 15%;
@@ -383,9 +427,20 @@
 //  border: none;
 //  color: white;
 //}
-
 .dialog-Image {
     width: fit-content;
     min-width: 350px;
     min-height: 350px;
+}
+
+//滚动条的宽度
+::-webkit-scrollbar {
+  width: 10px;
+  height: 10px;
+}
+
+//滚动条的滑块
+::-webkit-scrollbar-thumb {
+  background-color: #a1a3a9;
+  border-radius: 3px;
 }

@@ -133,8 +133,8 @@
 	                color: black;
 	            }
 	        }
-	        * {
-	            background-color: transparent!important;
+	        *:not(.el-pager) {
+	            background-color: transparent;
 	        }
 	        .el-textarea__inner{
 	           color: black;
@@ -147,12 +147,27 @@
 	            height: 26px;
 	            .el-input__inner {
 	                height: 26px;
+	                color: black;
 	            }
 	        }
 	        .tagdiv{
 	            position: absolute;
                 left: 8%;
-                top: 72%;
+                top: 100%;
+	        }
+	        .bottomFloor{
+	            position: absolute;
+                left: 8%;
+                top: 107%;
 	        }
 	    }
+	    .RL{
+	        .el-input{
+	           width: 80px; 
+	           margin-top: 10px;
+	           margin-left: 10px;
+	        }
+	        
+	    }
 	}
+	

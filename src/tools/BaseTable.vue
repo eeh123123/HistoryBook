@@ -86,7 +86,7 @@
 				Img: {
 					Visible: false,
 					Url: '',
-					action: 'http://49.235.128.250:8084/up'
+					action: 'http://119.45.27.191:8084/up'
 				},
 				Dialog: {
 					code: '',

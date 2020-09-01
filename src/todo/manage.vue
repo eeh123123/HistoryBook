@@ -13,7 +13,7 @@
 						<el-menu-item index="/commonDCT?dctid=person"><img src="../assets/smallimg/renwu.png"></img>人物表</el-menu-item>
 						<el-menu-item index="/commonDCT?dctid=jobtime"><img src="../assets/smallimg/guanzhi.png"></img>履历表</el-menu-item>
 						<el-menu-item index="/commonDCT?dctid=attribute"><img src="../assets/smallimg/attribute.png"></img>特性表</el-menu-item>
-						<el-menu-item index="/commonDCT?dctid=attributeTime">特性时间表</el-menu-item>
+						<el-menu-item index="/commonDCT?dctid=attributeTime"><img src="../assets/smallimg/attributeTime.png"></img>特性时间表</el-menu-item>
 						<el-menu-item index="/commonDCT?dctid=family"><img src="../assets/smallimg/family.png"></img>家族表</el-menu-item>
 						<el-menu-item index="/commonDCT?dctid=item"><img src="../assets/smallimg/treasure.png"></img>物品表</el-menu-item>
 						<el-menu-item index="/commonDCT?dctid=ssf_users"><img src="../assets/smallimg/user.png"></img>登陆用户表</el-menu-item>
@@ -33,14 +33,14 @@
 						<el-menu-item index="buoList"><img src="../assets/smallimg/buo.png"></img>布偶猫名录</el-menu-item>
 						<el-menu-item index="/commonDCT?dctid=buocat"><img src="../assets/smallimg/buo.png"></img>布偶猫字典</el-menu-item>
 					</el-submenu>
-					<el-submenu index="4">
+					<!--<el-submenu index="4">
 						<template slot="title"><i class="el-icon-warning"></i>账号管理（未完）</template>
 						<el-menu-item index="adminSet">个人信息</el-menu-item>
 					</el-submenu>
 					<el-submenu index="6">
 						<template slot="title"><i class="el-icon-warning"></i>模型设计（未完）</template>
 						<el-menu-item index="Dct">字典表</el-menu-item>
-					</el-submenu>
+					</el-submenu>-->                 
 				</el-menu>
 			</el-col>
 			<el-col :span="20" style="height: 100%;overflow: auto;">
