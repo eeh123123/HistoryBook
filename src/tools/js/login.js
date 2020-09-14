@@ -5,8 +5,7 @@ function getMd5(string) {
 }
 
 function loginIn(user, pwd, url, cb) {
-  axios
-    .post(url, {
+  axios.post(url, {
       userName: user,
       password: getMd5(pwd)
     })

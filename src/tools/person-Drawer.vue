@@ -16,7 +16,10 @@
 							<div class="circle"></div>
 							<div class="yoursName">配偶</div>
 						</div>
-						<div class="death" v-if="death"></div>
+						<el-tooltip class="item" effect="light" placement="bottom">
+							<div class="death" v-if="death"></div>
+							  <div slot="content">{{PersonData[0].death_date}}<br>{{PersonData[0].dieReason}}</div>
+						</el-tooltip>
 						<div class="you" v-bind:style="{backgroundImage:'url(' + PersonData[0]['imgURL']||'none.png' + ')'}">
 							<div class="circle"></div>
 						</div>
@@ -38,7 +41,7 @@
 						<div class="attribute1">
 							<el-tooltip class="item" effect="light" v-for="(item,index) in PersonData" placement="bottom">
 								<div slot="content">{{item.F_name}}<br/>{{item.attrF_caption}}
-									<span v-if="item.waijiao"><br>外交：{{item.waijiao}}</span>
+									<span v-if="item.shejiao"><br>外交：{{item.shejiao}}</span>
 									<span v-if="item.guanli"><br>管理：{{item.guanli}}</span>
 									<span v-if="item.junshi"><br>军事：{{item.junshi}}</span>
 									<span v-if="item.mimou"><br>密谋：{{item.mimou}}</span>
@@ -106,11 +109,15 @@
 				return this.$store.state.PersonData
 			},
 			old() {
-				if(moment(this.$store.state.currentTime).format("YYYYMMDD")-moment(this.PersonData[0].death_date).format("YYYYMMDD")>0){
+				if(this.$store.state.currentTime-moment(this.PersonData[0].death_date).format("YYYYMMDD")>0){
 					this.death = true
 					return  moment(this.PersonData[0].death_date).diff(moment(this.PersonData[0].born_date),'year')
 				}
-				return moment(this.$store.state.currentTime).diff(moment(this.PersonData[0].born_date),'year')
+				else{
+					let date1 = moment(this.$store.state.currentTime,"YYYY-MM-DD")
+					let date2 = this.PersonData[0].born_date
+					return date1.diff(date2,'years')
+				}
 			},
 		},
 		data() {

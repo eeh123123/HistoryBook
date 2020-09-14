@@ -6,9 +6,14 @@
 <script>
 	export default {
 		computed: {
-			currentTime() {
-				return this.$store.state.currentTime
-			},
+			 currentTime: {
+				 get: function() {
+					return this.$store.state.currentTime
+				},
+				 set: function(val) {
+				 	this.$store.commit("setcurrentTime", val);
+				}
+			}
 		},
 		data() {
 			return {
@@ -16,9 +21,7 @@
 			}
 		},
 		methods: {
-			QueryData() {
 
-			}
 		}
 	}
 </script>

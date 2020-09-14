@@ -73,6 +73,7 @@
 				this.$parent.option = ""
 				this.$parent.searchFlag = true
 				if(this.person||this.query_Dept){
+					this.$parent.currentPage = 1
 					this.$parent.option = " where 1 = 1"
 				}
 				if(this.person) {

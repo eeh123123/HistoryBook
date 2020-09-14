@@ -16,9 +16,9 @@
 						<el-menu-item index="/commonDCT?dctid=attributeTime"><img src="../assets/smallimg/attributeTime.png"></img>特性时间表</el-menu-item>
 						<el-menu-item index="/commonDCT?dctid=family"><img src="../assets/smallimg/family.png"></img>家族表</el-menu-item>
 						<el-menu-item index="/commonDCT?dctid=item"><img src="../assets/smallimg/treasure.png"></img>物品表</el-menu-item>
-						<el-menu-item index="/commonDCT?dctid=ssf_users"><img src="../assets/smallimg/user.png"></img>登陆用户表</el-menu-item>
-						<el-menu-item index="/dctEnum"><img src="../assets/smallimg/user.png"></img>枚举表</el-menu-item>
-						<el-menu-item index="/commonDCT?dctid=stone"><img src="../assets/images/stone.png" style="height: 28px;width: 28px;"></img>矿石表</el-menu-item>
+						<!--<el-menu-item index="/commonDCT?dctid=ssf_users"><img src="../assets/smallimg/user.png"></img>登陆用户表</el-menu-item>-->
+						<!--<el-menu-item index="/dctEnum"><img src="../assets/smallimg/user.png"></img>枚举表</el-menu-item>-->
+						<!--<el-menu-item index="/commonDCT?dctid=stone"><img src="../assets/images/stone.png" style="height: 28px;width: 28px;"></img>矿石表</el-menu-item>-->
 						<!--<el-menu-item index="experience">履历表(未做)</el-menu-item>-->
 					</el-submenu>
 					<el-submenu index="2">
@@ -28,11 +28,11 @@
 						<el-menu-item index="calendar"><img src="../assets/smallimg/calendar.png"></img>万年历</el-menu-item>
 						<el-menu-item index="map"><img src="../assets/smallimg/map.png"></img>地图</el-menu-item>
 					</el-submenu>
-					<el-submenu index="3">
+					<!--<el-submenu index="3">
 						<template slot="title"><img src="../assets/smallimg/cat.png"></img>猫之百科</template>
 						<el-menu-item index="buoList"><img src="../assets/smallimg/buo.png"></img>布偶猫名录</el-menu-item>
 						<el-menu-item index="/commonDCT?dctid=buocat"><img src="../assets/smallimg/buo.png"></img>布偶猫字典</el-menu-item>
-					</el-submenu>
+					</el-submenu>-->
 					<!--<el-submenu index="4">
 						<template slot="title"><i class="el-icon-warning"></i>账号管理（未完）</template>
 						<el-menu-item index="adminSet">个人信息</el-menu-item>

@@ -1,7 +1,7 @@
 <template>
 	<div class="sonVue">
 		<el-input v-model="person" placeholder="请输入姓名"></el-input>
-		<el-input v-model="father_F_MC"  placeholder="请选择父亲姓名" suffix-icon="el-icon-circle-plus" @click.native="open_Dialog()" >
+		<el-input v-model="father_F_MC"  placeholder="请选择父亲姓名" suffix-icon="el-icon-circle-plus" @click.native="open_Dialog()">
 		</el-input>
 		<el-button type="primary" icon="el-icon-search" @click="searchs">搜索</el-button>
 		<el-dialog :title="Dialog.title" :visible.sync="Dialog.Visible" :close-on-click-modal="false" v-dialogDrag width="30%">
@@ -91,6 +91,7 @@
 				this.father_F_MC = this.Dialog.currentRow[this.Dialog.commonData.F_Caption]
 				this.Dialog.Visible = false
 				this.Dialog.search_data = ''
+				this.searchs()
 			},
 			Dialog_selectedTableData(val) {
 				this.Dialog.currentRow = val;
@@ -105,12 +106,14 @@
 			searchs() {
 				this.$parent.option = " WHERE 1 = 1 "
 				if(this.person) {
+					this.$parent.currentPage = 1
 					this.$parent.option += " AND A.person_name like '%" + this.person + "%'"
 				}
-				if(this.fatherid) {
+				else if(this.fatherid) {
+					this.$parent.currentPage = 1
 					this.$parent.option += " AND  A.fatherid = '" + this.fatherid + "'"
 				}
-				this.$parent.searchFlag = false
+				this.$parent.searchFlag = true
 				this.$parent.queryTableData()
 			},
 		}

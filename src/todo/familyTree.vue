@@ -1,14 +1,16 @@
 <template>
 	<div>
-		<el-select class="margin-left10 margin-top10" v-model="familyValue" placeholder="请选择" @change="queryData">
-			<el-option v-for="item in familyOptions" :key="item.id" :label="item.F_caption" :value="item.id">
-			</el-option>
-		</el-select>
-		<el-select class="margin-left10 margin-top10" v-model="numberValue" placeholder="第几代" @change="changeNumber" clearable>
-			<el-option v-for="item in numberOptions" :key="item.id" :label="item.F_caption" :value="item.id">
-			</el-option>
-		</el-select>
-		
+		<div class="family_position">
+			<el-select class="margin-left10 margin-top10" v-model="familyValue" placeholder="请选择" @change="queryData">
+				<el-option v-for="item in familyOptions" :key="item.id" :label="item.F_caption" :value="item.id">
+				</el-option>
+			</el-select>
+			<el-select class="margin-left10 margin-top10" v-model="numberValue" placeholder="第几代" @change="changeNumber" clearable>
+				<el-option v-for="item in numberOptions" :key="item.id" :label="item.F_caption" :value="item.id">
+				</el-option>
+			</el-select>
+		</div>
+
 		<div class="tree">
 			<ul>
 				<child v-for="item in Array_data" :key="item.fatherid" :text="item">
@@ -30,19 +32,19 @@
 		data() {
 			return {
 				Array_data: [],
-				Array_data_Orign:[],
+				Array_data_Orign: [],
 				familyOptions: [],
 				familyValue: '',
-				numberOptions:[],
-				numberValue :'',
+				numberOptions: [],
+				numberValue: '',
 			};
 		},
 		methods: {
-			setNumber(){
-				for(let i=0;i<=15;i++){
-					this.numberOptions[i]={
-						id:i+1,
-						F_caption:'第'+(i-1+2)+'代'
+			setNumber() {
+				for(let i = 0; i <= 15; i++) {
+					this.numberOptions[i] = {
+						id: i + 1,
+						F_caption: '第' + (i - 1 + 2) + '代'
 					}
 				}
 			},
@@ -51,7 +53,7 @@
 				let option = {
 					tablename: "person",
 					showcol: ["*"],
-					sqlwhere: "FAMILYID=" + this.familyValue +" OR parentFamilyid =" + this.familyValue
+					sqlwhere: "FAMILYID=" + this.familyValue + " OR parentFamilyid =" + this.familyValue
 				}
 				axios.get(this.$store.state.MYURL + 'QueryTableRow.do', {
 						params: {
@@ -61,22 +63,21 @@
 						}
 					})
 					.then(res => {
-						for(let i =0;i<res.data.data.length;i++){
-							res.data.data[i].closed=true
-							if(res.data.data[i].isCreator==1&&res.data.data[i].familyid!=this.familyValue){
-								res.data.data[i].fatherid=""
+						for(let i = 0; i < res.data.data.length; i++) {
+							res.data.data[i].closed = true
+							if(res.data.data[i].isCreator == 1 && res.data.data[i].familyid != this.familyValue) {
+								res.data.data[i].fatherid = ""
 							}
 						}
 						this.Array_data = this.$tools.composeTree(res.data.data)
 						this.Array_data_Orign = JSON.parse(JSON.stringify(this.Array_data));
 					})
 			},
-			changeNumber(){
-				if(this.numberValue==''){
+			changeNumber() {
+				if(this.numberValue == '') {
 					this.Array_data[0].children = this.Array_data_Orign[0].children
-				}
-				else{
-					this.Array_data[0].children=this.$tools.dealTree(this.Array_data_Orign[0].children,this.numberValue-1)
+				} else {
+					this.Array_data[0].children = this.$tools.dealTree(this.Array_data_Orign[0].children, this.numberValue - 1)
 				}
 			},
 			queryfamilyOptions() {
@@ -96,7 +97,7 @@
 						this.familyOptions = res.data.data
 					})
 			},
-			handleClose(){
+			handleClose() {
 
 			}
 		},
@@ -107,3 +108,9 @@
 	}
 </script>
 
+<style lang="less" scoped="scoped">
+	.family_position{
+		    position: fixed;
+		    z-index:5;
+	}
+</style>

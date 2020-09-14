@@ -22,7 +22,7 @@
 					</div>
 					<div v-else-if="item.type == 'template'"></div>
 					<div v-else-if="item.COL_APP_TYPE == 'date'">
-						<el-date-picker v-model="scope.row[item.code]" type="date" editable value-format="yyyy-MM-dd">
+						<el-date-picker v-model="scope.row[item.code]" type="date" editable value-format="yyyy-MM-dd" style="width:140px">
 						</el-date-picker>
 					</div>
 					<div v-else-if="item.COL_APP_TYPE == 'window'">
@@ -46,7 +46,7 @@
 				</template>
 			</el-table-column>
 		</el-table>
-		<el-pagination @current-change="handleCurrentChange" class="hi-pagination-1" :page-sizes="[10, 20, 30, 40]" :page-size="pageSize-0" background layout="total, prev, pager, next" :total="tableData.total" :current-page.sync="Me_tableData.currentPage">
+		<el-pagination @current-change="handleCurrentChange" class="hi-pagination-1" :page-sizes="[10, 20, 30, 40]" :page-size="pageSize-0" background layout="total, prev, pager, next" :total="tableData.total" :current-page.sync="currentPage">
 		</el-pagination>
 		<el-dialog title="选择图片" :visible.sync="Img.Visible" :close-on-click-modal="false" v-dialogDrag custom-class="dialog-Image">
 			<el-upload class="avatar-uploader" :action="Img.action" :show-file-list="false" :on-success="handleAvatarSuccess">
@@ -135,7 +135,11 @@
 						values: array_update
 					}
 				}).then(res => {
-					this.tableData.data[this.Me_tableData.contentId - 1][this.Me_tableData.contentUrl] = this.Img.Url;
+					for(let i = 0;i<this.tableData.data.length;i++){
+						if(this.tableData.data[i].id==this.Me_tableData.contentId){
+							this.tableData.data[i].imgURL = this.Img.Url;
+						}
+					}
 					this.$message({
 						type: "success",
 						message: res.data.msg
@@ -208,11 +212,8 @@
 			tableData: Object,
 			tableHead: Array,
 			tableHeight: Number,
-			page: {
-				type: Object,
-				default: 10
-			},
 			pageSize: [Number, String],
+			currentPage:[Number, String],
 			handleCurrentChange: Function,
 		}
 	};

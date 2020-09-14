@@ -20,7 +20,7 @@
 				<el-row>
 					<el-button @click="Login()">登录</el-button>
 				</el-row>
-				<p class="tip">温馨提示：未登录过的新用户,自动注册</p>
+				<!--<p class="tip">温馨提示：未登录过的新用户,自动注册</p>-->
 			</div>
 		</div>
 	</div>
