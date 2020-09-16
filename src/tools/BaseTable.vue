@@ -3,7 +3,7 @@
 		<el-table class="baseTable" stripe tooltip-effect="light" :data.sync="tableData.data" :height.sync="tableHeight" @current-change="selectedTableData" highlight-current-row @sort-change="sortFunction"> 
 			<!--class="tb-edit"-->
 			<el-table-column v-for="(item, index) in tableHead" :value="item.code" :key="index" 
-				:show-overflow-tooltip="true" :prop="item.code" :label="item.label" align="center" 
+				:show-overflow-tooltip="item.COL_APP_TYPE!='enum'" :prop="item.code" :label="item.label" align="center" 
 				:width="item.code == 'index' ? 50 : item.COL_SHOW_SIZE" :min-width="item['min-width']" 
 				:sortable="item.COL_SORTABLE=='1'?'custom':false">
 				<template slot-scope="scope">
