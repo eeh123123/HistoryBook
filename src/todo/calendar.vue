@@ -87,6 +87,21 @@
 		},
 		data() {
 			return {
+				common:{
+					Year:"",
+					Month:"",
+					day:"",
+					Time:"",
+				},
+				event:{
+					Title:""
+
+				},
+				event_mx:{
+					refer:"",
+					userName:"",
+					updateTime:""
+				},
 				EventData: {
 
 				},
@@ -203,29 +218,6 @@
 				setTimeout(() => {
 					this.tableData.tableHeight = document.getElementById("calendar").offsetHeight - 100
 				}, 100)
-			},
-			onSubmit() {
-				console.log('submit!');
-			},
-			handleClose(tag) {
-				vm.dynamicTags.splice(vm.dynamicTags.indexOf(tag), 1);
-			},
-
-			showInput() {
-				vm.inputVisible = true;
-				vm.$nextTick(_ => {
-					vm.$refs.saveTagInput.$refs.input.focus();
-				});
-			},
-
-			handleInputConfirm() {
-				let inputValue = vm.inputValue;
-
-				if(inputValue) {
-					vm.dynamicTags.push(inputValue);
-				}
-				vm.inputVisible = false;
-				vm.inputValue = '';
 			},
 			save() {
 				let year
