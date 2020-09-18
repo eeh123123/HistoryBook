@@ -11,7 +11,7 @@
 						<el-menu-item index="/commonDCT?dctid=dept"><img src="../assets/smallimg/user.png"></img>部门表</el-menu-item>
 						<el-menu-item index="/commonDCT?dctid=county"><img src="../assets/smallimg/county.png"></img>州府表</el-menu-item>
 						<el-menu-item index="/commonDCT?dctid=person"><img src="../assets/smallimg/renwu.png"></img>人物表</el-menu-item>
-						<el-menu-item index="/commonDCT?dctid=jobtime"><img src="../assets/smallimg/guanzhi.png"></img>履历表</el-menu-item>
+						<el-menu-item index="/commonDCT?dctid=jobTime"><img src="../assets/smallimg/guanzhi.png"></img>履历表</el-menu-item>
 						<el-menu-item index="/commonDCT?dctid=attribute"><img src="../assets/smallimg/attribute.png"></img>特性表</el-menu-item>
 						<el-menu-item index="/commonDCT?dctid=attributeTime"><img src="../assets/smallimg/attributeTime.png"></img>特性时间表</el-menu-item>
 						<el-menu-item index="/commonDCT?dctid=family"><img src="../assets/smallimg/family.png"></img>家族表</el-menu-item>
@@ -19,7 +19,6 @@
 						<!--<el-menu-item index="/commonDCT?dctid=ssf_users"><img src="../assets/smallimg/user.png"></img>登陆用户表</el-menu-item>-->
 						<!--<el-menu-item index="/dctEnum"><img src="../assets/smallimg/user.png"></img>枚举表</el-menu-item>-->
 						<!--<el-menu-item index="/commonDCT?dctid=stone"><img src="../assets/images/stone.png" style="height: 28px;width: 28px;"></img>矿石表</el-menu-item>-->
-						<!--<el-menu-item index="experience">履历表(未做)</el-menu-item>-->
 					</el-submenu>
 					<el-submenu index="2">
 						<template slot="title"><img src="../assets/smallimg/look.png"></img>数据展示</template>

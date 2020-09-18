@@ -29,8 +29,11 @@ import dctEnum from './todo/dctEnum.vue'
 
 import store from './store';
 
-//import axios from './axios/index.js'
 import tools from './tools/js/tools.js'
+
+import simpleTable from 'gy_simpletable'
+Vue.component('simpleTable',simpleTable)
+
 
 Vue.prototype.$tools = tools
 
