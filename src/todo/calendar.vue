@@ -32,7 +32,8 @@
 				<el-input v-model="RL.nongliYue" placeholder="农历月"></el-input>
 				<el-input v-model="RL.tiandi" placeholder="天干地支"></el-input>
 				<el-button icon="el-icon-search" @click="searchRL()">搜索</el-button>
-				<BaseTable pageSize="15" :handleCurrentChange="handleCurrentChange" @selectedTableData="selectedTableData" :page="tableData.page" :tableHead="tableHead" :tableData.sync="tableData" :tableHeight.sync="tableData.tableHeight"></BaseTable>
+				<simpleTable :tableHead="tableHead" :tableData.sync="tableData" :currentPage.sync="currentPage" :tableHeight.sync="tableData.tableHeight" :selection="false" :highlightCurrentRow="false">
+				</simpleTable>
 			</div>
 		</div>
 		<div class="right">
@@ -55,7 +56,7 @@
 							是否精确：
 							<el-switch v-model="JingQue" active-value="1" inactive-value="0" active-color="#0000FF" inactive-color="#808080">
 							</el-switch>
-							<el-select v-model="bookValue" clearable filterable class="eventType" placeholder="请选择类型" size="mini">
+							<el-select v-model="event_mx.bookValue" clearable filterable class="eventType" placeholder="请选择类型" size="mini">
 								<el-option v-for="item in bookType" :key="item.id" :label="item.F_MC" :value="item.id">
 								</el-option>
 							</el-select>
@@ -63,7 +64,7 @@
 						<div class="bottomFloor">
 							<div class="info">编写：{{event.userName}}</div>
 							<div class="info">更新时间：{{event.updateTime}}</div>
-							<el-select v-model="eventType" clearable filterable class="eventType" placeholder="请选择类型" size="mini">
+							<el-select v-model="event_mx.eventType" clearable filterable class="eventType" placeholder="请选择类型" size="mini">
 								<el-option v-for="item in eventType_All" :key="item.id" :label="item.F_MC" :value="item.F_T1">
 								</el-option>
 							</el-select>
@@ -94,13 +95,14 @@
 					Time:"",
 				},
 				event:{
-					Title:""
-
+					Title:"",
 				},
 				event_mx:{
 					refer:"",
 					userName:"",
-					updateTime:""
+					updateTime:"",
+					bookValue:"",
+					eventType:""
 				},
 				EventData: {
 
@@ -150,9 +152,7 @@
 				RL_flag: false,
 				SJZ_val: "",
 				event: {},
-				eventType: '',
 				eventType_All: [],
-				bookValue: '',
 				bookType: [],
 				eventImgUrl: '',
 				JingQue: "1",
@@ -244,8 +244,8 @@
 					URL: vm.imgUrl,
 					userName: localStorage.getItem("username"),
 					updateTime: moment().format('YYYY-MM-DD HH:mm:ss'),
-					eventType:this.eventType,
-					bookValue: this.bookValue
+					eventType:this.event_mx.eventType,
+					bookValue: this.event_mx.bookValue
 				}
 				axios.post(this.MYURL + 'WriteStories.do?', {
 					params: option
@@ -266,7 +266,7 @@
 					day: '',
 					GuWen: this.GuWen,
 					JingQue: this.JingQue,
-					bookValue: this.bookValue
+					bookValue: this.event_mx.bookValue
 				}]
 				if(this.currentId == null || this.currentId == undefined) {
 					axios.post(this.$store.state.MYURL + 'InsertTableRow.do', {
@@ -295,7 +295,7 @@
 						day: '',
 						GuWen: this.GuWen,
 						JingQue: this.JingQue,
-						bookValue: this.bookValue
+						bookValue: this.event_mx.bookValue
 
 					}]
 					axios.post(this.$store.state.MYURL + 'UpdateTableRow.do', {
@@ -331,7 +331,7 @@
 							//							vm.updateTime = vm.Event[i].updateTime;
 							if(vm.Event[i]["eventType"]) {
 								vm.eventImgUrl = vm.$store.state.AliYunURL + vm.Event[i]["eventType"] + ".png" || ""
-								vm.eventType = vm.Event[i].eventType
+								vm.event_mx.eventType = vm.Event[i].eventType
 							} else {
 								vm.eventImgUrl = vm.$store.state.FWQURL + "upload/bookBG.png" || ""
 							}
@@ -365,15 +365,14 @@
 						this.total = parseInt(res.data.data.length) + 1
 						this.JingQue = res.data.data[0].JingQue + ""
 						this.currentId = res.data.data[0].id
-						this.bookValue = res.data.data[0].bookValue - 0
+						this.event_mx.bookValue = res.data.data[0].bookValue - 0
 						if(res.data.data.length > 1) {
 							alert(1)
 						}
 					} else {
 						this.GuWen = ""
 						this.Caption = ""
-						this.bookValue = ""
-						this.currentId = null
+//						this.event_mx.bookValue = ""
 					}
 				})
 			},
@@ -591,7 +590,7 @@
 			SXT_filterText(val) {
 				this.$refs.Tree.filter(val);
 			},
-			eventType(val) {
+			'event_mx.eventType'(val) {
 				if(val) {
 					vm.eventImgUrl = vm.$store.state.AliYunURL + val + ".png" || ""
 				} else {
