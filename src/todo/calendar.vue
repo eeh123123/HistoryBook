@@ -32,7 +32,7 @@
 				<el-input v-model="RL.nongliYue" placeholder="农历月"></el-input>
 				<el-input v-model="RL.tiandi" placeholder="天干地支"></el-input>
 				<el-button icon="el-icon-search" @click="searchRL()">搜索</el-button>
-				<simpleTable :tableHead="tableHead" :tableData.sync="tableData" :currentPage.sync="currentPage" :tableHeight.sync="tableData.tableHeight" :selection="false" :highlightCurrentRow="false">
+				<simpleTable @selectedTableData="selectedTableData":tableHead="tableHead" :tableData.sync="tableData" :currentPage.sync="currentPage" :tableHeight.sync="tableData.tableHeight" :selection="false" :highlightCurrentRow="false">
 				</simpleTable>
 			</div>
 		</div>
