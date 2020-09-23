@@ -37,14 +37,14 @@
 			</div>
 		</div>
 		<div class="right">
-			<div class="top">
+			<!--<div class="top">
 				<div class="searchs">
 					<el-input v-model="year" placeholder="年" style="width:20%"></el-input>
 					<el-input v-model="month" placeholder="月" style="width:16%"></el-input>
 					<el-input v-model="day" placeholder="日" style="width:16%"></el-input>
 					<el-button icon="el-icon-search" style="width:16%" @click="searchs()"></el-button>
 				</div>
-			</div>
+			</div>-->
 			<div class="bottom">
 				<el-form ref="form" class="form">
 					<el-input v-model="Title" placeholder="标题" class="title"></el-input>
@@ -93,12 +93,12 @@
 					Month:"",
 					day:"",
 					Time:"",
+					total: 0,
 				},
 				event:{
 					Title:"",
 				},
 				event_mx:{
-					refer:"",
 					userName:"",
 					updateTime:"",
 					bookValue:"",
@@ -107,7 +107,6 @@
 				EventData: {
 
 				},
-				total: 0,
 				value: new Date(700, 1, 1), //时间对象
 				SXT_filterText: '', //树形图的过滤文本
 				dynamicTags: [],
@@ -256,7 +255,6 @@
 //					this.loadNode(this.node_had, this.resolve_had); //再次执行懒加载的方法
 				})
 				let value = [{
-					refer: '',
 					time: year + "" + (vm.month >= 10 ? vm.month : "0" + vm.month) + (vm.day >= 10 ? vm.day : "0" + vm.day), //具体时间，小于10的前面要加0
 					userName: localStorage.getItem("username"),
 					updateTime: moment().format('YYYY-MM-DD HH:mm:ss'),
@@ -272,7 +270,7 @@
 					axios.post(this.$store.state.MYURL + 'InsertTableRow.do', {
 							params: {
 								tablename: "event_mx",
-								Insertcol: "refer,time,userName,updateTime,caption,year,month,day,GuWen",
+								Insertcol: "time,userName,updateTime,caption,year,month,day,GuWen",
 								values: value
 							}
 						})
@@ -285,7 +283,6 @@
 				} else {
 					value = [{
 						id: this.currentId,
-						refer: '',
 						time: year + "" + (vm.month >= 10 ? vm.month : "0" + vm.month) + (vm.day >= 10 ? vm.day : "0" + vm.day), //具体时间，小于10的前面要加0
 						userName: localStorage.getItem("username"),
 						updateTime: moment().format('YYYY-MM-DD HH:mm:ss'),
@@ -301,7 +298,7 @@
 					axios.post(this.$store.state.MYURL + 'UpdateTableRow.do', {
 							params: {
 								tablename: "event_mx",
-								Insertcol: "id,refer,time,userName,updateTime,caption,year,month,day,GuWen",
+								Insertcol: "id,time,userName,updateTime,caption,year,month,day,GuWen",
 								values: value
 							}
 						})
@@ -621,6 +618,7 @@
 					} else {
 						vm.Title = "";
 						vm.Caption = "";
+						vm.currentId = ""
 					}
 				}
 			}
