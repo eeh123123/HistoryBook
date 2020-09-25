@@ -183,6 +183,9 @@
 		},
 		computed: {
 			currentTime: function() {
+				this.common.year = this.$store.state.currentTime.slice(0,4)-0
+				this.common.month = this.$store.state.currentTime.slice(5,6)
+				this.common.day = this.$store.state.currentTime.slice(7,8)
 				return this.$store.state.currentTime
 			}
 		},
@@ -225,21 +228,22 @@
 				if(this.common.year < 10 && this.common.year > 0) {
 					year = '000' + this.common.year
 				}
-				year + "" + (this.common.month >= 10 ? this.common.month : "0" + this.common.month) + (this.day >= 10 ? this.day : "0" + this.day), //具体时间，小于10的前面要加0
+				let time = year + "" + (this.common.month >= 10 ? this.common.month : "0" + this.common.month) + (this.common.day >= 10 ? this.common.day : "0" + this.common.day) //具体时间，小于10的前面要加0
 				return {
-					year:year,
-					month:this.common.month,
-					day:this.common.day,
-					time: year + "" + (this.common.month >= 10 ? this.common.month : "0" + this.common.month) + (this.common.day >= 10 ? this.common.day : "0" + this.common.day), //具体时间，小于10的前面要加0
+					year: this.common.year,
+					month: this.common.month,
+					day: this.common.day,
+					time: time
 				}
 			},
 			save() {
-
+				let params = this.getTime()
 				let option = {
 					Title: this.Title, //事件标题
 					Caption: this.Caption, //事件内容
-					Time: Year: year - 0, //年份
-					Month: this.month, //月份 
+					time: params.time, //年份
+					year: params.year,
+					month: params.month, //月份 
 					Filename: "",
 					URL: this.imgUrl,
 					userName: localStorage.getItem("username"),
@@ -256,19 +260,18 @@
 					//					this.loadNode(this.node_had, this.resolve_had); //再次执行懒加载的方法
 				})
 				let value = [{
-					time: year + "" + (this.month >= 10 ? this.month : "0" + this.month) + (this.day >= 10 ? this.day : "0" + this.day), //具体时间，小于10的前面要加0
+					time: params.time, //年份
+					year: params.year,
+					month: params.month, //月份
 					userName: localStorage.getItem("username"),
 					updateTime: moment().format('YYYY-MM-DD HH:mm:ss'),
 					caption: this.Caption,
-					year: year - 0 + "", //年份,
-					month: this.month, //月份 ,
 					day: '',
 					GuWen: this.GuWen,
 					JingQue: this.JingQue,
 					bookValue: this.event_mx.bookValue
 				}]
-				debugger
-				if(this.event_mx.currentId == null || this.event_mx.currentId == undefined) {
+				if(this.event_mx.currentId == null || this.event_mx.currentId == undefined||this.event_mx.currentId ==="") {
 					axios.post(this.$store.state.MYURL + 'InsertTableRow.do', {
 							params: {
 								tablename: "event_mx",
@@ -285,12 +288,12 @@
 				} else {
 					value = [{
 						id: this.event_mx.currentId,
-						time: year + "" + (this.month >= 10 ? this.month : "0" + this.month) + (this.day >= 10 ? this.day : "0" + this.day), //具体时间，小于10的前面要加0
 						userName: localStorage.getItem("username"),
 						updateTime: moment().format('YYYY-MM-DD HH:mm:ss'),
 						caption: this.Caption,
-						year: year - 0, //年份,
-						month: this.month, //月份 ,
+						time: params.time, //年份
+						year: params.year,
+						month: params.month, //月份
 						day: '',
 						GuWen: this.GuWen,
 						JingQue: this.JingQue,
@@ -366,7 +369,7 @@
 					} else {
 						this.GuWen = ""
 						this.Caption = ""
-						this.event_mx.currentId = ""
+						this.event_mx.currentId = null
 						//						this.event_mx.bookValue = ""
 					}
 				})
@@ -412,7 +415,7 @@
 			},
 			node_click(node, data, obj) {
 				if(data.level == "1") {
-					vm.value = new Date(node.name.substring(0, node.name.length - 1), 0, 1, 1, 1, 1);
+					this.value = new Date(node.name.substring(0, node.name.length - 1), 0, 1, 1, 1, 1);
 				}
 				if(data.level == "2") {
 					var year = data.parent.label.substring(0, data.parent.label.length - 1);
@@ -432,6 +435,7 @@
 					}
 					vm.value = new Date(year, month - 1, day, 1, 1, 1);
 				}
+				this.$store.commit("setcurrentTime", moment(vm.value).format('YYYYMMDD'));
 			},
 
 			WNL() {
@@ -576,9 +580,33 @@
 			},
 			selectedTableData(item) {
 				this.value = new Date(item.year, item.month - 1, item.day)
+				this.$store.commit("setcurrentTime", moment(this.value).format('YYYYMMDD'));
 			},
 		},
 		watch: {
+			currentTime(val) {
+				this.searchMX()
+				this.SearchMonthStories()
+				//修改右侧对应的caption
+				for(var i = 0; i < vm.Event.length; i++) {
+					if(vm.Event[i].Time == moment(vm.value).format('YYYYMMDD')) {
+						vm.event = vm.Event[i]
+						vm.Title = vm.Event[i].Title;
+						vm.updateTime = vm.Event[i].updateTime;
+						if(vm.Event[i]["eventType"]) {
+							vm.eventImgUrl = vm.$store.state.AliYunURL + vm.Event[i]["eventType"] + ".png" || ""
+						} else {
+							vm.eventImgUrl = vm.$store.state.AliYunURL + "bookBG.png" || ""
+						}
+						vm.event = vm.Event[i]
+						break;
+					} else {
+						vm.Title = "";
+						vm.Caption = "";
+						this.event_mx.currentId = ""
+					}
+				}
+			},
 			SXT_filterText(val) {
 				this.$refs.Tree.filter(val);
 			},
@@ -589,12 +617,10 @@
 					vm.eventImgUrl = vm.$store.state.AliYunURL + "bookBG.png" || ""
 				}
 			},
-			value(val, old_val) {
-				debugger
+			/*value(val, old_val) {
 				this.$store.commit("setcurrentTime", moment(vm.value).format('YYYYMMDD'));
 				this.imgUrl = "";
 				this.SearchMonthStories();
-				this.searchMX();
 
 				this.common.year = moment(this.value).format('YYYY') - 0 + 0;
 				this.common.month = moment(this.value).format('MM') - 0 + 0;
@@ -620,7 +646,7 @@
 						this.event_mx.currentId = ""
 					}
 				}
-			}
+			}*/
 		}
 	};
 </script>
