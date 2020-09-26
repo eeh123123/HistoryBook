@@ -184,8 +184,8 @@
 		computed: {
 			currentTime: function() {
 				this.common.year = this.$store.state.currentTime.slice(0,4)-0
-				this.common.month = this.$store.state.currentTime.slice(5,6)
-				this.common.day = this.$store.state.currentTime.slice(7,8)
+				this.common.month = this.$store.state.currentTime.slice(4,6)-0
+				this.common.day = this.$store.state.currentTime.slice(6,8)-0
 				return this.$store.state.currentTime
 			}
 		},
@@ -260,6 +260,7 @@
 					//					this.loadNode(this.node_had, this.resolve_had); //再次执行懒加载的方法
 				})
 				let value = [{
+					title:this.Title, //事件标题
 					time: params.time, //年份
 					year: params.year,
 					month: params.month, //月份
@@ -275,7 +276,7 @@
 					axios.post(this.$store.state.MYURL + 'InsertTableRow.do', {
 							params: {
 								tablename: "event_mx",
-								Insertcol: "time,userName,updateTime,caption,year,month,day,GuWen",
+								Insertcol: "title,time,userName,updateTime,caption,year,month,day,GuWen",
 								values: value
 							}
 						})
@@ -288,22 +289,22 @@
 				} else {
 					value = [{
 						id: this.event_mx.currentId,
+						time: params.time, //年份
 						userName: localStorage.getItem("username"),
 						updateTime: moment().format('YYYY-MM-DD HH:mm:ss'),
 						caption: this.Caption,
-						time: params.time, //年份
 						year: params.year,
 						month: params.month, //月份
 						day: '',
 						GuWen: this.GuWen,
 						JingQue: this.JingQue,
-						bookValue: this.event_mx.bookValue
-
+						bookValue: this.event_mx.bookValue,
+						title:this.Title, //事件标题
 					}]
 					axios.post(this.$store.state.MYURL + 'UpdateTableRow.do', {
 							params: {
 								tablename: "event_mx",
-								Insertcol: "id,time,userName,updateTime,caption,year,month,day,GuWen",
+								Insertcol: "id,time,userName,updateTime,caption,year,month,day,GuWen,title",
 								values: value
 							}
 						})
@@ -328,7 +329,7 @@
 					for(var i = 0; i < vm.Event.length; i++) {
 						if(vm.Event[i].Time == time) {
 							vm.event = vm.Event[i]
-							vm.Title = vm.Event[i].Title;
+							vm.Title = vm.Event[i].title;
 							//							vm.Caption = vm.Event[i].caption;
 							//							vm.updateTime = vm.Event[i].updateTime;
 							if(vm.Event[i]["eventType"]) {
@@ -357,6 +358,9 @@
 					}
 				}).then(res => {
 					if(res.data.data.length != 0) {
+						if(res.data.data[0].title){
+							this.Title =  res.data.data[0].title
+						}
 						this.Caption = res.data.data[0].caption
 						this.GuWen = res.data.data[0].GuWen
 						this.total = parseInt(res.data.data.length) + 1
@@ -511,6 +515,7 @@
 					time += " 00:00:00";
 				}
 				vm.value = time;
+				this.$store.commit("setcurrentTime", moment(vm.value).format('YYYYMMDD'));
 			},
 			upload(params) {
 				const formData = new FormData();
@@ -591,7 +596,7 @@
 				for(var i = 0; i < vm.Event.length; i++) {
 					if(vm.Event[i].Time == moment(vm.value).format('YYYYMMDD')) {
 						vm.event = vm.Event[i]
-						vm.Title = vm.Event[i].Title;
+						vm.Title = vm.Event[i].title;
 						vm.updateTime = vm.Event[i].updateTime;
 						if(vm.Event[i]["eventType"]) {
 							vm.eventImgUrl = vm.$store.state.AliYunURL + vm.Event[i]["eventType"] + ".png" || ""

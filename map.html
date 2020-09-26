@@ -69,7 +69,7 @@
 			}
 			
 			.tuding1 {
-				background-image: url("http://49.235.128.250:8084/upload/tuding1.png");
+				background-image: url("http://119.45.27.191:8084/upload/tuding.png");
 			}
 			
 			.windowInput {
@@ -111,7 +111,7 @@
 			currentY: 0,
 			positionName: '' //全局的地标名字
 		}]
-		var MYURL = "http://49.235.128.250:8084/"
+		var MYURL = "http://119.45.27.191:8084/"
 		var currentX, currentY
 		window.onload = function() {
 			queryAxios()
@@ -251,7 +251,7 @@
 		function writePoint(x, y, positionName) {
 			var marker = new AMap.Marker({
 				position: map.getCenter(),
-				icon: 'http://49.235.128.250:8084/upload/maker.png',
+				icon: 'http://119.45.27.191:8084/upload/maker.png',
 				position: [x, y],
 			});
 
