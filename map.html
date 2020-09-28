@@ -239,8 +239,7 @@
 						showcol: "*",
 						sqlwhere: " 1=1"
 					}
-				})
-				.then(function(res) {
+			}).then(function(res) {
 					mapObj = res.data.data
 					for(let i = 0; i < mapObj.length; i++) {
 						writePoint(mapObj[i].positionX, mapObj[i].positionY, mapObj[i].positionName)
