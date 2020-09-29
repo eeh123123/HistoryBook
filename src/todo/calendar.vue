@@ -342,10 +342,15 @@
 							vm.event = vm.Event[i]
 							break;
 						} else {
-							vm.Title = "";
-							vm.Caption = "";
+							this.Title = "";
+							this.Caption = "";
 							this.event_mx.currentId = ""
 						}
+					}
+					if(this.Event.length==0){
+							this.Title = "";
+							this.Caption = "";
+							this.event_mx.currentId = ""
 					}
 					vm.drawWrited();
 				})
@@ -383,6 +388,7 @@
 						this.GuWen = ""
 						this.Caption = ""
 						this.event_mx.currentId = null
+						
 						//						this.event_mx.bookValue = ""
 					}
 				})
