@@ -183,9 +183,9 @@
 		},
 		computed: {
 			currentTime: function() {
-				this.common.year = this.$store.state.currentTime.slice(0,4)-0
-				this.common.month = this.$store.state.currentTime.slice(4,6)-0
-				this.common.day = this.$store.state.currentTime.slice(6,8)-0
+				this.common.year = this.$store.state.currentTime.slice(0, 4) - 0
+				this.common.month = this.$store.state.currentTime.slice(4, 6) - 0
+				this.common.day = this.$store.state.currentTime.slice(6, 8) - 0
 				return this.$store.state.currentTime
 			}
 		},
@@ -260,7 +260,7 @@
 					//					this.loadNode(this.node_had, this.resolve_had); //再次执行懒加载的方法
 				})
 				let value = [{
-					title:this.Title, //事件标题
+					title: this.Title, //事件标题
 					time: params.time, //年份
 					year: params.year,
 					month: params.month, //月份
@@ -270,9 +270,10 @@
 					day: '',
 					GuWen: this.GuWen,
 					JingQue: this.JingQue,
+					eventType: this.event_mx.eventType,
 					bookValue: this.event_mx.bookValue
 				}]
-				if(this.event_mx.currentId == null || this.event_mx.currentId == undefined||this.event_mx.currentId ==="") {
+				if(this.event_mx.currentId == null || this.event_mx.currentId == undefined || this.event_mx.currentId === "") {
 					axios.post(this.$store.state.MYURL + 'InsertTableRow.do', {
 							params: {
 								tablename: "event_mx",
@@ -298,8 +299,9 @@
 						day: '',
 						GuWen: this.GuWen,
 						JingQue: this.JingQue,
+						eventType: this.event_mx.eventType,
 						bookValue: this.event_mx.bookValue,
-						title:this.Title, //事件标题
+						title: this.Title, //事件标题
 					}]
 					axios.post(this.$store.state.MYURL + 'UpdateTableRow.do', {
 							params: {
@@ -320,25 +322,29 @@
 			SearchMonthStories() {
 				axios.get(this.$store.state.MYURL + 'SelectStories.do', {
 					params: {
-						Month: moment(this.value).format('MM') - 0, //准确时间。减0是为了把字符串转换成数字，去0
-						Year: moment(this.value).format('YYYY') - 0 //年份
+						Month: this.common.month, //准确时间。减0是为了把字符串转换成数字，去0
+						Year: this.common.year//年份
 					}
 				}).then(res => {
 					this.Event = res.data
 					let time = parseInt(moment(vm.value).format('YYYYMMDD'))
+					//修改右侧对应的caption
 					for(var i = 0; i < vm.Event.length; i++) {
-						if(vm.Event[i].Time == time) {
+						if(vm.Event[i].Time == this.currentTime) {
 							vm.event = vm.Event[i]
 							vm.Title = vm.Event[i].title;
-							//							vm.Caption = vm.Event[i].caption;
-							//							vm.updateTime = vm.Event[i].updateTime;
+							vm.updateTime = vm.Event[i].updateTime;
 							if(vm.Event[i]["eventType"]) {
 								vm.eventImgUrl = vm.$store.state.AliYunURL + vm.Event[i]["eventType"] + ".png" || ""
-								vm.event_mx.eventType = vm.Event[i].eventType
 							} else {
-								vm.eventImgUrl = vm.$store.state.FWQURL + "upload/bookBG.png" || ""
+								vm.eventImgUrl = vm.$store.state.AliYunURL + "bookBG.png" || ""
 							}
+							vm.event = vm.Event[i]
 							break;
+						} else {
+							vm.Title = "";
+							vm.Caption = "";
+							this.event_mx.currentId = ""
 						}
 					}
 					vm.drawWrited();
@@ -358,15 +364,18 @@
 					}
 				}).then(res => {
 					if(res.data.data.length != 0) {
-						if(res.data.data[0].title){
-							this.Title =  res.data.data[0].title
+						if(res.data.data[0].title) {
+							this.Title = res.data.data[0].title
 						}
+						debugger
 						this.Caption = res.data.data[0].caption
 						this.GuWen = res.data.data[0].GuWen
 						this.total = parseInt(res.data.data.length) + 1
 						this.JingQue = res.data.data[0].JingQue + ""
 						this.event_mx.currentId = res.data.data[0].id
 						this.event_mx.bookValue = res.data.data[0].bookValue - 0
+						this.event_mx.eventType = res.data.data[0].eventType
+
 						if(res.data.data.length > 1) {
 							alert(1)
 						}
@@ -592,25 +601,6 @@
 			currentTime(val) {
 				this.searchMX()
 				this.SearchMonthStories()
-				//修改右侧对应的caption
-				for(var i = 0; i < vm.Event.length; i++) {
-					if(vm.Event[i].Time == moment(vm.value).format('YYYYMMDD')) {
-						vm.event = vm.Event[i]
-						vm.Title = vm.Event[i].title;
-						vm.updateTime = vm.Event[i].updateTime;
-						if(vm.Event[i]["eventType"]) {
-							vm.eventImgUrl = vm.$store.state.AliYunURL + vm.Event[i]["eventType"] + ".png" || ""
-						} else {
-							vm.eventImgUrl = vm.$store.state.AliYunURL + "bookBG.png" || ""
-						}
-						vm.event = vm.Event[i]
-						break;
-					} else {
-						vm.Title = "";
-						vm.Caption = "";
-						this.event_mx.currentId = ""
-					}
-				}
 			},
 			SXT_filterText(val) {
 				this.$refs.Tree.filter(val);
