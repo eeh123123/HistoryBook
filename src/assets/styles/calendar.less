@@ -93,10 +93,7 @@
 	            background-repeat: no-repeat;
 	            min-height: 700px;
 	            .textareaForm {
-	                width: 83%;
-	                left: 8%;
-	                top: 22%;
-	                position: absolute;
+	                width: 100%;
 	                margin-top: 5px;
 	                .info {
 	                    float: left;
@@ -105,10 +102,6 @@
 	                    border-radius: 3px;
 	                    line-height: 1;
 	                    margin: 5px 5px 0 0;
-//	                    background-image: url("../images/nameBoard.png");
-//	                    background-size: 100% 100%;
-//	                    background-repeat: no-repeat;
-//	                    color: white;
 	                }
 	                .el-textarea__inner {
 	                    padding: 0;
@@ -119,12 +112,8 @@
 	            }
 	            position: relative;
 	            .bgImage {
-//	                height: 6.4vw;
-	                width: 83%;
-	                position: absolute;
-	                top: 9%;
-	                bottom: 78%;
-	                left: 8.1%;
+	                height: 110px;
+	                width: 100%%;
 	                background-size: 100% 100%;
 	                background-repeat: no-repeat;
 	            }
@@ -137,6 +126,12 @@
 	        }
 	        *:not(.el-pager) {
 	            background-color: transparent;
+	        }
+	        
+	        .el-pagination {
+	            display: flex;
+	            width: calc(100% - 6vw);
+	            float: left;
 	        }
 	        .el-textarea__inner{
 	           color: black;
@@ -152,15 +147,22 @@
 	                color: black;
 	            }
 	        }
-	        .tagdiv{
+	        
+	        .bottomDiv{
 	            position: absolute;
-                left: 0%;
-                top: 100%;
+                left: 7%;
+                top: calc(4% + 36px);
+                bottom: 3%; 
+                width: 86%;
+	        }
+	        .tagdiv{
+	            
 	        }
 	        .bottomFloor{
-	            position: absolute;
-                left: 0%;
-                top: 112%;
+	            
+	        }
+	        .box{
+	            width: 100%;
 	        }
 	    }
 	    .RL{

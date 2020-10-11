@@ -37,40 +37,39 @@
 			</div>
 		</div>
 		<div class="right">
-			<!--<div class="top">
-				<div class="searchs">
-					<el-input v-model="year" placeholder="年" style="width:20%"></el-input>
-					<el-input v-model="month" placeholder="月" style="width:16%"></el-input>
-					<el-input v-model="day" placeholder="日" style="width:16%"></el-input>
-					<el-button icon="el-icon-search" style="width:16%" @click="searchs()"></el-button>
-				</div>
-			</div>-->
 			<div class="bottom">
 				<el-form ref="form" class="form">
 					<el-input v-model="Title" placeholder="标题" class="title"></el-input>
-					<div class="bgImage" :style="{backgroundImage: 'url(' + eventImgUrl + ')' }"></div>
-					<el-form-item class="textareaForm">
-						<textarea autocomplete="off" class="el-textarea__inner" rows="4" style="min-height: 33px;" v-model="GuWen">{{GuWen}</textarea>
-						<textarea autocomplete="off" class="el-textarea__inner" rows="12" style="min-height: 33px;" v-model="Caption">{{Caption}</textarea>
-						<div class="tagdiv">
-							是否精确：
-							<el-switch v-model="JingQue" active-value="1" inactive-value="0" active-color="#0000FF" inactive-color="#808080">
-							</el-switch>
-							<el-select v-model="event_mx.bookValue" clearable filterable class="eventType" placeholder="请选择类型" size="mini">
-								<el-option v-for="item in bookType" :key="item.id" :label="item.F_MC" :value="item.id">
-								</el-option>
-							</el-select>
-						</div>
-						<div class="bottomFloor">
-							<div class="info">编写：{{event.userName}}</div>
-							<div class="info">更新时间：{{event.updateTime}}</div>
-							<el-select v-model="event_mx.eventType" clearable filterable class="eventType" placeholder="请选择类型" size="mini">
-								<el-option v-for="item in eventType_All" :key="item.id" :label="item.F_MC" :value="item.F_T1">
-								</el-option>
-							</el-select>
-							<el-button size="small" @click="save">记录</el-button>
-						</div>
-					</el-form-item>
+					<div class="bottomDiv">
+						<div class="bgImage" :style="{backgroundImage: 'url(' + eventImgUrl + ')' }"></div>
+						<el-form-item class="textareaForm">
+							<textarea autocomplete="off" class="el-textarea__inner" rows="4" style="min-height: 33px;" v-model="GuWen">{{GuWen}</textarea>
+							<textarea autocomplete="off" class="el-textarea__inner" rows="12" style="min-height: 33px;" v-model="Caption">{{Caption}</textarea>
+							<div class="tagdiv">
+								是否精确：
+								<el-switch v-model="JingQue" active-value="1" inactive-value="0" active-color="#0000FF" inactive-color="#808080">
+								</el-switch>
+								<el-select v-model="event_mx.bookValue" clearable filterable class="eventType" placeholder="请选择类型" size="mini">
+									<el-option v-for="item in bookType" :key="item.id" :label="item.F_MC" :value="item.id">
+									</el-option>
+								</el-select>
+							</div>
+							<div class="bottomFloor">
+								<div class="info">编写：{{event.userName}}</div>
+								<div class="info">更新时间：{{event.updateTime}}</div>
+								<div style="clear: both;"></div>
+								<div class="box">
+									<el-select v-model="event_mx.eventType" filterable clearable filterable class="eventType" style="float: left;" placeholder="请选择类型" size="mini">
+										<el-option v-for="item in eventType_All" :key="item.id" :label="item.F_MC" :value="item.F_T1">
+										</el-option>
+									</el-select>
+									<el-pagination background small layout="prev, pager, next" :total="event_mx.total" current-page.sync="currentPage" current-change="handleCurrentChange">
+									</el-pagination>
+									<el-button size="small" @click="save">记录</el-button>
+								</div>
+							</div>
+						</el-form-item>
+					</div>
 				</el-form>
 			</div>
 		</div>
@@ -93,7 +92,6 @@
 					month: "",
 					day: "",
 					Time: "",
-					total: 0,
 				},
 				event: {
 					Title: "",
@@ -104,6 +102,7 @@
 					bookValue: "",
 					eventType: "",
 					currentId: null,
+					total: 1
 				},
 				value: new Date(700, 1, 1), //时间对象
 				SXT_filterText: '', //树形图的过滤文本
@@ -255,9 +254,8 @@
 					params: option
 				}).then(data => {
 					this.$message(data.data.text + "\n" + data.data.sql);
-					this.SearchMonthStories();
-					//					this.node_had.childNodes = []; //把存起来的node的子节点清空，不然会界面会出现重复树！
-					//					this.loadNode(this.node_had, this.resolve_had); //再次执行懒加载的方法
+//					this.node_had.childNodes = []; //把存起来的node的子节点清空，不然会界面会出现重复树！
+//					this.loadNode(this.node_had, this.resolve_had); //再次执行懒加载的方法
 				})
 				let value = [{
 					title: this.Title, //事件标题
@@ -286,6 +284,7 @@
 								type: 'success',
 								message: res.data.msg
 							});
+							this.SearchMonthStories();
 						})
 				} else {
 					value = [{
@@ -315,6 +314,8 @@
 								type: 'success',
 								message: res.data.msg
 							});
+							//							this.SearchMonthStories()
+							this.searchMX()
 						})
 				}
 
@@ -323,7 +324,7 @@
 				axios.get(this.$store.state.MYURL + 'SelectStories.do', {
 					params: {
 						Month: this.common.month, //准确时间。减0是为了把字符串转换成数字，去0
-						Year: this.common.year//年份
+						Year: this.common.year //年份
 					}
 				}).then(res => {
 					this.Event = res.data
@@ -343,14 +344,13 @@
 							break;
 						} else {
 							this.Title = "";
-							this.Caption = "";
 							this.event_mx.currentId = ""
 						}
 					}
-					if(this.Event.length==0){
-							this.Title = "";
-							this.Caption = "";
-							this.event_mx.currentId = ""
+					if(this.Event.length == 0) {
+						this.Title = "";
+						this.Caption = "";
+						this.event_mx.currentId = ""
 					}
 					vm.drawWrited();
 				})
@@ -372,10 +372,9 @@
 						if(res.data.data[0].title) {
 							this.Title = res.data.data[0].title
 						}
-						debugger
 						this.Caption = res.data.data[0].caption
 						this.GuWen = res.data.data[0].GuWen
-						this.total = parseInt(res.data.data.length) + 1
+						this.event_mx.total = parseInt(res.data.data.length) + 1
 						this.JingQue = res.data.data[0].JingQue + ""
 						this.event_mx.currentId = res.data.data[0].id
 						this.event_mx.bookValue = res.data.data[0].bookValue - 0
@@ -388,7 +387,7 @@
 						this.GuWen = ""
 						this.Caption = ""
 						this.event_mx.currentId = null
-						
+
 						//						this.event_mx.bookValue = ""
 					}
 				})
@@ -618,36 +617,36 @@
 					vm.eventImgUrl = vm.$store.state.AliYunURL + "bookBG.png" || ""
 				}
 			},
-			/*value(val, old_val) {
+			value(val, old_val) {
 				this.$store.commit("setcurrentTime", moment(vm.value).format('YYYYMMDD'));
-				this.imgUrl = "";
-				this.SearchMonthStories();
-
-				this.common.year = moment(this.value).format('YYYY') - 0 + 0;
-				this.common.month = moment(this.value).format('MM') - 0 + 0;
-				this.common.day = moment(this.value).format('DD') - 0 + 0;
-
-				//修改右侧对应的caption
-				for(var i = 0; i < vm.Event.length; i++) {
-					if(vm.Event[i].Time == moment(vm.value).format('YYYYMMDD')) {
-						vm.event = vm.Event[i]
-						vm.Title = vm.Event[i].Title;
-						//						vm.Caption = vm.Event[i].caption;
-						vm.updateTime = vm.Event[i].updateTime;
-						if(vm.Event[i]["eventType"]) {
-							vm.eventImgUrl = vm.$store.state.AliYunURL + vm.Event[i]["eventType"] + ".png" || ""
-						} else {
-							vm.eventImgUrl = vm.$store.state.AliYunURL + "bookBG.png" || ""
-						}
-						vm.event = vm.Event[i]
-						break;
-					} else {
-						vm.Title = "";
-						vm.Caption = "";
-						this.event_mx.currentId = ""
-					}
-				}
-			}*/
+				//				this.imgUrl = "";
+				//				this.SearchMonthStories();
+				//
+				//				this.common.year = moment(this.value).format('YYYY') - 0 + 0;
+				//				this.common.month = moment(this.value).format('MM') - 0 + 0;
+				//				this.common.day = moment(this.value).format('DD') - 0 + 0;
+				//
+				//				//修改右侧对应的caption
+				//				for(var i = 0; i < vm.Event.length; i++) {
+				//					if(vm.Event[i].Time == moment(vm.value).format('YYYYMMDD')) {
+				//						vm.event = vm.Event[i]
+				//						vm.Title = vm.Event[i].Title;
+				//						//						vm.Caption = vm.Event[i].caption;
+				//						vm.updateTime = vm.Event[i].updateTime;
+				//						if(vm.Event[i]["eventType"]) {
+				//							vm.eventImgUrl = vm.$store.state.AliYunURL + vm.Event[i]["eventType"] + ".png" || ""
+				//						} else {
+				//							vm.eventImgUrl = vm.$store.state.AliYunURL + "bookBG.png" || ""
+				//						}
+				//						vm.event = vm.Event[i]
+				//						break;
+				//					} else {
+				//						vm.Title = "";
+				//						vm.Caption = "";
+				//						this.event_mx.currentId = ""
+				//					}
+				//				}
+			}
 		}
 	};
 </script>

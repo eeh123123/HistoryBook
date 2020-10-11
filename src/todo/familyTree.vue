@@ -1,5 +1,5 @@
 <template>
-	<div>
+	<div class="treeDiv">
 		<div class="family_position">
 			<el-select class="margin-left10 margin-top10" v-model="familyValue" placeholder="请选择" @change="queryData">
 				<el-option v-for="item in familyOptions" :key="item.id" :label="item.F_caption" :value="item.id">
