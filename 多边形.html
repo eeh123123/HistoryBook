@@ -25,11 +25,15 @@
 		<div class="input-card" style="width: 120px">
 			<button class="btn" onclick="polyEditor.open()" style="margin-bottom: 5px">开始编辑</button>
 			<button class="btn" onclick="polyEditor.close()">结束编辑</button>
+			<input id="value" type="text" />
+			<button onclick="save">保存</button>
 		</div>
 		<script type="text/javascript">
 			var MYURL = "http://119.45.27.191:8084/"
 			var path = []
 			var polygon
+			var map //地图对象
+			var polyEditor
 			queryAxios()
 
 			function queryAxios() {
@@ -44,7 +48,12 @@
 
 					let every
 					let everySon
-					debugger
+
+					map = new AMap.Map("container", {
+						center: [116.400274, 39.905812],
+						zoom: 14
+					});
+
 					for(let i = 0; i < mapObj.length; i++) {
 						every = mapObj[i].line.split(";")
 						path[i] = []
@@ -55,31 +64,26 @@
 							}
 							every[j] = everySon
 						}
+						polygon = new AMap.Polygon({
+							path: every,
+							strokeColor: "#FF33FF",
+							strokeWeight: 6,
+							strokeOpacity: 0.2,
+							fillOpacity: 0.4,
+							fillColor: '#1791fc',
+							zIndex: 50,
+						})
+						map.add(polygon)
 					}
-					polygon = new AMap.Polygon({
-						path: every,
-						strokeColor: "#FF33FF",
-						strokeWeight: 6,
-						strokeOpacity: 0.2,
-						fillOpacity: 0.4,
-						fillColor: '#1791fc',
-						zIndex: 50,
-					})
 					nextTurn()
 				})
 			}
 
 			function nextTurn() {
-				var map = new AMap.Map("container", {
-					center: [116.400274, 39.905812],
-					zoom: 14
-				});
-
-				map.add(polygon)
 				// 缩放地图到合适的视野级别
 				map.setFitView([polygon])
 
-				var polyEditor = new AMap.PolyEditor(map, polygon)
+				polyEditor = new AMap.PolyEditor(map, polygon)
 
 				polyEditor.on('addnode', function(event) {
 					log.info('触发事件：addnode')
@@ -97,6 +101,26 @@
 					log.info('触发事件： end')
 					// event.target 即为编辑后的多边形对象
 				})
+			}
+
+			function getPoint(r, ox, oy, count) {
+				var radians = (Math.PI / 180) * Math.round(360 / count), //弧度
+					i = 0;
+				for(; i < count; i++) {
+					var x = ox + r * Math.sin(radians * i),
+						y = oy + r * Math.cos(radians * i);
+
+					point.unshift({
+						x: x,
+						y: y
+					}); //为保持数据顺时针
+				}
+			}
+
+			save() {
+				let value =document.getElementById("value")
+				value = value.split(",")
+				let data = getPoint(10000,value[0],value[1],1000)
 			}
 		</script>
 	</body>
