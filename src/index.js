@@ -20,20 +20,20 @@ import Dct from './todo/Dct.vue'
 
 import buoList from './todo/buoList.vue'
 
-
 import adminSet from './todo/adminSet.vue';
 import map from './todo/map.vue'
 import dctEnum from './todo/dctEnum.vue'
 
+import chuli from './todo/chuli.vue'
 
+import zizhi from './todo/zizhi.vue'
 
 import store from './store';
 
 import tools from './tools/js/tools.js'
 
 import simpleTable from 'gy_simpletable'
-Vue.component('simpleTable',simpleTable)
-
+Vue.component('simpleTable', simpleTable)
 
 Vue.prototype.$tools = tools
 
@@ -45,7 +45,7 @@ const routes = [{
 		path: '/manage',
 		component: manage,
 		name: '管理页',
-		children: [ {
+		children: [{
 				path: '/addJob',
 				component: addJob,
 				meta: ['源数据', '添加官职'],
@@ -68,13 +68,13 @@ const routes = [{
 				path: "/commonDCT?dctid=attributeTime",
 				component: commonDct,
 				meta: ['源数据', '特性时间表'],
-			}, 
+			},
 			{
 				path: "/dctEnum",
 				component: dctEnum,
 				meta: ['源数据', '枚举表'],
-			}, 
-			
+			},
+
 			{
 				path: "/familyTree",
 				component: familyTree,
@@ -84,6 +84,11 @@ const routes = [{
 				path: "/GuanZhiTree",
 				component: guanzhiTree,
 				meta: ['数据展示', '家谱树'],
+			},
+			{
+				path: "/map",
+				component: map,
+				meta: ['数据展示', '地图'],
 			},
 			{
 				path: "/map",
@@ -103,6 +108,16 @@ const routes = [{
 				component: Dct,
 				meta: ['建模管理', '字典管理'],
 			},
+			{
+				path: '/chuli',
+				component: chuli,
+				meta: ['数据展示', '文本处理'],
+			},
+			{
+				path: '/zizhi',
+				component: zizhi,
+				meta: ['数据展示', '处理资治通鉴'],
+			},			
 			{
 				path: '/buoList',
 				component: buoList,

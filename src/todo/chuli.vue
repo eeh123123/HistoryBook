@@ -21,6 +21,7 @@
 			zhuanhuan(){
 				let data = this.value.replace(/\s*/g,"");
 				data = data.replace("-","");
+				data = data.replace("一","");
 				data = data.replace(")","");
 				data = data.replace("）","");
 				data = data.replace("(","（");
