@@ -21,6 +21,7 @@ import attributeTime from '../sonVue/attributeTime.vue'
 import guanzhi from '../sonVue/guanzhi.vue'
 import stone from '../sonVue/stone.vue'
 import county from '../sonVue/county.vue'
+import item from '../sonVue/item.vue'
 import BaseTable from '../tools/BaseTable.vue'
 let vm;
 export default {
@@ -46,6 +47,9 @@ export default {
 			}
 			if(this.$route.query.dctid == "county") {
 				return county
+			}
+			if(this.$route.query.dctid == "item") {
+				return item
 			}
 		}
 	},
