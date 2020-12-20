@@ -82,7 +82,6 @@
 				}
 				if(this.query_Dept){
 					this.$parent.option += " AND A.Belong =" + this.query_Dept + ""
-
 				}
 				this.$parent.queryTableData()
 			},
