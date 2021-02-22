@@ -186,6 +186,7 @@ pagesize
 		},
 		computed: {
 			currentTime: function() {
+				debugger
 				this.common.year = this.$store.state.currentTime.slice(0, 4) - 0
 				this.common.month = this.$store.state.currentTime.slice(4, 6) - 0
 				this.common.day = this.$store.state.currentTime.slice(6, 8) - 0
