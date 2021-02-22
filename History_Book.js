@@ -2,8 +2,8 @@
 //createConnection(哪台服务器, 用户名, 密码, 库)
 var mysql = require('mysql'); //Mysql的模块
 var db = mysql.createPool({
-	host: 'rm-bp1s48aed4qwyl694qo.mysql.rds.aliyuncs.com',
-	user: 'lileiguan',
+	host: 'rm-bp1s48aed4qwyl694qo1.mysql.rds.aliyuncs.com',
+	user: 'abcdw',
 	password: '8956193001qq',
 	database: 'lileiguan',
 	useConnectionPooling: true
