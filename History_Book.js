@@ -2,9 +2,9 @@
 //createConnection(哪台服务器, 用户名, 密码, 库)
 var mysql = require('mysql'); //Mysql的模块
 var db = mysql.createPool({
-	host: '49.235.128.250',
-	user: 'root',
-	password: '123',
+	host: 'rm-bp1s48aed4qwyl694qo.mysql.rds.aliyuncs.com',
+	user: 'lileiguan',
+	password: '8956193001qq',
 	database: 'lileiguan',
 	useConnectionPooling: true
 });
@@ -13,7 +13,7 @@ function queryDct1(req, res) {
 	return new Promise(
 		function(door, err) {
 			//第一步，先查询哪些列需要引用字典
-			var QueryWindow_SQL = "SELECT * FROM DOF_DCT_COLS WHERE COL_USE = 1 AND COL_VISIBLE = 1 AND COL_APP_TYPE = 'window' AND DCT_ID = '" + req.query.tablename + "' ORDER BY COL_FK_DCT";
+			var QueryWindow_SQL = "SELECT * FROM dof_dct_cols WHERE COL_USE = 1 AND COL_VISIBLE = 1 AND COL_APP_TYPE = 'window' AND DCT_ID = '" + req.query.tablename + "' ORDER BY COL_FK_DCT";
 			console.log("QueryWindow_SQL:" + QueryWindow_SQL)
 			db.query(QueryWindow_SQL, (err, data) => {
 				if(err) {
@@ -44,17 +44,21 @@ function queryDct1(req, res) {
 							dct.push(data[i].COL_FK_DCT)
 						}
 						let selectWindow_SQL = ""
-						selectWindow_SQL = "SELECT DCT_FID,DCT_CAPTION,DCT_F_NAME,DCT_ID from dct_dicts where dct_id IN ('" + dct.join("','") + "')"
-						db.query(selectWindow_SQL, (err, data) => { //第二步，获取字典名和列名
+						selectWindow_SQL = "SELECT DCT_FID,DCT_CAPTION,DCT_FNAME,DCT_ID from dct_dicts where dct_id IN ('" + dct.join("','") + "')"
+						db.query(selectWindow_SQL, (err, queryData) => { //第二步，获取字典名和列名
 							if(err) {
 								res.send("查询失败" + err);
 							} else {
 								let selectFinal_SQL = "SELECT A.*"
 								let col_SQL = ""
 								let table_SQL = " from " + req.query.tablename + " A "
+								let map = new Map()
+								for(let i=0;i<queryData.length;i++){
+									map.set(queryData[i].DCT_ID,queryData[i])
+								}
 								for(let i = 0; i < data.length; i++) {
-									col_SQL += (",B" + i + "." + data[i].DCT_FID + " AS " + col[i] + "_F_BH," + "B" + i + "." + data[i].DCT_F_NAME + " AS " + col[i] + "_F_MC ")
-									table_SQL += (" LEFT JOIN " + data[i].DCT_ID + " B" + i + " ON A." + col[i] + "=B" + i + "." + data[i].DCT_FID)
+									col_SQL += (",B" + i + "." + map.get(data[i].COL_FK_DCT).DCT_FID + " AS " + col[i] + "_F_BH," + "B" + i + "." + map.get(data[i].COL_FK_DCT).DCT_FNAME + " AS " + col[i] + "_F_MC ")
+									table_SQL += (" LEFT JOIN " + map.get(data[i].COL_FK_DCT).DCT_ID + " B" + i + " ON A." + col[i] + "=B" + i + "." + map.get(data[i].COL_FK_DCT).DCT_FID)
 								}
 								table_SQL += (req.query.sqlwhere || '')
 										  + (req.query.sortBy||'') 
@@ -139,8 +143,8 @@ module.exports = {
 	},
 	QueryPerson: function(req, res) {
 		let id = req.query.id;
-		let QueryPerson_SQL = "SELECT A.*,B.attrId AS 'attrId',B.isAllLife,B.getTime,B.endTime,C.imgUrl AS 'attrUrl',c.F_caption AS 'attrF_caption',c.F_name,D.imgURL AS 'motherImg',E.imgURL AS 'fatherImg' FROM PERSON A,attributetime B,attribute C,PERSON D,PERSON E WHERE A.ID = '" + id + "' AND B.USERID='" + id + "' AND C.id = B.attrId AND A.motherid = D.id AND A.fatherid = E.id"
-		console.log(QueryPerson_SQL)
+		let QueryPerson_SQL = "SELECT A.*,B.attrId AS 'attrId',B.isAllLife,B.getTime,B.endTime,C.imgUrl AS 'attrUrl',C.F_caption AS 'attrF_caption',C.F_name,C.shejiao,C.guanli,C.junshi,C.mimou,C.xueshi,D.imgURL AS 'motherImg',E.imgURL AS 'fatherImg' FROM person A,attributeTime B,attribute C,person D,person E WHERE A.ID = '" + id + "' AND B.USERID='" + id + "' AND C.id = B.attrId AND A.motherid = D.id AND A.fatherid = E.id"
+		console.log("QueryPerson_SQL:"+QueryPerson_SQL)
 		db.query(QueryPerson_SQL, (err, data) => {
 			if(err) {
 				res.send("查询失败" + err);
@@ -339,7 +343,6 @@ module.exports = {
 		var values = req.body.params.values
 		var update_str = []
 		var update_data = new Array(req.body.params.values.length)
-
 		for(let i = 0; i < update_data.length; i++) { //初始化二维数组
 			update_data[i] = [];
 		}

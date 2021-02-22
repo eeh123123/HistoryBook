@@ -16,18 +16,17 @@ app.use(history());
 //1 连接数据库
 //createConnection(哪台服务器, 用户名, 密码, 库)
 var db = mysql.createPool({
-	host: '49.235.128.250',
-	user: 'root',
-	password: '123',
+	host: 'rm-bp1s48aed4qwyl694qo.mysql.rds.aliyuncs.com',
+	user: 'lileiguan',
+	password: '8956193001qq',
 	database: 'lileiguan',
 	useConnectionPooling: true
 });
 
-app.use(bodyparser.urlencoded({
-	extended: false
-}))
+app.use(bodyparser.urlencoded({limit: '500mb', extended: true}));
+
 // parse application/json
-app.use(bodyparser.json())
+app.use(bodyparser.json({limit: '500mb'}));
 
 app.use(upload.single('file')); //此名需要同html input name的formedata一致否则会报错
 
@@ -69,29 +68,29 @@ app.all("*", function(req, res, next) {
 		next();
 });
 
-app.use(function (req, res, next) {
-    if (req.url != '/Login.do') {
-    	let token
-    	if(req.headers.hasOwnProperty('token')){
-    		 token = req.headers.token
-    	}
-    	else{
-            res.send({code: 403, msg: '登录已过期,请重新登录'}).end();
-            return
-    	}
-        let jwt = new JwtUtil(token);
-        let result = jwt.verifyToken(token);
-        // 如果考验通过就next，否则就返回登陆信息不正确
-        if (result == 'err') {
-            console.log(result);
-            res.send({code: 403, msg: '登录已过期,请重新登录'}).end();
-        } else {
-            next();
-        }
-    } else {
-        next();
-    }
-});
+//app.use(function (req, res, next) {
+//  if (req.url != '/Login.do') {
+//  	let token
+//  	if(req.headers.hasOwnProperty('token')){
+//  		 token = req.headers.token
+//  	}
+//  	else{
+//          res.send({code: 403, msg: '登录已过期,请重新登录'}).end();
+//          return
+//  	}
+//      let jwt = new JwtUtil(token);
+//      let result = jwt.verifyToken(token);
+//      // 如果考验通过就next，否则就返回登陆信息不正确
+//      if (result == 'err') {
+//          console.log(result);
+//          res.send({code: 403, msg: '登录已过期,请重新登录'}).end();
+//      } else {
+//          next();
+//      }
+//  } else {
+//      next();
+//  }
+//});
 
 
 //6 抛异常的函数
@@ -125,7 +124,7 @@ app.post('/up', function(req, res) {
 		var index = filename.lastIndexOf('.'); //获取文件后缀
 		var filename_ = sj() + filename.substring(index); //最终的文件名称
 
-		fs.writeFile("./upload/" + filename_, req.file.buffer, function(err) {
+		fs.writeFile("./upload/" + req.file.originalname, req.file.buffer, function(err) {
 			if(err) {
 				console.log("/up:err=" + err);
 			} else {
@@ -134,7 +133,7 @@ app.post('/up', function(req, res) {
 					code:0,
 					text: '上传成功',
 					status: 'success',
-					filename: filename_
+					filename: req.file.originalname
 				});
 			}
 		});
@@ -143,10 +142,11 @@ app.post('/up', function(req, res) {
 
 //8 登录接口
 app.post('/Login.do', function(req, res) {
+	var loginsql = "SELECT * FROM user WHERE username='" + req.body.params.username + "'";
 	console.log("当前登陆时间：" + Func.getNowFormatDate());
-	var loginsql = "SELECT * FROM SSF_USERS WHERE USER_NAME='" + req.body.params.username + "'";
 	console.log(loginsql);
 	db.query(loginsql, (err, data) => {
+		//添加异常处理
 		var string = JSON.stringify(data);
 		var jsondata = JSON.parse(string);
 		if(jsondata.length == "0") {
@@ -156,7 +156,7 @@ app.post('/Login.do', function(req, res) {
 				text: "登陆失败，无此用户"
 			});
 		} else if(jsondata.length == "1") {
-			if(jsondata[0].USER_PASSWORD == req.body.params.password) {
+			if(jsondata[0].password == req.body.params.password) {
 				// 登陆成功，添加token验证
                 let _id = (req.body.params.username+req.body.params.password).toString();
                 // 将用户id传入并生成token
@@ -177,7 +177,7 @@ app.post('/Login.do', function(req, res) {
 			}
 		}
 	});
-	let updateSql="UPDATE SSF_USERS SET LOGIN_TIME=NOW(),IP='"+Func.getClientIp(req)+"' WHERE USER_NAME='"+req.body.params.username+"'"
+	let updateSql="UPDATE user SET loginTime=NOW(),IP='"+Func.getClientIp(req)+"' WHERE username='"+req.body.params.username+"'"
 	console.log(updateSql)
 	db.query(updateSql, (err, data) => {
 
@@ -222,9 +222,9 @@ app.post('/WriteStories.do', function(req, res) {
 	console.log(req.body.params)
 	var title = req.body.params.Title || "";
 	var caption = req.body.params.Caption || "";
-	var Time = req.body.params.Time || "";
-	var Year = req.body.params.Year || "";
-	var Month = req.body.params.Month || "";
+	var Time = req.body.params.time || "";
+	var Year = req.body.params.year || "";
+	var Month = req.body.params.month || "";
 	var Tag = req.body.params.Tag || "";
 	var Filename = req.body.params.Filename || "";
 	var URL = req.body.params.URL || "";
@@ -235,7 +235,7 @@ app.post('/WriteStories.do', function(req, res) {
 
 	var values = [];
 	//先到数据库里查一把有没有这条数据。有的话，UPDATE，没有的话，INSERT
-	var SearchCount_sql = "SELECT COUNT(*) AS NUM FROM EVENT WHERE TIME='" + Time + "'";
+	var SearchCount_sql = "SELECT COUNT(*) AS NUM FROM event WHERE TIME='" + Time + "'";
 	console.log(SearchCount_sql);
 
 	db.query(SearchCount_sql, (err, data) => {
@@ -246,7 +246,7 @@ app.post('/WriteStories.do', function(req, res) {
 			var string = JSON.stringify(data);
 			var jsondata = JSON.parse(string);
 			if(data[0].NUM != "0") {
-				var sql = "UPDATE EVENT SET TITLE='" + title + "',Caption ='" + caption + "',Time='" + Time + "',Year='" + Year + "',Month='" + Month + "',Tag='" + Tag + "',Filename='" + Filename + "',URL='" + URL +"',userName = '"+userName+"',updateTime='"+updateTime+ "',eventType='"+eventType+"' WHERE TIME='" + Time + "'";
+				var sql = "UPDATE event SET TITLE='" + title + "',Caption ='" + caption + "',Time='" + Time + "',Year='" + Year + "',Month='" + Month + "',Tag='" + Tag + "',Filename='" + Filename + "',URL='" + URL +"',userName = '"+userName+"',updateTime='"+updateTime+ "',eventType='"+eventType+"' WHERE TIME='" + Time + "'";
 				db.query(sql, function(err, rows, fields, Filename) {
 					if(err) {
 						console.log(sql);
@@ -267,8 +267,8 @@ app.post('/WriteStories.do', function(req, res) {
 					}
 				});
 			} else {
-				var sql = "INSERT INTO EVENT(TITLE,Caption,Time,Year,Month,Tag,Filename,URL,userName,updateTime) VALUES ?";
-				values = [title, caption, Time, Year, Month, Tag, Filename, URL,userName,updateTime];
+				var sql = "INSERT INTO event(TITLE,Caption,Time,Year,Month,Tag,Filename,URL,userName,updateTime,eventType) VALUES ?";
+				values = [title, caption, Time, Year, Month, Tag, Filename, URL,userName,updateTime,eventType];
 				db.query(sql, [
 					[values]
 				], function(err, rows, fields, Filename) {
@@ -302,7 +302,7 @@ app.get('/SelectStories.do', function(req, res) {
 	var Year = req.query.Year || "";
 	var Month = req.query.Month || "";
 
-	var SELECT_SQL = "SELECT * FROM EVENT WHERE YEAR='" + Year + "' AND MONTH='" + Month + "'";
+	var SELECT_SQL = "SELECT * FROM event WHERE YEAR='" + Year + "' AND MONTH='" + Month + "'";
 	console.log(SELECT_SQL);
 	db.query(SELECT_SQL, (err, data) => {
 		if(err) {
@@ -321,13 +321,13 @@ app.get('/Search_Tree.do', function(req, res) {
 
 	var SelectTree_SQL = "";
 	if(Type == "1") {
-		SelectTree_SQL = "SELECT DISTINCT CONCAT(YEAR,'年') AS name FROM EVENT ORDER BY CAST(YEAR AS SIGNED)";
+		SelectTree_SQL = "SELECT DISTINCT CONCAT(YEAR,'年') AS name FROM event ORDER BY CAST(YEAR AS SIGNED)";
 	}
 	if(Type == "2") {
-		SelectTree_SQL = "SELECT DISTINCT(CONCAT(MONTH,'月')) AS name FROM EVENT WHERE YEAR = '" + Year + "' ORDER BY CAST(MONTH AS SIGNED)";
+		SelectTree_SQL = "SELECT DISTINCT(CONCAT(MONTH,'月')) AS name FROM event WHERE YEAR = '" + Year + "' ORDER BY CAST(MONTH AS SIGNED)";
 	}
 	if(Type == "3") {
-		SelectTree_SQL = "SELECT CONCAT(right(TIME,2),'日,',TITLE) AS name FROM EVENT WHERE YEAR ='" + Year + "' AND MONTH='" + Month + "' ORDER BY CAST(TIME AS SIGNED)";
+		SelectTree_SQL = "SELECT CONCAT(right(TIME,2),'日,',TITLE) AS name FROM event WHERE YEAR ='" + Year + "' AND MONTH='" + Month + "' ORDER BY CAST(TIME AS SIGNED)";
 	}
 	console.log(SelectTree_SQL);
 	db.query(SelectTree_SQL, (err, data) => {
@@ -345,7 +345,7 @@ app.get('/Search_Tree.do', function(req, res) {
 app.get('/Search_SJZ.do', function(req, res) {
 	var Caption = req.query.Caption || ""; //
 	var Search_SJZ_SQL = "";
-	Search_SJZ_SQL = "SELECT  Title AS content,date_format(str_to_date(TIME, '%Y%m%d'), '%Y-%m-%d') AS timestamp FROM EVENT WHERE TITLE LIKE '%" + Caption + "%' OR CAPTION LIKE '%" + Caption + "%' ORDER BY TIME";
+	Search_SJZ_SQL = "SELECT  Title AS content,date_format(str_to_date(TIME, '%Y%m%d'), '%Y-%m-%d') AS timestamp FROM event WHERE TITLE LIKE '%" + Caption + "%' OR CAPTION LIKE '%" + Caption + "%' ORDER BY TIME";
 	console.log(Search_SJZ_SQL);
 	db.query(Search_SJZ_SQL, (err, data) => {
 		if(err) {
@@ -396,3 +396,13 @@ app.get('/QueryDct.do', HB.QueryDct);
 app.get('/QueryPerson.do', HB.QueryPerson);
 
 app.listen(8084);
+
+
+
+//var debug = require('debug')('my-application'); // debug模块
+//app.set('port', process.env.PORT || 8084); // 设定监听端口
+//
+////启动监听
+//var server = app.listen(app.get('port'), function() {
+//debug('Express server listening on port ' + server.address().port);
+//});
