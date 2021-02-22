@@ -30,7 +30,7 @@
 						</el-input>
 					</div>
 					<div v-else-if="item.COL_APP_TYPE == 'icon'">
-						<img :src="scope.row[item.code]" @click="openImg(scope.$index,scope.row[item.code],item.code)" style="vertical-align: middle;height:30px;width: 30px" />
+						<img :src="scope.row[item.code]" @click="openImg(scope.$index,scope.row[item.code],item.code)" style="vertical-align: middle;height:40px;width: 40px" />
 					</div>
 					<div v-else-if="item.COL_APP_TYPE == 'boolean'">
 						<el-switch v-model="scope.row[item.code]" active-value="1" inactive-value="0">
@@ -218,3 +218,8 @@
 		}
 	};
 </script>
+<style>
+	/*.el-table td, .el-table th{
+		padding: 2px!important;
+	}*/
+</style>

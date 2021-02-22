@@ -3,16 +3,15 @@
 		<el-row style="height: 100%;">
 			<el-col :span="4" style="min-height: 100%; background-color: #324057;">
 				<el-menu :default-active="defaultActive" style="min-height: 100%;" theme="dark" router>
-					<el-menu-item index="manage"><i class="el-icon-menu"></i>首页</el-menu-item>
 					<el-submenu index="1">
 						<template slot="title"><i class="el-icon-plus"></i>源数据</template>
 <!--						<el-menu-item index="addJob"><img src="../assets/smallimg/guanzhi.png"></img>官职表(不分页)</el-menu-item>
 -->						<el-menu-item index="/commonDCT?dctid=guanzhi"><img src="../assets/smallimg/guanzhi.png"></img>官职表</el-menu-item>
 						<el-menu-item index="/commonDCT?dctid=dept"><img src="../assets/smallimg/user.png"></img>部门表</el-menu-item>
-						<el-menu-item index="/commonDCT?dctid=population"><img src="../assets/smallimg/county.png"></img>人口表</el-menu-item>
-						<el-menu-item index="/commonDCT?dctid=county"><img src="../assets/smallimg/county.png"></img>州县表</el-menu-item>
-						<el-menu-item index="/commonDCT?dctid=person"><img src="../assets/smallimg/renwu.png"></img>人物表</el-menu-item>
-						<el-menu-item index="/commonDCT?dctid=jobTime"><img src="../assets/smallimg/guanzhi.png"></img>履历表</el-menu-item>
+						<el-menu-item index="/commonDCT?dctid=population"><img src="../assets/smallimg/population.png"></img>人口表</el-menu-item>
+						<el-menu-item index="/commonDCT?dctid=county"><img src="../assets/smallimg/zhouxian.png"></img>州县表</el-menu-item>
+						<el-menu-item index="/commonDCT?dctid=person"><img src="../assets/smallimg/renkou.png"></img>人物表</el-menu-item>
+						<el-menu-item index="/commonDCT?dctid=jobTime"><img src="../assets/smallimg/lvli.png"></img>履历表</el-menu-item>
 						<el-menu-item index="/commonDCT?dctid=attribute"><img src="../assets/smallimg/attribute.png"></img>特性表</el-menu-item>
 						<el-menu-item index="/commonDCT?dctid=attributeTime"><img src="../assets/smallimg/attributeTime.png"></img>特性时间表</el-menu-item>
 						<el-menu-item index="/commonDCT?dctid=family"><img src="../assets/smallimg/family.png"></img>家族表</el-menu-item>
@@ -25,10 +24,12 @@
 						<template slot="title"><img src="../assets/smallimg/look.png"></img>数据展示</template>
 						<el-menu-item index="familyTree"><img src="../assets/smallimg/jiapushu.png"></img>家谱树</el-menu-item>
 						<el-menu-item index="GuanZhiTree"><img src="../assets/smallimg/guanzhishu.png"></img>官职树</el-menu-item>
+						<el-menu-item index="jobTime"><img src="../assets/smallimg/gaoguanshu.png"></img>高官树</el-menu-item>
 						<el-menu-item index="calendar"><img src="../assets/smallimg/calendar.png"></img>万年历</el-menu-item>
 						<el-menu-item index="map"><img src="../assets/smallimg/map.png"></img>地图</el-menu-item>
 						<el-menu-item index="chuli"><img src=""></img>处理行政区划</el-menu-item>
 						<el-menu-item index="zizhi"><img src=""></img>处理资治通鉴</el-menu-item>
+						<el-menu-item index="textChuli"><img src=""></img>处理普通文本</el-menu-item>
 					</el-submenu>
 					<!--<el-submenu index="3">
 						<template slot="title"><img src="../assets/smallimg/cat.png"></img>猫之百科</template>

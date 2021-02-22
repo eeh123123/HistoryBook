@@ -54,8 +54,8 @@
 			dealData(data) {
 				for(let i = data.length - 1; i >= 0; i--) {
 					if(data[i].isAllLife == "0") {
-						if(moment(data[i].getTime, "YYYY-MM-DD").format("YYYYMMDD") > moment(this.$store.state.currentTime).format("YYYYMMDD") ||
-							moment(data[i].endTime, "YYYY-MM-DD").format("YYYYMMDD") < moment(this.$store.state.currentTime).format("YYYYMMDD")
+						if(moment(data[i].getTime, "YYYY-MM-DD").format("YYYYMMDD") > moment(this.$store.state.currentTime).format("YYYYMMDD") 
+//							||moment(data[i].endTime, "YYYY-MM-DD").format("YYYYMMDD") < moment(this.$store.state.currentTime).format("YYYYMMDD")
 						) {
 							data.splice(i, 1)
 						}

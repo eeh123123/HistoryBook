@@ -2,38 +2,38 @@
 	    position: relative;
 	    height: 100%;
 	}
-
+	
 	textarea {
 	    text-indent: 25px
 	}
-
+	
 	.searchs {
 	    margin-top: 10px;
 	}
-
+	
 	.el-form-item {
 	    margin-top: 10px;
 	}
-
+	
 	.el-form-item__content {
 	    margin-left: 0px !important;
 	}
-
+	
 	.el-textarea {
 	    padding-right: 10px;
 	}
-
+	
 	h1 {
 	    text-align: center;
 	}
-
+	
 	.new-tree {
 	    left: 0px;
 	    right: 500px;
 	    box-shadow: 0 0 8px #f5f5f5;
 	    background: #fff;
 	}
-
+	
 	.tabbtn {
 	    float: left;
 	    margin: 10px 10px 0 10px;
@@ -43,23 +43,23 @@
 	    background-color: deepskyblue;
 	    cursor: pointer;
 	}
-
+	
 	.el-timeline-item__wrapper:hover {
 	    background-color: #ccc;
 	}
-
+	
 	.el-timeline-item__wrapper {
 	    padding-left: 0px;
 	    margin-left: 28px;
 	}
-
+	
 	.writed {
 	    background-image: url("../images/pen.svg");
 	    background-repeat: no-repeat;
 	    background-position: right top;
 	    background-size: 30px 30px;
 	}
-
+	
 	.calendar {
 	    #line {
 	        width: 100%;
@@ -79,19 +79,25 @@
 	    }
 	    .left {
 	        float: left;
-	        width: calc(100% - 24.47vw);
+            width: calc(100% - 77.91vh + 38.95px);
 	        height: 100%;
 	    }
 	    .right {
 	        float: right;
-	        width: 24.47vw;
-	        padding: 15px;
+	        height: 100%;
+	        width: calc(77.91vh - 38.95px);
 	        padding-top: 50px;
+	        padding-left: 10px;
+	        padding-bottom: 10px;
+	        padding-right: 10px;
+	        >.bottom {
+	            height: 100%;
+	        }
 	        .form {
+	            height: 100%;
 	            background-image: url("../../../static/img/commonEventBg.png");
 	            background-size: 100% 100%;
 	            background-repeat: no-repeat;
-	            min-height: 700px;
 	            .textareaForm {
 	                width: 100%;
 	                margin-top: 5px;
@@ -112,7 +118,7 @@
 	            }
 	            position: relative;
 	            .bgImage {
-	                height: 110px;
+	                height: 10vw;
 	                width: 100%%;
 	                background-size: 100% 100%;
 	                background-repeat: no-repeat;
@@ -124,54 +130,47 @@
 	                color: black;
 	            }
 	        }
-	        *:not(.el-pager) {
+	        *:not(.el-pager):not(.el-button ):not(button) {
 	            background-color: transparent;
 	        }
-	        
 	        .el-pagination {
 	            display: flex;
 	            width: calc(100% - 6vw);
 	            float: left;
+	            padding-top: 10px;
 	        }
-	        .el-textarea__inner{
-	           color: black;
+	        .el-textarea__inner {
+	            color: black;
 	        }
 	        .title {
 	            position: absolute;
 	            left: 6%;
 	            top: 4%;
 	            width: 88%;
-	            height: 26px;
+	            height: 1.77vw;
 	            .el-input__inner {
-	                height: 26px;
+	                height: 1.77vw;
 	                color: black;
 	            }
 	        }
-	        
-	        .bottomDiv{
+	        .bottomDiv {
 	            position: absolute;
-                left: 7%;
-                top: calc(4% + 36px);
-                bottom: 3%; 
-                width: 86%;
+	            left: 7%;
+	            top: calc(4% + 2.1875vw);
+	            bottom: 3%;
+	            width: 86%;
 	        }
-	        .tagdiv{
-	            
-	        }
-	        .bottomFloor{
-	            
-	        }
-	        .box{
+	        .tagdiv {}
+	        .bottomFloor {}
+	        .box {
 	            width: 100%;
 	        }
 	    }
-	    .RL{
-	        .el-input{
-	           width: 80px; 
-	           margin-top: 10px;
-	           margin-left: 10px;
+	    .RL {
+	        .el-input {
+	            width: 80px;
+	            margin-top: 10px;
+	            margin-left: 10px;
 	        }
-	        
 	    }
 	}
-	

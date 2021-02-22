@@ -1,3 +1,4 @@
+pagesize
 <template>
 	<div class="main calendar">
 		<div class="left">
@@ -14,7 +15,7 @@
 			</div>
 			<div id="tree" v-show="SXT_flag" class="tab">
 				<!--树形图-->
-				<el-tree :props="props" :load="loadNode" lazy class="new-tree" @node-click="node_click" keep-alive>
+				<el-tree ref="tree" :default-expanded-keys="treeId" node-key="id" :props="props" :load="loadNode" lazy class="new-tree" @node-click="node_click">
 				</el-tree>
 			</div>
 			<div id="line" v-show="SJZ_flag" class="tab" keep-alive>
@@ -43,8 +44,8 @@
 					<div class="bottomDiv">
 						<div class="bgImage" :style="{backgroundImage: 'url(' + eventImgUrl + ')' }"></div>
 						<el-form-item class="textareaForm">
-							<textarea autocomplete="off" class="el-textarea__inner" rows="4" style="min-height: 33px;" v-model="GuWen">{{GuWen}</textarea>
-							<textarea autocomplete="off" class="el-textarea__inner" rows="12" style="min-height: 33px;" v-model="Caption">{{Caption}</textarea>
+							<textarea autocomplete="off" class="el-textarea__inner" rows="8" style="min-height: 33px;" v-model="GuWen">{{GuWen}</textarea>
+							<textarea autocomplete="off" class="el-textarea__inner" rows="11" style="min-height: 33px;" v-model="Caption">{{Caption}</textarea>
 							<div class="tagdiv">
 								是否精确：
 								<el-switch v-model="JingQue" active-value="1" inactive-value="0" active-color="#0000FF" inactive-color="#808080">
@@ -63,9 +64,9 @@
 										<el-option v-for="item in eventType_All" :key="item.id" :label="item.F_MC" :value="item.F_T1">
 										</el-option>
 									</el-select>
-									<el-pagination background small layout="prev, pager, next" :total="event_mx.total" current-page.sync="currentPage" current-change="handleCurrentChange">
+									<el-pagination background small :page-size="1" layout="prev, pager, next" :total="event_mx.total" current-page.sync="event_mx.pageIndex" @current-change="handleCurrentChange">
 									</el-pagination>
-									<el-button size="small" @click="save">记录</el-button>
+									<el-button size="small" @click="save" type="primary">记录</el-button>
 								</div>
 							</div>
 						</el-form-item>
@@ -87,6 +88,8 @@
 		},
 		data() {
 			return {
+				treeId:[],
+				temp_treeid:'',
 				common: {
 					year: "",
 					month: "",
@@ -102,7 +105,8 @@
 					bookValue: "",
 					eventType: "",
 					currentId: null,
-					total: 1
+					total: 1,
+					pageIndex: 1
 				},
 				value: new Date(700, 1, 1), //时间对象
 				SXT_filterText: '', //树形图的过滤文本
@@ -254,8 +258,9 @@
 					params: option
 				}).then(data => {
 					this.$message(data.data.text + "\n" + data.data.sql);
-//					this.node_had.childNodes = []; //把存起来的node的子节点清空，不然会界面会出现重复树！
-//					this.loadNode(this.node_had, this.resolve_had); //再次执行懒加载的方法
+					this.node_had.childNodes = []; //把存起来的node的子节点清空，不然会界面会出现重复树！
+					this.loadNode(this.node_had, this.resolve_had); //再次执行懒加载的方法
+					this.$set(this.treeId,0, this.temp_treeid)
 				})
 				let value = [{
 					title: this.Title, //事件标题
@@ -368,27 +373,30 @@
 						sqlwhere: option.sqlwhere
 					}
 				}).then(res => {
+					res.data.data.push({
+						Caption: '',
+						GuWen:'',
+						JingQue:1,
+						id:'',
+						bookValue:'',
+						eventType:''
+					})
+					var length = res.data.data.length
 					if(res.data.data.length != 0) {
-						if(res.data.data[0].title) {
-							this.Title = res.data.data[0].title
+						if(res.data.data[length - 1].title) {
+							this.Title = res.data.data[this.event_mx.pageIndex - 1].title
 						}
-						this.Caption = res.data.data[0].caption
-						this.GuWen = res.data.data[0].GuWen
-						this.event_mx.total = parseInt(res.data.data.length) + 1
-						this.JingQue = res.data.data[0].JingQue + ""
-						this.event_mx.currentId = res.data.data[0].id
-						this.event_mx.bookValue = res.data.data[0].bookValue - 0
-						this.event_mx.eventType = res.data.data[0].eventType
-
-						if(res.data.data.length > 1) {
-							alert(1)
-						}
+						this.Caption = res.data.data[this.event_mx.pageIndex - 1].caption
+						this.GuWen = res.data.data[this.event_mx.pageIndex - 1].GuWen
+						this.event_mx.total = parseInt(length)
+						this.JingQue = res.data.data[this.event_mx.pageIndex - 1].JingQue + ""
+						this.event_mx.currentId = res.data.data[this.event_mx.pageIndex - 1].id
+						this.event_mx.bookValue = res.data.data[this.event_mx.pageIndex - 1].bookValue - 0
+						this.event_mx.eventType = res.data.data[this.event_mx.pageIndex - 1].eventType
 					} else {
 						this.GuWen = ""
 						this.Caption = ""
 						this.event_mx.currentId = null
-
-						//						this.event_mx.bookValue = ""
 					}
 				})
 			},
@@ -416,6 +424,7 @@
 						resolve(res.data)
 					})
 				} else if(node.level === 2) {
+					this.temp_treeid = node.id
 					var year = node.parent.label.substring(0, node.parent.label.length - 1);
 					var month = node.data.name.substring(0, node.data.name.length - 1);
 					axios.get(vm.MYURL + 'Search_Tree.do?', {
@@ -451,9 +460,9 @@
 						} //
 						day += data.label[i];
 					}
-					vm.value = new Date(year, month - 1, day, 1, 1, 1);
+					var value = new Date(year, month - 1, day, 1, 1, 1);
 				}
-				this.$store.commit("setcurrentTime", moment(vm.value).format('YYYYMMDD'));
+				this.$store.commit("setcurrentTime", moment(value).format('YYYYMMDD'));
 			},
 
 			WNL() {
@@ -594,8 +603,8 @@
 				})
 			},
 			handleCurrentChange(val) {
-				this.currentPage = val
-				this.searchRL()
+				this.event_mx.pageIndex = val
+				this.searchMX()
 			},
 			selectedTableData(item) {
 				this.value = new Date(item.year, item.month - 1, item.day)
@@ -616,36 +625,6 @@
 				} else {
 					vm.eventImgUrl = vm.$store.state.AliYunURL + "bookBG.png" || ""
 				}
-			},
-			value(val, old_val) {
-				this.$store.commit("setcurrentTime", moment(vm.value).format('YYYYMMDD'));
-				//				this.imgUrl = "";
-				//				this.SearchMonthStories();
-				//
-				//				this.common.year = moment(this.value).format('YYYY') - 0 + 0;
-				//				this.common.month = moment(this.value).format('MM') - 0 + 0;
-				//				this.common.day = moment(this.value).format('DD') - 0 + 0;
-				//
-				//				//修改右侧对应的caption
-				//				for(var i = 0; i < vm.Event.length; i++) {
-				//					if(vm.Event[i].Time == moment(vm.value).format('YYYYMMDD')) {
-				//						vm.event = vm.Event[i]
-				//						vm.Title = vm.Event[i].Title;
-				//						//						vm.Caption = vm.Event[i].caption;
-				//						vm.updateTime = vm.Event[i].updateTime;
-				//						if(vm.Event[i]["eventType"]) {
-				//							vm.eventImgUrl = vm.$store.state.AliYunURL + vm.Event[i]["eventType"] + ".png" || ""
-				//						} else {
-				//							vm.eventImgUrl = vm.$store.state.AliYunURL + "bookBG.png" || ""
-				//						}
-				//						vm.event = vm.Event[i]
-				//						break;
-				//					} else {
-				//						vm.Title = "";
-				//						vm.Caption = "";
-				//						this.event_mx.currentId = ""
-				//					}
-				//				}
 			}
 		}
 	};

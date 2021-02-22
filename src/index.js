@@ -28,9 +28,14 @@ import chuli from './todo/chuli.vue'
 
 import zizhi from './todo/zizhi.vue'
 
+import textChuli from './todo/textChuli.vue'
+
+import jobTime from './todo/jobTime.vue'
+
 import store from './store';
 
 import tools from './tools/js/tools.js'
+
 
 import simpleTable from 'gy_simpletable'
 Vue.component('simpleTable', simpleTable)
@@ -114,6 +119,11 @@ const routes = [{
 				meta: ['数据展示', '文本处理'],
 			},
 			{
+				path: '/textChuli',
+				component: textChuli,
+				meta: ['数据展示', '识别后处理'],
+			},
+			{
 				path: '/zizhi',
 				component: zizhi,
 				meta: ['数据展示', '处理资治通鉴'],
@@ -122,6 +132,11 @@ const routes = [{
 				path: '/buoList',
 				component: buoList,
 				meta: ['猫之百科', '布偶猫名录'],
+			},
+			{
+				path: '/jobTime',
+				component: jobTime,
+				meta: ['数据展示', '高官表'],
 			}
 		]
 	}
@@ -137,8 +152,8 @@ router.beforeEach(async(to, from, next) => {
 	if(to.path === '/login') {
 		next()
 	} else {
+		
 		next()
-
 		//  if (Store.getters.menus.length === 0 || Store.getters.dict.size === 0) {
 		//    if (Store.getters.menus.length === 0) {
 		//      // 同步获取菜单
