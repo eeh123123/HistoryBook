@@ -16,9 +16,9 @@ app.use(history());
 //1 连接数据库
 //createConnection(哪台服务器, 用户名, 密码, 库)
 var db = mysql.createPool({
-	host: 'rm-bp1s48aed4qwyl694qo1.mysql.rds.aliyuncs.com',
-	user: 'abcdw',
-	password: '8956193001qq',
+	host: 'rm-bp1s48aed4qwyl694qo.mysql.rds.aliyuncs.com',
+	user: 'lileiguan',
+	password: '2021Historybook',
 	database: 'lileiguan',
 	useConnectionPooling: true
 });
@@ -394,6 +394,10 @@ app.get('/QueryDct.do', HB.QueryDct);
 
 //查询个人属性
 app.get('/QueryPerson.do', HB.QueryPerson);
+
+//查询高官表
+app.get('/QueryGaoGuan.do', HB.QueryGaoGuan);
+
 
 app.listen(8084);
 

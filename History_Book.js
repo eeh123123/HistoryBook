@@ -2,9 +2,9 @@
 //createConnection(哪台服务器, 用户名, 密码, 库)
 var mysql = require('mysql'); //Mysql的模块
 var db = mysql.createPool({
-	host: 'rm-bp1s48aed4qwyl694qo1.mysql.rds.aliyuncs.com',
-	user: 'abcdw',
-	password: '8956193001qq',
+	host: 'rm-bp1s48aed4qwyl694qo.mysql.rds.aliyuncs.com',
+	user: 'lileiguan',
+	password: '2021Historybook',
 	database: 'lileiguan',
 	useConnectionPooling: true
 });
@@ -141,11 +141,26 @@ module.exports = {
 			}
 		});
 	},
+	//人物抽屉：查人物的父母和五维属性
 	QueryPerson: function(req, res) {
 		let id = req.query.id;
 		let QueryPerson_SQL = "SELECT A.*,B.attrId AS 'attrId',B.isAllLife,B.getTime,B.endTime,C.imgUrl AS 'attrUrl',C.F_caption AS 'attrF_caption',C.F_name,C.shejiao,C.guanli,C.junshi,C.mimou,C.xueshi,D.imgURL AS 'motherImg',E.imgURL AS 'fatherImg' FROM person A,attributeTime B,attribute C,person D,person E WHERE A.ID = '" + id + "' AND B.USERID='" + id + "' AND C.id = B.attrId AND A.motherid = D.id AND A.fatherid = E.id"
-		console.log("QueryPerson_SQL:"+QueryPerson_SQL)
+		console.log("QueryPerson_SQL:" + QueryPerson_SQL)
 		db.query(QueryPerson_SQL, (err, data) => {
+			if(err) {
+				res.send("查询失败" + err);
+			} else {
+				res.send(data).end();
+			}
+		});
+	},
+	//人物抽屉,查人物的父母和五维属性
+	QueryGaoGuan: function(req, res) {
+		let time = req.query.time;
+		let chaodai = req.query.chaodai;
+		let QueryGaoGuan_SQL = "select a.*,b.person_name,b.imgURL,c.GuanZhi_MC from jobTime a, person b,guanzhi c where a.userid = b.id and a.jobid = c.id and REPLACE(starttime,'-','')<" + time + " and a.dynasty = " + chaodai+ " AND IF( a.endtime IS NOT NULL, REPLACE ( a.endtime, '-', '' ) > "+time+", true )"
+		console.log("QueryGaoGuan_SQL:" + QueryGaoGuan_SQL)
+		db.query(QueryGaoGuan_SQL, (err, data) => {
 			if(err) {
 				res.send("查询失败" + err);
 			} else {
@@ -156,7 +171,7 @@ module.exports = {
 	//通用查询
 	QueryTableRow: function(req, res) {
 		console.log("QueryTableRow");
-		var QueryTableRow_SQL = "SELECT " + req.query.showcol + " FROM " + req.query.tablename + " WHERE " + req.query.sqlwhere + (req.query.sortBy||'');
+		var QueryTableRow_SQL = "SELECT " + req.query.showcol + " FROM " + req.query.tablename + " WHERE " + req.query.sqlwhere + (req.query.sortBy || '');
 		console.log("QueryTableRow_SQL：" + QueryTableRow_SQL);
 		var QueryCount_Sql = "SELECT " + req.query.showcol + " FROM " + req.query.tablename;
 		console.log("QueryCount_Sql：" + QueryCount_Sql)
