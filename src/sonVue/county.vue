@@ -4,7 +4,7 @@
 		<el-input v-model="name" placeholder="请输入州府名"></el-input>
 		<el-input v-model="startyear" placeholder="起年"></el-input>
 		<el-input v-model="endyear" placeholder="止年"></el-input>
-		<el-select v-model="query_Dept" clearable filterable class="margin-left10" placeholder="选择道属" @change="searchs()" style="width: 100px;">
+		<el-select v-model="query_Dept" clearable filterable class="margin-left10" placeholder="选择道属" @change="searchs('select')" style="width: 100px;">
 			<el-option v-for="item in GZB_data_All" :key="item.id" :label="item.name" :value="item.id">
 			</el-option>
 		</el-select>
@@ -46,7 +46,10 @@
 						this.GZB_data_All = res.data.data;
 					})
 			},
-			searchs() {
+			searchs(type) {
+				if(type=='select'){
+					this.$parent.currentPage = 1
+				}
 				this.$parent.option = ""
 				this.$parent.searchFlag = true
 				if(this.query_Dept||this.name||this.sql||this.startyear||this.endyear) {

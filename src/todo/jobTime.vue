@@ -37,6 +37,10 @@
 		methods: {
 			changeIframe() {
 				document.getElementById("sonIframe").src = "../../static/" + this.chaodai + ".html"
+				var _this = this
+				document.getElementById("sonIframe").onload = function(){
+					document.getElementById('sonIframe').contentWindow.QueryGaoGuan(_this.$store.state.MYURL,_this.currentTime.replace(/-/g,''))
+				};
 			}
 		},
 		mounted() {

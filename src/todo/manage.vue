@@ -5,8 +5,9 @@
 				<el-menu :default-active="defaultActive" style="min-height: 100%;" theme="dark" router>
 					<el-submenu index="1">
 						<template slot="title"><i class="el-icon-plus"></i>源数据</template>
-<!--						<el-menu-item index="addJob"><img src="../assets/smallimg/guanzhi.png"></img>官职表(不分页)</el-menu-item>
--->						<el-menu-item index="/commonDCT?dctid=guanzhi"><img src="../assets/smallimg/guanzhi.png"></img>官职表</el-menu-item>
+						<!--						<el-menu-item index="addJob"><img src="../assets/smallimg/guanzhi.png"></img>官职表(不分页)</el-menu-item>
+-->
+						<el-menu-item index="/commonDCT?dctid=guanzhi"><img src="../assets/smallimg/guanzhi.png"></img>官职表</el-menu-item>
 						<el-menu-item index="/commonDCT?dctid=dept"><img src="../assets/smallimg/user.png"></img>部门表</el-menu-item>
 						<el-menu-item index="/commonDCT?dctid=population"><img src="../assets/smallimg/population.png"></img>人口表</el-menu-item>
 						<el-menu-item index="/commonDCT?dctid=county"><img src="../assets/smallimg/zhouxian.png"></img>州县表</el-menu-item>
@@ -31,6 +32,13 @@
 						<el-menu-item index="zizhi"><img src=""></img>处理资治通鉴</el-menu-item>
 						<el-menu-item index="textChuli"><img src=""></img>处理普通文本</el-menu-item>
 					</el-submenu>
+					<el-submenu index="3">
+						<template slot="title">
+							<div @click="tuichudenglu()">
+								<img src="../assets/smallimg/logout.png"></img>退出登录
+							</div>
+						</template>
+					</el-submenu>
 					<!--<el-submenu index="3">
 						<template slot="title"><img src="../assets/smallimg/cat.png"></img>猫之百科</template>
 						<el-menu-item index="buoList"><img src="../assets/smallimg/buo.png"></img>布偶猫名录</el-menu-item>
@@ -43,7 +51,7 @@
 					<el-submenu index="6">
 						<template slot="title"><i class="el-icon-warning"></i>模型设计（未完）</template>
 						<el-menu-item index="Dct">字典表</el-menu-item>
-					</el-submenu>-->                 
+					</el-submenu>-->
 				</el-menu>
 			</el-col>
 			<el-col :span="20" style="height: 100%;overflow: auto;">
@@ -57,9 +65,38 @@
 
 <script>
 	export default {
+		name: 'manage',
 		computed: {
 			defaultActive: function() {
 				return this.$route.path.replace('/', '');
+			}
+		},
+		methods: {
+			tuichudenglu() {
+				this.$confirm('即将退出登录，是否确认？', '提示', {
+					confirmButtonText: '确定',
+					cancelButtonText: '取消',
+					type: 'warning'
+				}).then(() => {
+					localStorage.setItem("username", "");
+					localStorage.setItem("password", "");
+					this.deleteCookie("Authorization");
+					window.location.href = "/";
+					this.$message({
+						type: 'success',
+						message: '退出成功!'
+					});
+				}).catch(() => {
+					this.$message({
+						type: 'info',
+						message: '已取消'
+					});
+				});
+			},
+			 deleteCookie(name) {     
+				var  date = new  Date();     
+				date.setTime(date.getTime() - 10000);     
+				document.cookie = name + "=; expires=" + date.toGMTString(); 
 			}
 		}
 	}

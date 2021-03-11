@@ -1,8 +1,14 @@
 <template>
 	<div class="full" style="padding: 10px;">
-		<el-input v-model="value" style="width:200px" @change="zhuanhuan"></el-input>
+		<h1>处理唐代行政区划</h1>
+		<h3>示例：输入文字模板类似于这样：</h3>
+		下博县（618-907)<br>
+		<h3>点击转换按钮，你会得到：</h3>
+		下博县	618	907<br>
+		<h3>这段文字可以直接粘贴入数据库。</h3>
+		<el-input v-model="value" style="width:200px;margin-top: 10px;" @change="zhuanhuan"></el-input>
 		<br>
-		<el-button @click="zhuanhuan">转换</el-button>
+		<el-button @click="zhuanhuan" style="margin-bottom:10px">转换</el-button>
 		<el-input type="textarea" :autosize="{ minRows: 2, maxRows: 4}" placeholder="请输入内容" v-model="textarea">
 		</el-input>
 	</div>

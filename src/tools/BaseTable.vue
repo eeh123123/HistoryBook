@@ -111,6 +111,7 @@
 						sqlwhere: "DCT_ID = '" + this.$route.query.dctid + "'"
 					}
 				}).then(res => {
+					this.Me_tableData.DCT_SORT = res.data.data[0].DCT_SORT
 					this.Me_tableData.F_PKEY = res.data.data[0].DCT_FID
 				})
 			},

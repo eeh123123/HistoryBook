@@ -186,7 +186,6 @@ pagesize
 		},
 		computed: {
 			currentTime: function() {
-				debugger
 				this.common.year = this.$store.state.currentTime.slice(0, 4) - 0
 				this.common.month = this.$store.state.currentTime.slice(4, 6) - 0
 				this.common.day = this.$store.state.currentTime.slice(6, 8) - 0
@@ -259,8 +258,8 @@ pagesize
 					params: option
 				}).then(data => {
 					this.$message(data.data.text + "\n" + data.data.sql);
-					this.node_had.childNodes = []; //把存起来的node的子节点清空，不然会界面会出现重复树！
-					this.loadNode(this.node_had, this.resolve_had); //再次执行懒加载的方法
+//					this.node_had.childNodes = []; //把存起来的node的子节点清空，不然会界面会出现重复树！
+//					this.loadNode(this.node_had, this.resolve_had); //再次执行懒加载的方法
 					this.$set(this.treeId,0, this.temp_treeid)
 				})
 				let value = [{
@@ -320,7 +319,7 @@ pagesize
 								type: 'success',
 								message: res.data.msg
 							});
-							//							this.SearchMonthStories()
+							this.SearchMonthStories()
 							this.searchMX()
 						})
 				}
