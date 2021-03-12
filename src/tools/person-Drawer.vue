@@ -16,8 +16,8 @@
 							<div class="circle"></div>
 							<div class="yoursName">配偶</div>
 						</div>
-						<el-tooltip class="item" effect="light" placement="bottom">
-							<div class="death" v-if="death"></div>
+						<el-tooltip class="item" effect="light" placement="bottom" v-if="death">
+							<div class="death"></div>
 							<div slot="content">{{PersonData[0].death_date}}<br>{{PersonData[0].dieReason}}</div>
 						</el-tooltip>
 						<div class="you" v-bind:style="{backgroundImage:'url(' + PersonData[0]['imgURL']||'none.png' + ')'}">
@@ -31,15 +31,26 @@
 						<div class="old">{{old}}</div>
 						<div class="attribute5Num">
 							<div class="son">
-								<div class="shejiao"></div>{{shejiao}}</div>
+								<el-tooltip content="外交" placement="top" effect="light">
+									<div class="shejiao"></div>
+								</el-tooltip>{{shejiao}}</div>
 							<div class="son">
-								<div class="junshi"></div>{{junshi}}</div>
+								<el-tooltip content="军事" placement="top" effect="light">
+									<div class="junshi"></div>
+								</el-tooltip>{{junshi}}</div>
+
 							<div class="son">
-								<div class="guanli"></div>{{guanli}}</div>
+								<el-tooltip content="管理" placement="top" effect="light">
+									<div class="guanli"></div>
+								</el-tooltip>{{guanli}}</div>
 							<div class="son">
-								<div class="mimou"></div>{{mimou}}</div>
+								<el-tooltip content="密谋" placement="top" effect="light">
+									<div class="mimou"></div>
+								</el-tooltip>{{mimou}}</div>
 							<div class="son">
-								<div class="xueshi"></div>{{xueshi}}</div>
+								<el-tooltip content="学识" placement="top" effect="light">
+									<div class="xueshi"></div>
+								</el-tooltip>{{xueshi}}</div>
 						</div>
 					</div>
 					<div class="bottom">
@@ -114,7 +125,6 @@
 				return this.$store.state.PersonData
 			},
 			old() {
-				debugger
 				if(this.$store.state.currentTime - moment(this.PersonData[0].death_date).format("YYYYMMDD") > 0) {
 					this.death = true;
 					return moment(this.PersonData[0].death_date).diff(moment(this.PersonData[0].born_date), 'year')
