@@ -18,7 +18,7 @@
 						</div>
 						<el-tooltip class="item" effect="light" placement="bottom">
 							<div class="death" v-if="death"></div>
-							  <div slot="content">{{PersonData[0].death_date}}<br>{{PersonData[0].dieReason}}</div>
+							<div slot="content">{{PersonData[0].death_date}}<br>{{PersonData[0].dieReason}}</div>
 						</el-tooltip>
 						<div class="you" v-bind:style="{backgroundImage:'url(' + PersonData[0]['imgURL']||'none.png' + ')'}">
 							<div class="circle"></div>
@@ -30,11 +30,16 @@
 					<div class="top">
 						<div class="old">{{old}}</div>
 						<div class="attribute5Num">
-							<div class="son"><div class="shejiao"></div>{{shejiao}}</div>
-							<div class="son"><div class="junshi"></div>{{junshi}}</div>
-							<div class="son"><div class="guanli"></div>{{guanli}}</div>
-							<div class="son"><div class="mimou"></div>{{mimou}}</div>
-							<div class="son"><div class="xueshi"></div>{{xueshi}}</div>						
+							<div class="son">
+								<div class="shejiao"></div>{{shejiao}}</div>
+							<div class="son">
+								<div class="junshi"></div>{{junshi}}</div>
+							<div class="son">
+								<div class="guanli"></div>{{guanli}}</div>
+							<div class="son">
+								<div class="mimou"></div>{{mimou}}</div>
+							<div class="son">
+								<div class="xueshi"></div>{{xueshi}}</div>
 						</div>
 					</div>
 					<div class="bottom">
@@ -89,17 +94,17 @@
 				return this.$store.state.Drawer
 			},
 			PersonData() {
-				let shejiao=5
-				let guanli=5
-				let junshi=5
-				let mimou=5
-				let xueshi=5
-				for(let i=0;i<this.$store.state.PersonData.length;i++){
-					shejiao+=parseInt(this.$store.state.PersonData[i].shejiao||0)  
-					guanli+=parseInt(this.$store.state.PersonData[i].guanli||0)  
-					junshi+=parseInt(this.$store.state.PersonData[i].junshi||0)  
-					mimou+=parseInt(this.$store.state.PersonData[i].mimou||0)  
-					xueshi+=parseInt(this.$store.state.PersonData[i].xueshi||0)  
+				let shejiao = 5
+				let guanli = 5
+				let junshi = 5
+				let mimou = 5
+				let xueshi = 5
+				for(let i = 0; i < this.$store.state.PersonData.length; i++) {
+					shejiao += parseInt(this.$store.state.PersonData[i].shejiao || 0)
+					guanli += parseInt(this.$store.state.PersonData[i].guanli || 0)
+					junshi += parseInt(this.$store.state.PersonData[i].junshi || 0)
+					mimou += parseInt(this.$store.state.PersonData[i].mimou || 0)
+					xueshi += parseInt(this.$store.state.PersonData[i].xueshi || 0)
 				}
 				this.shejiao = shejiao
 				this.guanli = guanli
@@ -109,26 +114,27 @@
 				return this.$store.state.PersonData
 			},
 			old() {
-				if(this.$store.state.currentTime-moment(this.PersonData[0].death_date).format("YYYYMMDD")>0){
-					this.death = true
-					return  moment(this.PersonData[0].death_date).diff(moment(this.PersonData[0].born_date),'year')
-				}
-				else{
-					let date1 = moment(this.$store.state.currentTime,"YYYY-MM-DD")
+				debugger
+				if(this.$store.state.currentTime - moment(this.PersonData[0].death_date).format("YYYYMMDD") > 0) {
+					this.death = true;
+					return moment(this.PersonData[0].death_date).diff(moment(this.PersonData[0].born_date), 'year')
+				} else {
+					this.death = false;
+					let date1 = moment(this.$store.state.currentTime, "YYYY-MM-DD")
 					let date2 = this.PersonData[0].born_date
-					return date1.diff(date2,'years')
+					return date1.diff(date2, 'years')
 				}
 			},
 		},
 		data() {
 			return {
 				direction: 'ltr',
-				death:false,
-				shejiao:0,
-				guanli:0,
-				junshi:0,
-				mimou:0,
-				xueshi:0
+				death: false,
+				shejiao: 0,
+				guanli: 0,
+				junshi: 0,
+				mimou: 0,
+				xueshi: 0
 			}
 		},
 		methods: {
