@@ -16,7 +16,7 @@ app.use(history());
 //1 连接数据库
 //createConnection(哪台服务器, 用户名, 密码, 库)
 var db = mysql.createPool({
-	host: 'rm-bp1s48aed4qwyl694qo.mysql.rds.aliyuncs.com',
+	host: 'rm-bp1s48aed4qwyl694qo12.mysql.rds.aliyuncs.com',
 	user: 'lileiguan',
 	password: '2021Historybook',
 	database: 'lileiguan',
