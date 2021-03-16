@@ -1,12 +1,17 @@
 <template>
 	<div class="fillcontain">
 		<el-row style="height: 100%;">
-			<el-col :span="4" style="min-height: 100%; background-color: #324057;">
-				<el-menu :default-active="defaultActive" style="min-height: 100%;" theme="dark" router>
+			<el-col :span="isCollapse?1:4" style="min-height: 100%; background-color: #324057;">
+				<el-radio-group v-model="isCollapse">
+					<el-radio-button :label="false">展开</el-radio-button>
+					<el-radio-button :label="true">收起</el-radio-button>
+				</el-radio-group>
+				<el-menu :default-active="defaultActive" style="min-height: 100%;width:100%" router :collapse="isCollapse" :unique-opened="true">
 					<el-submenu index="1">
-						<template slot="title"><i class="el-icon-plus"></i>源数据</template>
-						<!--						<el-menu-item index="addJob"><img src="../assets/smallimg/guanzhi.png"></img>官职表(不分页)</el-menu-item>
--->
+						<template slot="title">
+							<i class="el-icon-plus"></i><span v-if="!isCollapse">源数据</span>
+						</template>
+						<!--<el-menu-item index="addJob"><img src="../assets/smallimg/guanzhi.png"></img>官职表(不分页)</el-menu-item>-->
 						<el-menu-item index="/commonDCT?dctid=guanzhi"><img src="../assets/smallimg/guanzhi.png"></img>官职表</el-menu-item>
 						<el-menu-item index="/commonDCT?dctid=dept"><img src="../assets/smallimg/user.png"></img>部门表</el-menu-item>
 						<el-menu-item index="/commonDCT?dctid=population"><img src="../assets/smallimg/population.png"></img>人口表</el-menu-item>
@@ -22,7 +27,7 @@
 						<!--<el-menu-item index="/commonDCT?dctid=stone"><img src="../assets/images/stone.png" style="height: 28px;width: 28px;"></img>矿石表</el-menu-item>-->
 					</el-submenu>
 					<el-submenu index="2">
-						<template slot="title"><img src="../assets/smallimg/look.png"></img>数据展示</template>
+						<template slot="title"><img src="../assets/smallimg/look.png"></img><span v-if="!isCollapse">数据展示</span></template>
 						<el-menu-item index="familyTree"><img src="../assets/smallimg/jiapushu.png"></img>家谱树</el-menu-item>
 						<el-menu-item index="GuanZhiTree"><img src="../assets/smallimg/guanzhishu.png"></img>官职树</el-menu-item>
 						<el-menu-item index="jobTime"><img src="../assets/smallimg/gaoguanshu.png"></img>高官树</el-menu-item>
@@ -35,7 +40,7 @@
 					<el-submenu index="3">
 						<template slot="title">
 							<div @click="tuichudenglu()">
-								<img src="../assets/smallimg/logout.png"></img>退出登录
+								<img src="../assets/smallimg/logout.png"></img><span v-if="!isCollapse">退出登录</span>
 							</div>
 						</template>
 					</el-submenu>
@@ -54,7 +59,7 @@
 					</el-submenu>-->
 				</el-menu>
 			</el-col>
-			<el-col :span="20" style="height: 100%;overflow: auto;">
+			<el-col :span="isCollapse?23:20"  style="height: 100%;overflow: auto;">
 				<keep-alive>
 					<router-view></router-view>
 				</keep-alive>
@@ -69,6 +74,11 @@
 		computed: {
 			defaultActive: function() {
 				return this.$route.path.replace('/', '');
+			}
+		},
+		data() {
+			return {
+				isCollapse: true
 			}
 		},
 		methods: {

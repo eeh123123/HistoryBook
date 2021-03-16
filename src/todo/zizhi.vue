@@ -1,7 +1,14 @@
 <template>
 	<div class="full" style="padding: 10px;">
 		<h1>处理资治通鉴</h1>
-		<el-input v-model="value" style="width:200px"></el-input>
+		<h3>资治通鉴的事例:(每个文本中间隔3行，请注意这样新增并不会有标题)</h3> 
+		05350218春，正月，戊申朔，大赦，改元。
+<br>
+<br>
+<br>
+		<br>
+		春季，正月，戊申朔（初一），梁武帝下令大赦天下，改年号为大同。
+		<br><el-input v-model="value" style="width:200px"></el-input>
 		<br>
 		<el-button @click="zhuanhuan">转换</el-button>
 		<br>
@@ -38,12 +45,12 @@
 				let date
 				for(let j = 0; j < data.length; j++) {
 					if(j % 2 == 0) {
-						date = data[j].slice(0, 10)
+						date = data[j].slice(0, 8)
 						event.push({
-							caption: data[j].slice(10),
-							year: date[0] - 0,
-							month: date[1] - 0,
-							Time: date[0] + date[1] + date[2],
+							caption: data[j].slice(8),
+							year: date.substring(0,4)-0,
+							month: date.substring(4,6)-0,
+							Time: date,
 							bookValue: 24,
 							title: ''
 						})
@@ -51,10 +58,10 @@
 						if(data[j].search("【】") != -1) {
 							event_mx.push({
 								caption: data[j],
-								GuWen: data[j - 1].slice(10),
-								year: date[0] - 0,
-								month: date[1] - 0,
-								Time: date[0] + date[1] + date[2],
+								GuWen: data[j - 1].slice(8),
+								year: date.substring(0,4)-0,
+								month: date.substring(4,6)-0,
+								Time: date,
 								bookValue: 24,
 								title: '',
 								JingQue: 0
@@ -62,10 +69,10 @@
 						} else {
 							event_mx.push({
 								caption: data[j].replace(/【】/g, ""),
-								GuWen: data[j - 1].slice(10).replace(/【】/g, ""),
-								year: date[0] - 0,
-								month: date[1] - 0,
-								Time: date[0] + date[1] + date[2],
+								GuWen: data[j - 1].slice(8).replace(/【】/g, ""),
+								year: date.substring(0,4)-0,
+								month: date.substring(4,6)-0,
+								Time: date,
 								bookValue: 24,
 								title: '',
 								JingQue: 1

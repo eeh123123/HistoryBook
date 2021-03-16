@@ -9,7 +9,7 @@ axios.interceptors.request.use(
 			config.cancel = c
 		})
 		let authorization = Cookies.get('Authorization')
-		if(config.url === "http://localhost:8084/Login.do" || config.url === "http://119.45.27.191:8084/Login.do") {
+		if(config.url === "http://localhost:80/Login.do" || config.url === "http://119.45.27.191:80/Login.do") {
 			// 登录接口不作处理
 			return config
 		} else {

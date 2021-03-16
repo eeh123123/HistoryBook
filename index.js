@@ -16,7 +16,7 @@ app.use(history());
 //1 连接数据库
 //createConnection(哪台服务器, 用户名, 密码, 库)
 var db = mysql.createPool({
-	host: 'rm-bp1s48aed4qwyl694qo12.mysql.rds.aliyuncs.com',
+	host: 'rm-bp1s48aed4qwyl694qo.mysql.rds.aliyuncs.com',
 	user: 'lileiguan',
 	password: '2021Historybook',
 	database: 'lileiguan',
@@ -104,7 +104,7 @@ http.createServer(function(req, res) {
 		res.writeHead(200);
 		res.end('Server Error');
 	}
-}).listen(8084, "127.0.0.1");
+}).listen(80, "127.0.0.1");
 
 //7 文件上传
 app.post('/up', function(req, res) {
@@ -399,12 +399,12 @@ app.get('/QueryPerson.do', HB.QueryPerson);
 app.get('/QueryGaoGuan.do', HB.QueryGaoGuan);
 
 
-app.listen(8084);
+app.listen(80);
 
 
 
 //var debug = require('debug')('my-application'); // debug模块
-//app.set('port', process.env.PORT || 8084); // 设定监听端口
+//app.set('port', process.env.PORT || 80); // 设定监听端口
 //
 ////启动监听
 //var server = app.listen(app.get('port'), function() {

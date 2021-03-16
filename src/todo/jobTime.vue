@@ -4,11 +4,12 @@
 			<el-option v-for="item in chaodaiOptions" :key="item.id" :label="item.name" :value="item.id">
 			</el-option>
 		</el-select>
-		<iframe id="sonIframe" src="../../static/1.html" frameborder="0"></iframe>
+		<component v-bind:is="currentView" ref="child"></component>
 	</div>
 </template>
 
 <script>
+	import beizhou from '../sonVue/1.vue'
 	export default {
 		data() {
 			return {
@@ -32,24 +33,31 @@
 		computed: {
 			currentTime: function() {
 				return this.$store.state.currentTime
+			},
+			currentView() {
+				if(this.chaodai == 1) {
+					return beizhou
+				}
 			}
 		},
 		methods: {
 			changeIframe() {
-				document.getElementById("sonIframe").src = "../../static/" + this.chaodai + ".html"
-				var _this = this
-				document.getElementById("sonIframe").onload = function(){
-					document.getElementById('sonIframe').contentWindow.QueryGaoGuan(_this.$store.state.MYURL,_this.currentTime.replace(/-/g,''))
-				};
+				
+//				document.getElementById("sonIframe").src = "../../static/" + this.chaodai + ".html"
+//				var _this = this
+//				document.getElementById("sonIframe").onload = function() {
+//					document.getElementById('sonIframe').contentWindow.QueryGaoGuan(_this.$store.state.MYURL, _this.currentTime.replace(/-/g, ''))
+//				};
+				
 			}
 		},
 		mounted() {
-			
+				this.$refs.child.QueryGaoGuan(this.$store.state.MYURL, this.currentTime.replace(/-/g, ''));
 		},
 		watch: {
 			currentTime: function() {
-				document.getElementById('sonIframe').contentWindow.QueryGaoGuan(this.$store.state.MYURL,this.currentTime.replace(/-/g,''))
-			}
+				this.$refs.child.QueryGaoGuan(this.$store.state.MYURL, this.currentTime.replace(/-/g, ''));
+			},
 		}
 	}
 </script>
