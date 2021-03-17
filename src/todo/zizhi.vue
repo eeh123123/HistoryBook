@@ -10,7 +10,7 @@
 		春季，正月，戊申朔（初一），梁武帝下令大赦天下，改年号为大同。
 		<br><el-input v-model="value" style="width:200px"></el-input>
 		<br>
-		<el-button @click="zhuanhuan">转换</el-button>
+		<el-button @click="zhuanhuan">保存</el-button>
 		<br>
 		<h1>处理隋书:</h1>
 		<el-input v-model="value1" style="width:200px"></el-input>

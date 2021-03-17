@@ -496,12 +496,18 @@
 </template>
 
 <script>
+	import * as d3 from 'd3';
 	export default {
 		name: 'item-Data',
 		data() {
 			return {
 
 			}
+		},
+		mounted() {
+			d3.zoom().on("zoom", function() {
+				d3.select('#main-area').attr('transform', d3.event.transform)
+			})
 		},
 		methods: {
 			QueryGaoGuan(url, time) {
@@ -530,7 +536,7 @@
 			},
 			addEvent(id, data) {
 				var _this = this
-				$("#" + id).attr("userid",data.userid)
+				$("#" + id).attr("userid", data.userid)
 				$("#" + id).bind("contextmenu", function() {
 					return false;
 				})
