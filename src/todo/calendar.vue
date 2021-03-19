@@ -1,4 +1,3 @@
-pagesize
 <template>
 	<div class="main calendar">
 		<div class="left">
@@ -9,14 +8,13 @@ pagesize
 				<div class="tabbtn" @click="RLClick()">日历</div>
 				<div style="clear:both"></div>
 			</div>
-			<div id="calendar" v-show="WNL_flag" class="tab" style="height: caLc(100% - 45px);">
+			<div id="calendar" v-show="WNL_flag" class="tab" style="height: calc(100% - 45px);">
 				<el-calendar v-model="value">
 				</el-calendar>
 			</div>
 			<div id="tree" v-show="SXT_flag" class="tab">
 				<!--树形图-->
-				<el-tree ref="tree" :default-expanded-keys="treeId" node-key="id" :props="props" :load="loadNode" lazy class="new-tree" @node-click="node_click">
-				</el-tree>
+				<el-tree :data="treeData" :props="defaultProps" @node-click="handleNodeClick"></el-tree>
 			</div>
 			<div id="line" v-show="SJZ_flag" class="tab" keep-alive>
 				<el-input v-model="SJZ_val" placeholder="此处输入汉字模糊查询" style="width:30%;margin-left: 20px;"></el-input>
@@ -88,8 +86,12 @@ pagesize
 		},
 		data() {
 			return {
-				treeId:[],
-				temp_treeid:'',
+				treeData: [],
+				defaultProps: {
+					children: 'children',
+					label: 'label'
+				},
+
 				common: {
 					year: "",
 					month: "",
@@ -116,12 +118,6 @@ pagesize
 				MYURL: this.$store.state.MYURL,
 				GuWen: "",
 				imgUrl: '',
-				props: {
-					label: 'name',
-					children: 'zones',
-					isLeaf: 'leaf'
-				},
-				tree_data: "",
 				SJZ_data: [{
 					content: '支持使用图标',
 					timestamp: '2018-04-12 20:46',
@@ -205,7 +201,8 @@ pagesize
 			this.common.month = this.value.getMonth() - 1 + 2;
 			this.common.day = this.value.getDate();
 
-			vm.SearchMonthStories()
+			this.queryTreeData()
+			this.SearchMonthStories()
 
 			this.queryEventType()
 			this.setBookType()
@@ -239,6 +236,54 @@ pagesize
 					time: time
 				}
 			},
+			queryTreeData() {
+				axios.get(this.MYURL + 'QueryTableRow.do', {
+					params: {
+						tablename: "event",
+						showcol: "*",
+						sqlwhere: "1=1 order by time"
+					}
+				}).then(res => {
+					var map = new Map();
+					var map2 = new Map();
+					var data = res.data.data
+					for(var i = 0; i < data.length; i++) {
+						map.set(data[i].year, data[i].year) //获取年份
+						map2.set(data[i].year, new Map())
+					}
+					for(var [key, value] of map) {
+						this.treeData.push({
+							id: key,
+							label: key + "年",
+							children: []
+						})
+					}
+					for(var i = 0; i < data.length; i++) {
+						for(var j = 0; j < this.treeData.length; j++) {
+							if(data[i].year == this.treeData[j].id) {
+								map2.get(data[i].year).set(data[i].month, data[i].month)
+							}
+						}
+					}
+					for(var [key, value] of map2) {
+						for(var j = 0; j < this.treeData.length; j++) {
+							if(key == this.treeData[j].id) {
+								for(var [key1, value1] of value) {
+									this.treeData[j].children.push({
+										id: key1,
+										label: key1 + "月",
+										children: new Map()
+									})
+								}
+							}
+						}
+					}
+
+				})
+			},
+			handleNodeClick() {
+
+			},
 			save() {
 				let params = this.getTime()
 				let option = {
@@ -258,9 +303,6 @@ pagesize
 					params: option
 				}).then(data => {
 					this.$message(data.data.text + "\n" + data.data.sql);
-//					this.node_had.childNodes = []; //把存起来的node的子节点清空，不然会界面会出现重复树！
-//					this.loadNode(this.node_had, this.resolve_had); //再次执行懒加载的方法
-					this.$set(this.treeId,0, this.temp_treeid)
 				})
 				let value = [{
 					title: this.Title, //事件标题
@@ -375,11 +417,11 @@ pagesize
 				}).then(res => {
 					res.data.data.push({
 						Caption: '',
-						GuWen:'',
-						JingQue:1,
-						id:'',
-						bookValue:'',
-						eventType:''
+						GuWen: '',
+						JingQue: 1,
+						id: '',
+						bookValue: '',
+						eventType: ''
 					})
 					var length = res.data.data.length
 					if(res.data.data.length != 0) {
@@ -403,68 +445,6 @@ pagesize
 			searchs() {
 				vm.value = new Date(vm.year, vm.month - 1, vm.day, 12, 0, 0)
 			},
-			loadNode(node, resolve) {
-				if(node.level === 0) {
-					vm.node_had = node; //这里是关键！在data里面定义一个变量，将node.level == 0的node存起来
-					vm.resolve_had = resolve; //同上，把node.level == 0的resolve也存起来
-					axios.get(vm.MYURL + 'Search_Tree.do?', {
-						params: {
-							Type: "1"
-						}
-					}).then(res => {
-						resolve(res.data)
-					})
-				} else if(node.level === 1) {
-					axios.get(vm.MYURL + 'Search_Tree.do?', {
-						params: {
-							Type: "2",
-							Year: node.data.name.substring(0, node.data.name.length - 1)
-						}
-					}).then(res => {
-						resolve(res.data)
-					})
-				} else if(node.level === 2) {
-					this.temp_treeid = node.id
-					var year = node.parent.label.substring(0, node.parent.label.length - 1);
-					var month = node.data.name.substring(0, node.data.name.length - 1);
-					axios.get(vm.MYURL + 'Search_Tree.do?', {
-						params: {
-							Type: "3",
-							Year: year,
-							Month: month
-						}
-					}).then(res => {
-						resolve(res.data)
-					})
-				} else {
-					return resolve([]);
-				}
-			},
-			node_click(node, data, obj) {
-				if(data.level == "1") {
-					this.value = new Date(node.name.substring(0, node.name.length - 1), 0, 1, 1, 1, 1);
-				}
-				if(data.level == "2") {
-					var year = data.parent.label.substring(0, data.parent.label.length - 1);
-					var month = data.data.name.substring(0, data.data.name.length - 1);
-					vm.value = new Date(year, month - 1, 1, 1, 1, 1);
-				}
-				if(data.level == "3") {
-					var year = data.parent.parent.label.substring(0, data.parent.parent.label.length - 1);
-					var month = data.parent.data.name.substring(0, data.parent.data.name.length - 1);
-					//以下是获取日期 day
-					var day = "";
-					for(var i = 0; i < data.label.length; i++) {
-						if(data.label[i] === "日") {
-							break;
-						} //
-						day += data.label[i];
-					}
-					var value = new Date(year, month - 1, day, 1, 1, 1);
-				}
-				this.$store.commit("setcurrentTime", moment(value).format('YYYYMMDD'));
-			},
-
 			WNL() {
 				vm.WNL_flag = true;
 				vm.SXT_flag = false;
@@ -539,21 +519,6 @@ pagesize
 				}
 				vm.value = time;
 				this.$store.commit("setcurrentTime", moment(vm.value).format('YYYYMMDD'));
-			},
-			upload(params) {
-				const formData = new FormData();
-				formData.append('file', params.file)
-				const headerConfig = {
-					headers: {
-						'Content-Type': 'multipart/form-data'
-					}
-				};
-				formData.append('originalname', params.file.name);
-				axios.post(this.MYURL + 'up', formData, headerConfig).then(function(data) {
-					if(data.data.status == 'success') {
-						vm.imgUrl = vm.MYURL + "upload/" + data.data.filename
-					}
-				})
 			},
 			queryEventType() {
 				axios.get(this.$store.state.MYURL + 'QueryTableRow.do', {
