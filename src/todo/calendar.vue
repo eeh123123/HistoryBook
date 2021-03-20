@@ -272,17 +272,28 @@
 									this.treeData[j].children.push({
 										id: key1,
 										label: key1 + "月",
-										children: new Map()
+										children: []
 									})
 								}
 							}
 						}
 					}
-
+					for(var i in this.treeData) {
+						for(var j in this.treeData[i].children) {
+							for(var k in data) {
+								if(this.treeData[i].id == data[k].year && this.treeData[i].children[j].id == data[k].month){
+									this.treeData[i].children[j].children.push({
+										id: data[k].day,
+										label: data[k].Time.slice(7,8) + "日,"+data[k].title
+									})
+								}
+							}
+						}
+					}
 				})
 			},
 			handleNodeClick() {
-
+				debugger
 			},
 			save() {
 				let params = this.getTime()
