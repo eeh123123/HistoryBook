@@ -98,7 +98,9 @@
 							<path d="M.3,.0L51.2,.0L51.2,49.9L.3,49.9L.3,.0z" />
 						</clipPath>
 					</defs>
+					
 					<rect fill="#fffef7" stroke="#808080" width="2420" y="0" height="1073" x="0" />
+					<g id='root'>
 					<g transform="translate(719.45,149.75)" id="group1">
 						<path fill="#ffc37c" stroke="#ffc37c" d="M10.5,.0L21.0,7.0L10.5,14.0L.0,7.0L10.5,.0z" stroke-width="1" id="shape2" fill-rule="nonzero" />
 						<path fill="#ffc37c" stroke="#ffc37c" d="M10.5,.0L21.0,7.0L10.5,14.0L.0,7.0L10.5,.0z" stroke-width="1" transform="translate(21.00,0.00)" id="shape3" fill-rule="nonzero" />
@@ -489,6 +491,7 @@
 					<path stroke="#236ea1" fill="none" d="M.0,.0L.0,-42.4" transform="translate(1539.66,510.60)" id="shape231" />
 					<path stroke="#236ea1" fill="none" d="M.0,.0L.0,-42.4" transform="translate(1899.28,510.60)" id="shape232" />
 					<path stroke="#236ea1" fill="none" d="M.0,.0L.0,-42.4" transform="translate(2244.24,510.60)" id="shape233" />
+					</g>
 				</svg>
 			</div>
 		</div>
@@ -505,9 +508,12 @@
 			}
 		},
 		mounted() {
-			d3.zoom().on("zoom", function() {
-				d3.select('#main-area').attr('transform', d3.event.transform)
+
+			let zoom = d3.zoom().on("zoom", function(event) {
+				console.log(event)
+				d3.select('#root').attr('transform', event.transform)
 			})
+			d3.select('#page1').call(zoom)
 		},
 		methods: {
 			QueryGaoGuan(url, time) {

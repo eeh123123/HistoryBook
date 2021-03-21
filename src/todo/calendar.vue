@@ -14,7 +14,7 @@
 			</div>
 			<div id="tree" v-show="SXT_flag" class="tab">
 				<!--树形图-->
-				<el-tree :data="treeData" :props="defaultProps" @node-click="handleNodeClick"></el-tree>
+				<el-tree node-key="id" :data="treeData" :props="defaultProps" @node-click="handleNodeClick" :default-expanded-keys="expandedKey"></el-tree>
 			</div>
 			<div id="line" v-show="SJZ_flag" class="tab" keep-alive>
 				<el-input v-model="SJZ_val" placeholder="此处输入汉字模糊查询" style="width:30%;margin-left: 20px;"></el-input>
@@ -86,7 +86,8 @@
 		},
 		data() {
 			return {
-				treeData: [],
+				expandedKey: [], //默认展开的节点
+				treeData: [],//树的数据
 				defaultProps: {
 					children: 'children',
 					label: 'label'
@@ -246,10 +247,17 @@
 				}).then(res => {
 					var map = new Map();
 					var map2 = new Map();
-					var data = res.data.data
+					var data = res.data.data;
+					this.treeData = []
 					for(var i = 0; i < data.length; i++) {
 						map.set(data[i].year, data[i].year) //获取年份
 						map2.set(data[i].year, new Map())
+						//从这里确定展开哪个节点
+						if(this.currentTime == data[i].Time) {
+							this.expandedKey[0] = data[i].year
+							this.expandedKey[0] = data[i].Time
+
+						}
 					}
 					for(var [key, value] of map) {
 						this.treeData.push({
@@ -270,7 +278,7 @@
 							if(key == this.treeData[j].id) {
 								for(var [key1, value1] of value) {
 									this.treeData[j].children.push({
-										id: key1,
+										id: (this.treeData[j].id > 1000 ? this.treeData[j].id : "0" + this.treeData[j].id) + (key1 > 10 ? key1 : 0 + key1),
 										label: key1 + "月",
 										children: []
 									})
@@ -281,10 +289,11 @@
 					for(var i in this.treeData) {
 						for(var j in this.treeData[i].children) {
 							for(var k in data) {
-								if(this.treeData[i].id == data[k].year && this.treeData[i].children[j].id == data[k].month){
+								if(this.treeData[i].id == data[k].year && this.treeData[i].children[j].id == (data[k].year>1000?data[k].year:"0"+data[k].year) + (data[k].month>10?data[k].month:"0"+data[k].month)) {
 									this.treeData[i].children[j].children.push({
-										id: data[k].day,
-										label: data[k].Time.slice(7,8) + "日,"+data[k].title
+										value: data[k].Time,
+										id: data[k].Time,
+										label: data[k].Time.slice(6, 8) + "日," + data[k].title
 									})
 								}
 							}
@@ -292,8 +301,10 @@
 					}
 				})
 			},
-			handleNodeClick() {
-				debugger
+			handleNodeClick(obj, node, c) {
+				if(node.level == 2) {} else if(node.level == 3) {
+					this.$store.commit("setcurrentTime", node.data.value);
+				}
 			},
 			save() {
 				let params = this.getTime()
@@ -343,6 +354,7 @@
 								message: res.data.msg
 							});
 							this.SearchMonthStories();
+							this.queryTreeData();
 						})
 				} else {
 					value = [{
@@ -372,8 +384,9 @@
 								type: 'success',
 								message: res.data.msg
 							});
-							this.SearchMonthStories()
-							this.searchMX()
+							this.SearchMonthStories();
+							this.searchMX();
+							this.queryTreeData();
 						})
 				}
 
@@ -608,4 +621,9 @@
 
 <style lang="less">
 	@import '../assets/styles/calendar';
+	.calendar {
+		textarea {
+			text-indent: 25px
+		}
+	}
 </style>

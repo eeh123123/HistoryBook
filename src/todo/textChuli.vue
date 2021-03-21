@@ -13,10 +13,9 @@
 		<el-input type="textarea" :autosize="{ minRows: 2, maxRows: 4}" placeholder="请输入内容" v-model="textarea1" style="margin-bottom:10px;">
 		</el-input>
 
-		<h3>输入文字模板：</h3> 一库房左侧一个，右侧两个，中间两个，密集架背面左侧两个，中间两个，右侧两个
+		<h3>输入文字模板1：</h3> 一库房左侧一个，右侧两个，中间两个，密集架背面左侧两个，中间两个，右侧两个
 		<br>
-		<h3>点击转换按钮，你会得到：</h3>
-		一库房左侧一个
+		<h3>点击转换按钮，你会得到：</h3> 一库房左侧一个
 		<br>右侧两个
 		<br>中间两个
 		<br>密集架背面左侧两个
@@ -27,6 +26,27 @@
 		<el-button @click="zhuanhuan2">转换</el-button>
 		<el-input type="textarea" :autosize="{ minRows: 2, maxRows: 4}" placeholder="请输入内容" v-model="textarea2">
 		</el-input>
+
+		<h3>输入文字模板2：</h3>
+		<br>文成帝拓跋浚
+		<br>阳平幽王拓跋新成
+		<br>京兆康王拓跋子推
+		<br>济阴王拓跋小新成
+		<br>
+		<h3>点击转换按钮，你会得到：</h3>
+		<br>拓跋浚			文成帝
+		<br>拓跋新成			阳平幽王
+		<br>拓跋子推			京兆康王
+		<br>拓跋小新成			济阴王
+		<el-input type="textarea" :autosize="{ minRows: 2, maxRows: 4}" placeholder="请输入内容" v-model="value3">
+		</el-input>
+
+		<el-button @click="zhuanhuan3">转换</el-button>
+		<el-input type="textarea" :autosize="{ minRows: 6, maxRows: 10}" placeholder="请输入内容" v-model="textarea3">
+		</el-input>
+		
+		
+
 	</div>
 </template>
 
@@ -40,7 +60,9 @@
 				value1: '',
 				textarea1: '',
 				value2: '',
-				textarea2: ''
+				textarea2: '',
+				value3: '',
+				textarea3: ''
 			}
 		},
 		methods: {
@@ -69,16 +91,42 @@
 			},
 			zhuanhuan2() {
 				let data = this.value2.replace(/\s*/g, "");
-
-				data = data.replace(new RegExp("，", "gm"), "\n");
+				if(data.search("，") != -1) {
+					data = data.replace(new RegExp("，", "gm"), "\n");
+				}
+				if(data.search("、") != -1) {
+					data = data.replace(new RegExp("、", "gm"), "\n");
+				}
 				this.textarea2 = data
+			},
+			zhuanhuan3() {
+				let data = this.value3
+				var str = ""; //总字符串
+				var str1 = "";
+				data = data.replace("。", "\n")
+				data = data.replace(new RegExp("。", "gm"), "");
+				data = data.replace(/\[.*?\]/g, '');
+				data = data.split("\n");
+				for(var i = 0; i < data.length; i++) {
+					data[i]= data[i].replace("，", "	");
+					if(data[i].search("王") != -1 || data[i].search("帝") != -1) {
+						for(var j in data[i]) {
+							if(data[i][j] == "王" || data[i][j] == "帝") {
+								str1 = data[i].substring(j-0+1, data[i].length) + "	" + data[i].slice(0, j-0+1) 
+									str += str1 + "\n"
+								break;
+							}
+						}
+					} else {
+						str += data[i]+"\n"
+					}
+				}
+				this.textarea3 = str
 			}
 		}
 	}
 </script>
 
 <style lang="less" scoped="scoped">
-	textarea {
-		text-indent: 0px;
-	}
+
 </style>

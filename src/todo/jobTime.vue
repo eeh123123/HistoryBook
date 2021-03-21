@@ -1,5 +1,5 @@
 <template>
-	<div class="full">
+	<div class="full" style="overflow: hidden;">
 		<el-select v-model="chaodai" clearable filterable class="margin-left10 chaodaiSelect" placeholder="选择朝代" @change="changeIframe()">
 			<el-option v-for="item in chaodaiOptions" :key="item.id" :label="item.name" :value="item.id">
 			</el-option>

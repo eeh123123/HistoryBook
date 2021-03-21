@@ -64,7 +64,7 @@
 								Time: date,
 								bookValue: 24,
 								title: '',
-								JingQue: 0
+								JingQue: 1
 							})
 						} else {
 							event_mx.push({
@@ -75,7 +75,7 @@
 								Time: date,
 								bookValue: 24,
 								title: '',
-								JingQue: 1
+								JingQue: 0
 							})
 						}
 						if(j == data.length - 1) {
