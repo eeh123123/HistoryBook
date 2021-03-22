@@ -38,15 +38,15 @@
 		<div class="right">
 			<div class="bottom">
 				<el-form ref="form" class="form">
-					<el-input v-model="Title" placeholder="标题" class="title"></el-input>
+					<el-input v-model="event.title" placeholder="标题" class="title"></el-input>
 					<div class="bottomDiv">
 						<div class="bgImage" :style="{backgroundImage: 'url(' + eventImgUrl + ')' }"></div>
 						<el-form-item class="textareaForm">
-							<textarea autocomplete="off" class="el-textarea__inner" rows="8" style="min-height: 33px;" v-model="GuWen">{{GuWen}</textarea>
-							<textarea autocomplete="off" class="el-textarea__inner" rows="11" style="min-height: 33px;" v-model="Caption">{{Caption}</textarea>
+							<textarea autocomplete="off" class="el-textarea__inner" rows="8" style="min-height: 33px;" v-model="event_mx.GuWen">{{event_mx.GuWen}</textarea>
+							<textarea autocomplete="off" class="el-textarea__inner" rows="11" style="min-height: 33px;" v-model="event_mx.caption">{{event_mx.caption}</textarea>
 							<div class="tagdiv">
 								是否精确：
-								<el-switch v-model="JingQue" active-value="1" inactive-value="0" active-color="#0000FF" inactive-color="#808080">
+								<el-switch v-model="event_mx.JingQue" active-value="1" inactive-value="0" active-color="#0000FF" inactive-color="#808080">
 								</el-switch>
 								<el-select v-model="event_mx.bookValue" clearable filterable class="eventType" placeholder="请选择类型" size="mini">
 									<el-option v-for="item in bookType" :key="item.id" :label="item.F_MC" :value="item.id">
@@ -87,12 +87,11 @@
 		data() {
 			return {
 				expandedKey: [], //默认展开的节点
-				treeData: [],//树的数据
+				treeData: [], //树的数据
 				defaultProps: {
 					children: 'children',
 					label: 'label'
 				},
-
 				common: {
 					year: "",
 					month: "",
@@ -100,53 +99,38 @@
 					Time: "",
 				},
 				event: {
-					Title: "",
+					title: "",
 				},
+				Event: {},
 				event_mx: {
+					GuWen: "", //古文
+					caption: "", //白话文描述
 					userName: "",
 					updateTime: "",
 					bookValue: "",
 					eventType: "",
+					JingQue: "1",
 					currentId: null,
 					total: 1,
 					pageIndex: 1
 				},
 				value: new Date(700, 1, 1), //时间对象
-				SXT_filterText: '', //树形图的过滤文本
-				Event: "",
-				Title: "",
-				Caption: "",
 				MYURL: this.$store.state.MYURL,
-				GuWen: "",
-				imgUrl: '',
 				SJZ_data: [{
 					content: '支持使用图标',
 					timestamp: '2018-04-12 20:46',
 					size: 'large',
 					type: 'primary',
 					icon: 'el-icon-more'
-				}, {
-					content: '支持自定义颜色',
-					timestamp: '2018-04-03 20:46',
-					color: '#0bbd87'
-				}, {
-					content: '支持自定义尺寸',
-					timestamp: '2018-04-03 20:46',
-					size: 'large'
-				}, {
-					content: '默认样式的节点',
-					timestamp: '2018-04-03 20:46'
 				}],
 				WNL_flag: true,
 				SJZ_flag: false,
 				SXT_flag: false,
 				RL_flag: false,
-				SJZ_val: "",
-				event: {},
-				eventType_All: [],
+				SJZ_val: "", //时间轴的搜索条件
+				eventType_All: [], //时间Options
 				bookType: [],
 				eventImgUrl: '',
-				JingQue: "1",
 				RL: {
 					year: '',
 					month: '',
@@ -178,7 +162,7 @@
 						pageSize: 15
 					}
 				},
-				currentPage: 1,
+				currentPage: 1, //日历的页码
 			}
 		},
 		computed: {
@@ -289,7 +273,7 @@
 					for(var i in this.treeData) {
 						for(var j in this.treeData[i].children) {
 							for(var k in data) {
-								if(this.treeData[i].id == data[k].year && this.treeData[i].children[j].id == (data[k].year>1000?data[k].year:"0"+data[k].year) + (data[k].month>10?data[k].month:"0"+data[k].month)) {
+								if(this.treeData[i].id == data[k].year && this.treeData[i].children[j].id == (data[k].year > 1000 ? data[k].year : "0" + data[k].year) + (data[k].month > 10 ? data[k].month : "0" + data[k].month)) {
 									this.treeData[i].children[j].children.push({
 										value: data[k].Time,
 										id: data[k].Time,
@@ -309,17 +293,15 @@
 			save() {
 				let params = this.getTime()
 				let option = {
-					Title: this.Title, //事件标题
-					Caption: this.Caption, //事件内容
-					time: params.time, //年份
-					year: params.year,
+					Title: this.event.title, //事件标题
+					caption: this.event_mx.caption, //事件内容
+					time: params.time, //时间
+					year: params.year,//年份
 					month: params.month, //月份 
-					Filename: "",
-					URL: this.imgUrl,
-					userName: localStorage.getItem("username"),
-					updateTime: moment().format('YYYY-MM-DD HH:mm:ss'),
-					eventType: this.event_mx.eventType,
-					bookValue: this.event_mx.bookValue
+					userName: localStorage.getItem("username"),//编辑者
+					updateTime: moment().format('YYYY-MM-DD HH:mm:ss'),//编辑时间
+					eventType: this.event_mx.eventType,//事件类型
+					bookValue: this.event_mx.bookValue//参考书目
 				}
 				axios.post(this.MYURL + 'WriteStories.do?', {
 					params: option
@@ -327,16 +309,16 @@
 					this.$message(data.data.text + "\n" + data.data.sql);
 				})
 				let value = [{
-					title: this.Title, //事件标题
+					title: this.event.title, //事件标题
 					time: params.time, //年份
 					year: params.year,
 					month: params.month, //月份
 					userName: localStorage.getItem("username"),
 					updateTime: moment().format('YYYY-MM-DD HH:mm:ss'),
-					caption: this.Caption,
+					caption: this.event_mx.caption,
 					day: '',
-					GuWen: this.GuWen,
-					JingQue: this.JingQue,
+					GuWen: this.event_mx.GuWen,
+					JingQue: this.event_mx.JingQue,
 					eventType: this.event_mx.eventType,
 					bookValue: this.event_mx.bookValue
 				}]
@@ -362,15 +344,15 @@
 						time: params.time, //年份
 						userName: localStorage.getItem("username"),
 						updateTime: moment().format('YYYY-MM-DD HH:mm:ss'),
-						caption: this.Caption,
+						caption: this.event_mx.caption,
 						year: params.year,
 						month: params.month, //月份
 						day: '',
-						GuWen: this.GuWen,
-						JingQue: this.JingQue,
+						GuWen: this.event_mx.GuWen,
+						JingQue: this.event_mx.JingQue,
 						eventType: this.event_mx.eventType,
 						bookValue: this.event_mx.bookValue,
-						title: this.Title, //事件标题
+						title: this.event.title, //事件标题
 					}]
 					axios.post(this.$store.state.MYURL + 'UpdateTableRow.do', {
 							params: {
@@ -404,7 +386,6 @@
 					for(var i = 0; i < vm.Event.length; i++) {
 						if(vm.Event[i].Time == this.currentTime) {
 							vm.event = vm.Event[i]
-							vm.Title = vm.Event[i].title;
 							vm.updateTime = vm.Event[i].updateTime;
 							if(vm.Event[i]["eventType"]) {
 								vm.eventImgUrl = vm.$store.state.AliYunURL + vm.Event[i]["eventType"] + ".png" || ""
@@ -414,13 +395,13 @@
 							vm.event = vm.Event[i]
 							break;
 						} else {
-							this.Title = "";
+							this.event.title = "";
 							this.event_mx.currentId = ""
 						}
 					}
 					if(this.Event.length == 0) {
-						this.Title = "";
-						this.Caption = "";
+						this.event.title = "";
+						this.event_mx.caption = "";
 						this.event_mx.currentId = ""
 					}
 					vm.drawWrited();
@@ -440,7 +421,7 @@
 					}
 				}).then(res => {
 					res.data.data.push({
-						Caption: '',
+						caption: '',
 						GuWen: '',
 						JingQue: 1,
 						id: '',
@@ -452,16 +433,16 @@
 						if(res.data.data[length - 1].title) {
 							this.Title = res.data.data[this.event_mx.pageIndex - 1].title
 						}
-						this.Caption = res.data.data[this.event_mx.pageIndex - 1].caption
-						this.GuWen = res.data.data[this.event_mx.pageIndex - 1].GuWen
+						this.event_mx.caption = res.data.data[this.event_mx.pageIndex - 1].caption
+						this.event_mx.GuWen = res.data.data[this.event_mx.pageIndex - 1].GuWen
 						this.event_mx.total = parseInt(length)
-						this.JingQue = res.data.data[this.event_mx.pageIndex - 1].JingQue + ""
+						this.event_mx.JingQue = res.data.data[this.event_mx.pageIndex - 1].JingQue + ""
 						this.event_mx.currentId = res.data.data[this.event_mx.pageIndex - 1].id
 						this.event_mx.bookValue = res.data.data[this.event_mx.pageIndex - 1].bookValue - 0
 						this.event_mx.eventType = res.data.data[this.event_mx.pageIndex - 1].eventType
 					} else {
-						this.GuWen = ""
-						this.Caption = ""
+						this.event_mx.GuWen = ""
+						this.event_mx.caption = ""
 						this.event_mx.currentId = null
 					}
 				})
@@ -525,12 +506,11 @@
 				for(var j = 0; j < lastMounthFlag; j++) {
 					$(span[j]).parent().removeClass("writed");
 				}
-
 			},
 			SJZ_search() {
 				axios.get(vm.MYURL + 'Search_SJZ.do?', {
 					params: {
-						Caption: vm.SJZ_val, //时间轴查找的关键字
+						caption: vm.SJZ_val, //时间轴查找的关键字
 					}
 				}).then(res => {
 					vm.SJZ_data = res.data;
@@ -604,9 +584,6 @@
 			currentTime(val) {
 				this.searchMX()
 				this.SearchMonthStories()
-			},
-			SXT_filterText(val) {
-				this.$refs.Tree.filter(val);
 			},
 			'event_mx.eventType' (val) {
 				if(val) {
