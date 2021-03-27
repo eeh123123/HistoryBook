@@ -14,7 +14,7 @@
 			</div>
 			<div id="tree" v-show="SXT_flag" class="tab">
 				<!--树形图-->
-				<el-tree node-key="id" :data="treeData" :props="defaultProps" @node-click="handleNodeClick" :default-expanded-keys="expandedKey"></el-tree>
+				<el-tree node-key="id" ref="tree" :data="treeData" :props="defaultProps" @node-click="handleNodeClick" :default-expanded-keys="expandedKey"></el-tree>
 			</div>
 			<div id="line" v-show="SJZ_flag" class="tab" keep-alive>
 				<el-input v-model="SJZ_val" placeholder="此处输入汉字模糊查询" style="width:30%;margin-left: 20px;"></el-input>
@@ -76,531 +76,537 @@
 	</div>
 </template>
 
-<script>
-	import BaseTable from '../tools/BaseTable.vue'
-	let Write_Time = "";
-	let vm;
-	export default {
-		components: {
-			BaseTable
+<script>import BaseTable from '../tools/BaseTable.vue'
+let Write_Time = "";
+let vm;
+export default {
+	components: {
+		BaseTable
+	},
+	data() {
+		return {
+			expandedKey: [], //默认展开的节点
+			treeData: [], //树的数据
+			defaultProps: {
+				children: 'children',
+				label: 'label'
+			},
+			common: {
+				year: "",
+				month: "",
+				day: "",
+				Time: "",
+			},
+			event: {
+				title: "",
+			},
+			Event: {},
+			event_mx: {
+				GuWen: "", //古文
+				caption: "", //白话文描述
+				userName: "",
+				updateTime: "",
+				bookValue: "",
+				eventType: "",
+				JingQue: "1",
+				currentId: null,
+				total: 1,
+				pageIndex: 1
+			},
+			value: new Date(700, 1, 1), //时间对象
+			MYURL: this.$store.state.MYURL,
+			SJZ_data: [{
+				content: '支持使用图标',
+				timestamp: '2018-04-12 20:46',
+				size: 'large',
+				type: 'primary',
+				icon: 'el-icon-more'
+			}],
+			WNL_flag: true,
+			SJZ_flag: false,
+			SXT_flag: false,
+			RL_flag: false,
+			SJZ_val: "", //时间轴的搜索条件
+			eventType_All: [], //时间Options
+			bookType: [],
+			eventImgUrl: '',
+			RL: {
+				year: '',
+				month: '',
+				nongliYue: '',
+				tiandi: ''
+			},
+			tableHead: [{
+				code: "year",
+				label: "年"
+			}, {
+				code: "month",
+				label: "月"
+			}, {
+				code: "day",
+				label: "日"
+			}, {
+				code: "nongli",
+				label: "农历"
+			}, {
+				code: "tiandi",
+				label: "干支"
+			}],
+			tableData: {
+				data: [],
+				total: 0,
+				map: new Map(),
+				tableHeight: 600,
+				page: {
+					pageSize: 15
+				}
+			},
+			currentPage: 1, //日历的页码
+		}
+	},
+	computed: {
+		currentTime: function() {
+			this.common.year = this.$store.state.currentTime.slice(0, 4) - 0
+			this.common.month = this.$store.state.currentTime.slice(4, 6) - 0
+			this.common.day = this.$store.state.currentTime.slice(6, 8) - 0
+			return this.$store.state.currentTime
+		}
+	},
+	filters: {
+		formatDate: function(value) {
+			return moment(value).format('YYYY-MM-DD');
+		}
+	},
+	created() {
+		vm = this;
+	},
+	mounted() {
+		this.common.year = this.value.getFullYear();
+		this.common.month = this.value.getMonth() - 1 + 2;
+		this.common.day = this.value.getDate();
+
+		this.queryTreeData()
+		this.SearchMonthStories()
+
+		this.queryEventType()
+		this.setBookType()
+		this.setTableHeight()
+		this.linstenEvent()
+
+	},
+	methods: {
+		linstenEvent() {
+			var _this = this
+			$(document).keydown(function(event) {
+				if(event.keyCode == 13) {
+					_this.queryTreeData()
+				}
+			});
 		},
-		data() {
+		setTableHeight() {
+			setTimeout(() => {
+				this.tableData.tableHeight = document.getElementById("calendar").offsetHeight - 100
+			}, 100)
+		},
+		getTime() {
+			let year
+			if(this.common.year >= 1000) {
+				year = this.common.year
+			}
+			if(this.common.year < 1000 && this.common.year >= 100) {
+				year = '0' + this.common.year
+			}
+			if(this.common.year < 100 && this.common.year >= 10) {
+				year = '00' + this.common.year
+			}
+			if(this.common.year < 10 && this.common.year > 0) {
+				year = '000' + this.common.year
+			}
+			let time = year + "" + (this.common.month >= 10 ? this.common.month : "0" + this.common.month) + (this.common.day >= 10 ? this.common.day : "0" + this.common.day) //具体时间，小于10的前面要加0
 			return {
-				expandedKey: [], //默认展开的节点
-				treeData: [], //树的数据
-				defaultProps: {
-					children: 'children',
-					label: 'label'
-				},
-				common: {
-					year: "",
-					month: "",
-					day: "",
-					Time: "",
-				},
-				event: {
-					title: "",
-				},
-				Event: {},
-				event_mx: {
-					GuWen: "", //古文
-					caption: "", //白话文描述
-					userName: "",
-					updateTime: "",
-					bookValue: "",
-					eventType: "",
-					JingQue: "1",
-					currentId: null,
-					total: 1,
-					pageIndex: 1
-				},
-				value: new Date(700, 1, 1), //时间对象
-				MYURL: this.$store.state.MYURL,
-				SJZ_data: [{
-					content: '支持使用图标',
-					timestamp: '2018-04-12 20:46',
-					size: 'large',
-					type: 'primary',
-					icon: 'el-icon-more'
-				}],
-				WNL_flag: true,
-				SJZ_flag: false,
-				SXT_flag: false,
-				RL_flag: false,
-				SJZ_val: "", //时间轴的搜索条件
-				eventType_All: [], //时间Options
-				bookType: [],
-				eventImgUrl: '',
-				RL: {
-					year: '',
-					month: '',
-					nongliYue: '',
-					tiandi: ''
-				},
-				tableHead: [{
-					code: "year",
-					label: "年"
-				}, {
-					code: "month",
-					label: "月"
-				}, {
-					code: "day",
-					label: "日"
-				}, {
-					code: "nongli",
-					label: "农历"
-				}, {
-					code: "tiandi",
-					label: "干支"
-				}],
-				tableData: {
-					data: [],
-					total: 0,
-					map: new Map(),
-					tableHeight: 600,
-					page: {
-						pageSize: 15
+				year: this.common.year,
+				month: this.common.month,
+				day: this.common.day,
+				time: time
+			}
+		},
+		queryTreeData() {
+			axios.get(this.MYURL + 'QueryTableRow.do', {
+				params: {
+					tablename: "event",
+					showcol: "*",
+					sqlwhere: "1=1 order by time"
+				}
+			}).then(res => {
+				var map = new Map();
+				var map2 = new Map();
+				var data = res.data.data;
+				this.treeData = []
+				for(var i = 0; i < data.length; i++) {
+					map.set(data[i].year, data[i].year) //获取年份
+					map2.set(data[i].year, new Map())
+					//从这里确定展开哪个节点
+					if(this.currentTime == data[i].Time) {
+						this.expandedKey[0] = data[i].year
+						this.expandedKey[0] = data[i].Time
+
 					}
-				},
-				currentPage: 1, //日历的页码
-			}
-		},
-		computed: {
-			currentTime: function() {
-				this.common.year = this.$store.state.currentTime.slice(0, 4) - 0
-				this.common.month = this.$store.state.currentTime.slice(4, 6) - 0
-				this.common.day = this.$store.state.currentTime.slice(6, 8) - 0
-				return this.$store.state.currentTime
-			}
-		},
-		filters: {
-			formatDate: function(value) {
-				return moment(value).format('YYYY-MM-DD');
-			}
-		},
-		created() {
-			vm = this;
-		},
-		mounted() {
-			this.common.year = this.value.getFullYear();
-			this.common.month = this.value.getMonth() - 1 + 2;
-			this.common.day = this.value.getDate();
-
-			this.queryTreeData()
-			this.SearchMonthStories()
-
-			this.queryEventType()
-			this.setBookType()
-			this.setTableHeight()
-		},
-		methods: {
-			setTableHeight() {
-				setTimeout(() => {
-					this.tableData.tableHeight = document.getElementById("calendar").offsetHeight - 100
-				}, 100)
-			},
-			getTime() {
-				let year
-				if(this.common.year >= 1000) {
-					year = this.common.year
 				}
-				if(this.common.year < 1000 && this.common.year >= 100) {
-					year = '0' + this.common.year
+				for(var [key, value] of map) {
+					this.treeData.push({
+						id: key,
+						label: key + "年",
+						children: []
+					})
 				}
-				if(this.common.year < 100 && this.common.year >= 10) {
-					year = '00' + this.common.year
-				}
-				if(this.common.year < 10 && this.common.year > 0) {
-					year = '000' + this.common.year
-				}
-				let time = year + "" + (this.common.month >= 10 ? this.common.month : "0" + this.common.month) + (this.common.day >= 10 ? this.common.day : "0" + this.common.day) //具体时间，小于10的前面要加0
-				return {
-					year: this.common.year,
-					month: this.common.month,
-					day: this.common.day,
-					time: time
-				}
-			},
-			queryTreeData() {
-				axios.get(this.MYURL + 'QueryTableRow.do', {
-					params: {
-						tablename: "event",
-						showcol: "*",
-						sqlwhere: "1=1 order by time"
-					}
-				}).then(res => {
-					var map = new Map();
-					var map2 = new Map();
-					var data = res.data.data;
-					this.treeData = []
-					for(var i = 0; i < data.length; i++) {
-						map.set(data[i].year, data[i].year) //获取年份
-						map2.set(data[i].year, new Map())
-						//从这里确定展开哪个节点
-						if(this.currentTime == data[i].Time) {
-							this.expandedKey[0] = data[i].year
-							this.expandedKey[0] = data[i].Time
-
+				for(var i = 0; i < data.length; i++) {
+					for(var j = 0; j < this.treeData.length; j++) {
+						if(data[i].year == this.treeData[j].id) {
+							map2.get(data[i].year).set(data[i].month, data[i].month)
 						}
 					}
-					for(var [key, value] of map) {
-						this.treeData.push({
-							id: key,
-							label: key + "年",
-							children: []
-						})
-					}
-					for(var i = 0; i < data.length; i++) {
-						for(var j = 0; j < this.treeData.length; j++) {
-							if(data[i].year == this.treeData[j].id) {
-								map2.get(data[i].year).set(data[i].month, data[i].month)
+				}
+				for(var [key, value] of map2) {
+					for(var j = 0; j < this.treeData.length; j++) {
+						if(key == this.treeData[j].id) {
+							for(var [key1, value1] of value) {
+								this.treeData[j].children.push({
+									id: (this.treeData[j].id > 1000 ? this.treeData[j].id : "0" + this.treeData[j].id) + (key1 > 10 ? key1 : 0 + key1),
+									label: key1 + "月",
+									children: []
+								})
 							}
 						}
 					}
-					for(var [key, value] of map2) {
-						for(var j = 0; j < this.treeData.length; j++) {
-							if(key == this.treeData[j].id) {
-								for(var [key1, value1] of value) {
-									this.treeData[j].children.push({
-										id: (this.treeData[j].id > 1000 ? this.treeData[j].id : "0" + this.treeData[j].id) + (key1 > 10 ? key1 : 0 + key1),
-										label: key1 + "月",
-										children: []
-									})
-								}
+				}
+				for(var i in this.treeData) {
+					for(var j in this.treeData[i].children) {
+						for(var k in data) {
+							if(this.treeData[i].id == data[k].year && this.treeData[i].children[j].id == (data[k].year > 1000 ? data[k].year : "0" + data[k].year) + (data[k].month > 10 ? data[k].month : "0" + data[k].month)) {
+								this.treeData[i].children[j].children.push({
+									value: data[k].Time,
+									id: data[k].Time,
+									label: data[k].Time.slice(6, 8) + "日," + data[k].title
+								})
 							}
 						}
 					}
-					for(var i in this.treeData) {
-						for(var j in this.treeData[i].children) {
-							for(var k in data) {
-								if(this.treeData[i].id == data[k].year && this.treeData[i].children[j].id == (data[k].year > 1000 ? data[k].year : "0" + data[k].year) + (data[k].month > 10 ? data[k].month : "0" + data[k].month)) {
-									this.treeData[i].children[j].children.push({
-										value: data[k].Time,
-										id: data[k].Time,
-										label: data[k].Time.slice(6, 8) + "日," + data[k].title
-									})
-								}
-							}
+				}
+			})
+		},
+		handleNodeClick(obj, node, c) {
+			if(node.level == 2) {} else if(node.level == 3) {
+				this.$store.commit("setcurrentTime", node.data.value);
+			}
+		},
+		save() {
+			let params = this.getTime()
+			let option = {
+				Title: this.event.title, //事件标题
+				caption: this.event_mx.caption, //事件内容
+				time: params.time, //时间
+				year: params.year, //年份
+				month: params.month, //月份 
+				userName: localStorage.getItem("username"), //编辑者
+				updateTime: moment().format('YYYY-MM-DD HH:mm:ss'), //编辑时间
+				eventType: this.event_mx.eventType, //事件类型
+				bookValue: this.event_mx.bookValue //参考书目
+			}
+			axios.post(this.MYURL + 'WriteStories.do?', {
+				params: option
+			}).then(data => {
+				this.$message(data.data.text + "\n" + data.data.sql);
+			})
+			let value = [{
+				title: this.event.title, //事件标题
+				time: params.time, //年份
+				year: params.year,
+				month: params.month, //月份
+				userName: localStorage.getItem("username"),
+				updateTime: moment().format('YYYY-MM-DD HH:mm:ss'),
+				caption: this.event_mx.caption,
+				day: '',
+				GuWen: this.event_mx.GuWen,
+				JingQue: this.event_mx.JingQue,
+				eventType: this.event_mx.eventType,
+				bookValue: this.event_mx.bookValue
+			}]
+			if(this.event_mx.currentId == null || this.event_mx.currentId == undefined || this.event_mx.currentId === "") {
+				axios.post(this.$store.state.MYURL + 'InsertTableRow.do', {
+						params: {
+							tablename: "event_mx",
+							Insertcol: "title,time,userName,updateTime,caption,year,month,day,GuWen",
+							values: value
 						}
-					}
-				})
-			},
-			handleNodeClick(obj, node, c) {
-				if(node.level == 2) {} else if(node.level == 3) {
-					this.$store.commit("setcurrentTime", node.data.value);
-				}
-			},
-			save() {
-				let params = this.getTime()
-				let option = {
-					Title: this.event.title, //事件标题
-					caption: this.event_mx.caption, //事件内容
-					time: params.time, //时间
-					year: params.year,//年份
-					month: params.month, //月份 
-					userName: localStorage.getItem("username"),//编辑者
-					updateTime: moment().format('YYYY-MM-DD HH:mm:ss'),//编辑时间
-					eventType: this.event_mx.eventType,//事件类型
-					bookValue: this.event_mx.bookValue//参考书目
-				}
-				axios.post(this.MYURL + 'WriteStories.do?', {
-					params: option
-				}).then(data => {
-					this.$message(data.data.text + "\n" + data.data.sql);
-				})
-				let value = [{
-					title: this.event.title, //事件标题
+					})
+					.then(res => {
+						this.$message({
+							type: 'success',
+							message: res.data.msg
+						});
+						this.SearchMonthStories();
+						this.queryTreeData();
+					})
+			} else {
+				value = [{
+					id: this.event_mx.currentId,
 					time: params.time, //年份
-					year: params.year,
-					month: params.month, //月份
 					userName: localStorage.getItem("username"),
 					updateTime: moment().format('YYYY-MM-DD HH:mm:ss'),
 					caption: this.event_mx.caption,
+					year: params.year,
+					month: params.month, //月份
 					day: '',
 					GuWen: this.event_mx.GuWen,
 					JingQue: this.event_mx.JingQue,
 					eventType: this.event_mx.eventType,
-					bookValue: this.event_mx.bookValue
+					bookValue: this.event_mx.bookValue,
+					title: this.event.title, //事件标题
 				}]
-				if(this.event_mx.currentId == null || this.event_mx.currentId == undefined || this.event_mx.currentId === "") {
-					axios.post(this.$store.state.MYURL + 'InsertTableRow.do', {
-							params: {
-								tablename: "event_mx",
-								Insertcol: "title,time,userName,updateTime,caption,year,month,day,GuWen",
-								values: value
-							}
-						})
-						.then(res => {
-							this.$message({
-								type: 'success',
-								message: res.data.msg
-							});
-							this.SearchMonthStories();
-							this.queryTreeData();
-						})
-				} else {
-					value = [{
-						id: this.event_mx.currentId,
-						time: params.time, //年份
-						userName: localStorage.getItem("username"),
-						updateTime: moment().format('YYYY-MM-DD HH:mm:ss'),
-						caption: this.event_mx.caption,
-						year: params.year,
-						month: params.month, //月份
-						day: '',
-						GuWen: this.event_mx.GuWen,
-						JingQue: this.event_mx.JingQue,
-						eventType: this.event_mx.eventType,
-						bookValue: this.event_mx.bookValue,
-						title: this.event.title, //事件标题
-					}]
-					axios.post(this.$store.state.MYURL + 'UpdateTableRow.do', {
-							params: {
-								tablename: "event_mx",
-								Insertcol: "id,time,userName,updateTime,caption,year,month,day,GuWen,title",
-								values: value
-							}
-						})
-						.then(res => {
-							this.$message({
-								type: 'success',
-								message: res.data.msg
-							});
-							this.SearchMonthStories();
-							this.searchMX();
-							this.queryTreeData();
-						})
-				}
-
-			},
-			SearchMonthStories() {
-				axios.get(this.$store.state.MYURL + 'SelectStories.do', {
-					params: {
-						Month: this.common.month, //准确时间。减0是为了把字符串转换成数字，去0
-						Year: this.common.year //年份
-					}
-				}).then(res => {
-					this.Event = res.data
-					let time = parseInt(moment(vm.value).format('YYYYMMDD'))
-					//修改右侧对应的caption
-					for(var i = 0; i < vm.Event.length; i++) {
-						if(vm.Event[i].Time == this.currentTime) {
-							vm.event = vm.Event[i]
-							vm.updateTime = vm.Event[i].updateTime;
-							if(vm.Event[i]["eventType"]) {
-								vm.eventImgUrl = vm.$store.state.AliYunURL + vm.Event[i]["eventType"] + ".png" || ""
-							} else {
-								vm.eventImgUrl = vm.$store.state.AliYunURL + "bookBG.png" || ""
-							}
-							vm.event = vm.Event[i]
-							break;
-						} else {
-							this.event.title = "";
-							this.event_mx.currentId = ""
+				axios.post(this.$store.state.MYURL + 'UpdateTableRow.do', {
+						params: {
+							tablename: "event_mx",
+							Insertcol: "id,time,userName,updateTime,caption,year,month,day,GuWen,title",
+							values: value
 						}
-					}
-					if(this.Event.length == 0) {
+					})
+					.then(res => {
+						this.$message({
+							type: 'success',
+							message: res.data.msg
+						});
+						this.SearchMonthStories();
+						this.searchMX();
+						this.queryTreeData();
+					})
+			}
+
+		},
+		SearchMonthStories() {
+			axios.get(this.$store.state.MYURL + 'SelectStories.do', {
+				params: {
+					Month: this.common.month, //准确时间。减0是为了把字符串转换成数字，去0
+					Year: this.common.year //年份
+				}
+			}).then(res => {
+				this.Event = res.data
+				let time = parseInt(moment(vm.value).format('YYYYMMDD'))
+				//修改右侧对应的caption
+				for(var i = 0; i < vm.Event.length; i++) {
+					if(vm.Event[i].Time == this.currentTime) {
+						vm.event = vm.Event[i]
+						vm.updateTime = vm.Event[i].updateTime;
+						if(vm.Event[i]["eventType"]) {
+							vm.eventImgUrl = vm.$store.state.AliYunURL + vm.Event[i]["eventType"] + ".png" || ""
+						} else {
+							vm.eventImgUrl = vm.$store.state.AliYunURL + "bookBG.png" || ""
+						}
+						vm.event = vm.Event[i]
+						break;
+					} else {
 						this.event.title = "";
-						this.event_mx.caption = "";
 						this.event_mx.currentId = ""
 					}
-					vm.drawWrited();
-				})
-			},
-			searchMX() {
-				let option = {
-					tablename: "event_mx",
-					showcol: ['*'],
-					sqlwhere: "1=1 AND time= '" + this.currentTime + "'"
 				}
-				axios.get(this.MYURL + 'QueryTableRow.do', {
-					params: {
-						tablename: option.tablename,
-						showcol: option.showcol.join(","),
-						sqlwhere: option.sqlwhere
-					}
-				}).then(res => {
-					res.data.data.push({
-						caption: '',
-						GuWen: '',
-						JingQue: 1,
-						id: '',
-						bookValue: '',
-						eventType: ''
-					})
-					var length = res.data.data.length
-					if(res.data.data.length != 0) {
-						if(res.data.data[length - 1].title) {
-							this.Title = res.data.data[this.event_mx.pageIndex - 1].title
-						}
-						this.event_mx.caption = res.data.data[this.event_mx.pageIndex - 1].caption
-						this.event_mx.GuWen = res.data.data[this.event_mx.pageIndex - 1].GuWen
-						this.event_mx.total = parseInt(length)
-						this.event_mx.JingQue = res.data.data[this.event_mx.pageIndex - 1].JingQue + ""
-						this.event_mx.currentId = res.data.data[this.event_mx.pageIndex - 1].id
-						this.event_mx.bookValue = res.data.data[this.event_mx.pageIndex - 1].bookValue - 0
-						this.event_mx.eventType = res.data.data[this.event_mx.pageIndex - 1].eventType
-					} else {
-						this.event_mx.GuWen = ""
-						this.event_mx.caption = ""
-						this.event_mx.currentId = null
-					}
-				})
-			},
-			searchs() {
-				vm.value = new Date(vm.year, vm.month - 1, vm.day, 12, 0, 0)
-			},
-			WNL() {
-				vm.WNL_flag = true;
-				vm.SXT_flag = false;
-				vm.SJZ_flag = false;
-				vm.RL_flag = false
-			},
-			SXT() {
-				vm.WNL_flag = false
-				vm.SXT_flag = true
-				vm.SJZ_flag = false
-				vm.RL_flag = false
-			},
-			SJZ() {
-				vm.WNL_flag = false;
-				vm.SXT_flag = false;
-				vm.SJZ_flag = true
-				vm.RL_flag = false
-				vm.SJZ_search()
-			},
-			RLClick() {
-				vm.WNL_flag = false
-				vm.SXT_flag = false
-				vm.SJZ_flag = false
-				vm.RL_flag = true
-			},
-			drawWrited() {
-				let lastMounthFlag = 0; //上个月结束的下标标签
-				$("tbody").find("span").parent().removeClass("writed");
-				for(var i = 0; i < vm.Event.length; i++) {
-					var span = $("tbody").find("span");
-					let flag = 0;
-					for(var k = 0; k < span.length; k++) {
-						if(span[k].innerText == 1) {
-							flag++;
-							if(flag == 1) {
-								lastMounthFlag = k;
-							}
-						}
-						if(flag == 2) {
-							break;
-						}
-						var day = "";
-						var time_day = "";
-						for(var j = 0; j < vm.Event.length; j++) {
-							day = span[k].innerText;
-							time_day = vm.Event[j].Time.substr(6) - 0; //字符串转数字
-							if(day == time_day) {
-								$(span[k]).parent().addClass("writed");
-							}
-						}
-					}
+				if(this.Event.length == 0) {
+					this.event.title = "";
+					this.event_mx.caption = "";
+					this.event_mx.currentId = ""
 				}
-				//这个月1号之前的div通通移除class :writed
-				for(var j = 0; j < lastMounthFlag; j++) {
-					$(span[j]).parent().removeClass("writed");
-				}
-			},
-			SJZ_search() {
-				axios.get(vm.MYURL + 'Search_SJZ.do?', {
-					params: {
-						caption: vm.SJZ_val, //时间轴查找的关键字
-					}
-				}).then(res => {
-					vm.SJZ_data = res.data;
-				})
-			},
-			SJZ_click(data) {
-				var time = data;
-				if(time.length < 14) {
-					time += " 00:00:00";
-				}
-				vm.value = time;
-				this.$store.commit("setcurrentTime", moment(vm.value).format('YYYYMMDD'));
-			},
-			queryEventType() {
-				axios.get(this.$store.state.MYURL + 'QueryTableRow.do', {
-					params: {
-						tablename: "dct_enums",
-						showcol: ['*'],
-						sqlwhere: "F_PARENT='01'"
-					}
-				}).then(res => {
-					this.eventType_All = res.data.data
-				})
-			},
-			setBookType() {
-				axios.get(this.$store.state.MYURL + 'QueryTableRow.do', {
-					params: {
-						tablename: "dct_enums",
-						showcol: ['*'],
-						sqlwhere: "F_T3='2'"
-					}
-				}).then(res => {
-					this.bookType = res.data.data
-				})
-			},
-			searchRL() {
-				var sqlwhere = "1=1 "
-				if(this.RL.year) {
-					sqlwhere += "AND year = " + this.RL.year
-				}
-				if(this.RL.month) {
-					sqlwhere += " AND month = " + this.RL.month
-				}
-				if(this.RL.nongliYue) {
-					sqlwhere += " AND nongli like '%" + this.RL.nongliYue + "月%'"
-				}
-				if(this.RL.tiandi) {
-					sqlwhere += " AND tiandi = '" + this.RL.tiandi + "'"
-				}
-				axios.get(this.MYURL + 'QueryTableRow.do', {
-					params: {
-						tablename: "lifa",
-						showcol: ['*'],
-						sqlwhere: sqlwhere
-					}
-				}).then(res => {
-					this.setTableHeight()
-					this.tableData.data = res.data.data
-				})
-			},
-			handleCurrentChange(val) {
-				this.event_mx.pageIndex = val
-				this.searchMX()
-			},
-			selectedTableData(item) {
-				this.value = new Date(item.year, item.month - 1, item.day)
-				this.$store.commit("setcurrentTime", moment(this.value).format('YYYYMMDD'));
-			},
+				vm.drawWrited();
+			})
 		},
-		watch: {
-			currentTime(val) {
-				this.searchMX()
-				this.SearchMonthStories()
-			},
-			'event_mx.eventType' (val) {
-				if(val) {
-					vm.eventImgUrl = vm.$store.state.AliYunURL + val + ".png" || ""
+		searchMX() {
+			let option = {
+				tablename: "event_mx",
+				showcol: ['*'],
+				sqlwhere: "1=1 AND time= '" + this.currentTime + "'"
+			}
+			axios.get(this.MYURL + 'QueryTableRow.do', {
+				params: {
+					tablename: option.tablename,
+					showcol: option.showcol.join(","),
+					sqlwhere: option.sqlwhere
+				}
+			}).then(res => {
+				res.data.data.push({
+					caption: '',
+					GuWen: '',
+					JingQue: 1,
+					id: '',
+					bookValue: '',
+					eventType: ''
+				})
+				var length = res.data.data.length
+				if(res.data.data.length != 0) {
+					if(res.data.data[length - 1].title) {
+						this.Title = res.data.data[this.event_mx.pageIndex - 1].title
+					}
+					this.event_mx.caption = res.data.data[this.event_mx.pageIndex - 1].caption
+					this.event_mx.GuWen = res.data.data[this.event_mx.pageIndex - 1].GuWen
+					this.event_mx.total = parseInt(length)
+					this.event_mx.JingQue = res.data.data[this.event_mx.pageIndex - 1].JingQue + ""
+					this.event_mx.currentId = res.data.data[this.event_mx.pageIndex - 1].id
+					this.event_mx.bookValue = res.data.data[this.event_mx.pageIndex - 1].bookValue - 0
+					this.event_mx.eventType = res.data.data[this.event_mx.pageIndex - 1].eventType
 				} else {
-					vm.eventImgUrl = vm.$store.state.AliYunURL + "bookBG.png" || ""
+					this.event_mx.GuWen = ""
+					this.event_mx.caption = ""
+					this.event_mx.currentId = null
+				}
+			})
+		},
+		searchs() {
+			vm.value = new Date(vm.year, vm.month - 1, vm.day, 12, 0, 0)
+		},
+		WNL() {
+			vm.WNL_flag = true;
+			vm.SXT_flag = false;
+			vm.SJZ_flag = false;
+			vm.RL_flag = false
+		},
+		SXT() {
+			vm.WNL_flag = false
+			vm.SXT_flag = true
+			vm.SJZ_flag = false
+			vm.RL_flag = false
+		},
+		SJZ() {
+			vm.WNL_flag = false;
+			vm.SXT_flag = false;
+			vm.SJZ_flag = true
+			vm.RL_flag = false
+			vm.SJZ_search()
+		},
+		RLClick() {
+			vm.WNL_flag = false
+			vm.SXT_flag = false
+			vm.SJZ_flag = false
+			vm.RL_flag = true
+		},
+		drawWrited() {
+			let lastMounthFlag = 0; //上个月结束的下标标签
+			$("tbody").find("span").parent().removeClass("writed");
+			for(var i = 0; i < vm.Event.length; i++) {
+				var span = $("tbody").find("span");
+				let flag = 0;
+				for(var k = 0; k < span.length; k++) {
+					if(span[k].innerText == 1) {
+						flag++;
+						if(flag == 1) {
+							lastMounthFlag = k;
+						}
+					}
+					if(flag == 2) {
+						break;
+					}
+					var day = "";
+					var time_day = "";
+					for(var j = 0; j < vm.Event.length; j++) {
+						day = span[k].innerText;
+						time_day = vm.Event[j].Time.substr(6) - 0; //字符串转数字
+						if(day == time_day) {
+							$(span[k]).parent().addClass("writed");
+						}
+					}
 				}
 			}
-		}
-	};
-</script>
-
-<style lang="less">
-	@import '../assets/styles/calendar';
-	.calendar {
-		textarea {
-			text-indent: 25px
+			//这个月1号之前的div通通移除class :writed
+			for(var j = 0; j < lastMounthFlag; j++) {
+				$(span[j]).parent().removeClass("writed");
+			}
+		},
+		SJZ_search() {
+			axios.get(vm.MYURL + 'Search_SJZ.do?', {
+				params: {
+					caption: vm.SJZ_val, //时间轴查找的关键字
+				}
+			}).then(res => {
+				vm.SJZ_data = res.data;
+			})
+		},
+		SJZ_click(data) {
+			var time = data;
+			if(time.length < 14) {
+				time += " 00:00:00";
+			}
+			vm.value = time;
+			this.$store.commit("setcurrentTime", moment(vm.value).format('YYYYMMDD'));
+		},
+		queryEventType() {
+			axios.get(this.$store.state.MYURL + 'QueryTableRow.do', {
+				params: {
+					tablename: "dct_enums",
+					showcol: ['*'],
+					sqlwhere: "F_PARENT='01'"
+				}
+			}).then(res => {
+				this.eventType_All = res.data.data
+			})
+		},
+		setBookType() {
+			axios.get(this.$store.state.MYURL + 'QueryTableRow.do', {
+				params: {
+					tablename: "dct_enums",
+					showcol: ['*'],
+					sqlwhere: "F_T3='2'"
+				}
+			}).then(res => {
+				this.bookType = res.data.data
+			})
+		},
+		searchRL() {
+			var sqlwhere = "1=1 "
+			if(this.RL.year) {
+				sqlwhere += "AND year = " + this.RL.year
+			}
+			if(this.RL.month) {
+				sqlwhere += " AND month = " + this.RL.month
+			}
+			if(this.RL.nongliYue) {
+				sqlwhere += " AND nongli like '%" + this.RL.nongliYue + "月%'"
+			}
+			if(this.RL.tiandi) {
+				sqlwhere += " AND tiandi = '" + this.RL.tiandi + "'"
+			}
+			axios.get(this.MYURL + 'QueryTableRow.do', {
+				params: {
+					tablename: "lifa",
+					showcol: ['*'],
+					sqlwhere: sqlwhere
+				}
+			}).then(res => {
+				this.setTableHeight()
+				this.tableData.data = res.data.data
+			})
+		},
+		handleCurrentChange(val) {
+			this.event_mx.pageIndex = val
+			this.searchMX()
+		},
+		selectedTableData(item) {
+			this.value = new Date(item.year, item.month - 1, item.day)
+			this.$store.commit("setcurrentTime", moment(this.value).format('YYYYMMDD'));
+		},
+	},
+	watch: {
+		currentTime(val) {
+			this.searchMX()
+			this.SearchMonthStories()
+		},
+		'event_mx.eventType' (val) {
+			if(val) {
+				vm.eventImgUrl = vm.$store.state.AliYunURL + val + ".png" || ""
+			} else {
+				vm.eventImgUrl = vm.$store.state.AliYunURL + "bookBG.png" || ""
+			}
 		}
 	}
-</style>
+};</script>
+
+<style lang="less">@import '../assets/styles/calendar';
+.calendar {
+	textarea {
+		text-indent: 25px
+	}
+}</style>
