@@ -399,7 +399,7 @@ app.get('/QueryPerson.do', HB.QueryPerson);
 app.get('/QueryGaoGuan.do', HB.QueryGaoGuan);
 
 
-app.listen(80);
+app.listen(8084);
 
 
 

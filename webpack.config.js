@@ -83,7 +83,7 @@ if(isDev) {
 	}) //如果是测试环境下的一些配置
 	config.devtool = '#cheap-module-eval-source-map' //官方推荐使用这个配置,作用是在浏览器中调试时,显示的代码和我们的项目中的代码会基本相似,而不会显示编译后的代码,以致于我们调试连自己都看不懂                                      
 	config.devServer = { //这个devServer的配置是在webpack2.x以后引入的,1.x是没有的
-			port: 80, //访问的端口号
+			port: 8083, //访问的端口号
 			host: '127.0.0.1', //可以设置0.0.0.0 ,这样设置你可以通过127.0.0.1或则localhost去访问
 			overlay: {
 				errors: true, //编译中遇到的错误都会显示到网页中去

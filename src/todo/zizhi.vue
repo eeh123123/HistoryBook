@@ -4,11 +4,9 @@
 		<h3>资治通鉴的事例:(每个文本中间隔3行，请注意这样新增并不会有标题)</h3> 
 		05350218春，正月，戊申朔，大赦，改元。
 <br>
-<br>
-<br>
 		<br>
 		春季，正月，戊申朔（初一），梁武帝下令大赦天下，改年号为大同。
-		<br><el-input v-model="value" style="width:200px"></el-input>
+		<br><el-input autosize type="textarea" v-model="value"></el-input>
 		<br>
 		<el-button @click="zhuanhuan">保存</el-button>
 		<br>
@@ -40,8 +38,7 @@
 			zhuanhuan() {
 				let event = []
 				let event_mx = []
-
-				let data = this.value.split("    ")
+				let data = this.value.split("\n\n")
 				let date
 				for(let j = 0; j < data.length; j++) {
 					if(j % 2 == 0) {
@@ -125,6 +122,7 @@
 				let event_mx = []
 
 				let data = this.value1.split("  ")
+				debugger
 				var date = ""
 				var year, month, day
 				for(var i = 0; i < data.length; i++) {
