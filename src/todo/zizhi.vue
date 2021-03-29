@@ -52,7 +52,7 @@
 							title: ''
 						})
 					} else {
-						if(data[j].search("【】") == -1) {
+						if(data[j-1].search("【】") == -1) {
 							event_mx.push({
 								caption: data[j],
 								GuWen: data[j - 1].slice(8),
